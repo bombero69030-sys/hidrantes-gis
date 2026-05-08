@@ -607,7 +607,10 @@ function mostrarDetalle(id){
     </div>
   `;
   document.getElementById('panel-detalle').style.display='block';
-  mapa.setView([h.lat,h.lon],Math.max(mapa.getZoom(),16));
+  // Solo mueve si el hidrante no está visible en el área actual
+  if(!mapa.getBounds().contains([h.lat,h.lon])){
+    mapa.flyTo([h.lat,h.lon], Math.max(mapa.getZoom(),16), {animate:true, duration:0.8});
+  }
   Object.entries(marcadores).forEach(([mid,m])=>{
     m.getElement()?.querySelector('.marcador-hidrante')?.classList.toggle('m-seleccionado',mid===id);
   });
@@ -860,7 +863,10 @@ function miPosicion(){
       marcadorPosicion.bindPopup(`<b>📍 Tu posición</b><br>Precisión: ±${Math.round(accuracy)} m`).openPopup();
       // Círculo de precisión
       circuloPosicion = L.circle([lat,lon],{radius:accuracy,color:'#1A73E8',fillColor:'#1A73E8',fillOpacity:0.1,weight:1}).addTo(mapa);
-      mapa.setView([lat,lon], 16);
+      // Solo mueve si la posición no está ya visible en pantalla
+      if(!mapa.getBounds().contains([lat,lon])){
+        mapa.flyTo([lat,lon], 16, {animate:true, duration:1.2});
+      }
       btn.textContent = '📍 Mi posición';
       btn.disabled = false;
       mostrarToast(`📍 Posición encontrada (±${Math.round(accuracy)} m)`);
@@ -946,7 +952,7 @@ function hidranteCercano(){
 
       // Ajustar vista para ver ambos puntos
       const bounds = L.latLngBounds([[lat,lon],[cercano.lat,cercano.lon]]);
-      mapa.fitBounds(bounds, {padding:[60,60]});
+      mapa.flyToBounds(bounds, {padding:[80,80], animate:true, duration:1.2});
 
       btn.textContent = '🚒 Más cercano';
       btn.disabled = false;

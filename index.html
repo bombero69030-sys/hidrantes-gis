@@ -95,8 +95,8 @@
   .paginacion button:hover{background:#D5D8DC}
   .paginacion button:disabled{opacity:0.4;cursor:not-allowed}
 
-  #mapa{flex:1;z-index:1}
-  .mapa-wrapper{position:relative;flex:1}
+  #mapa{width:100%;height:100%;min-height:400px;z-index:1}
+  .mapa-wrapper{position:relative;flex:1;display:flex;flex-direction:column}
 
   #panel-detalle{position:absolute;top:16px;right:16px;width:310px;background:white;border-radius:10px;box-shadow:var(--sombra);z-index:900;display:none;max-height:calc(100vh - 120px);overflow-y:auto}
   .pd-header{background:var(--rojo-oscuro);color:white;padding:13px 15px;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:space-between}
@@ -828,6 +828,8 @@ function emojiTipo(t){return{soterra:'🟢',boca:'🔴',columna:'🟣',deposito:
 // ARRANQUE
 // ============================================
 cargarDatos();
+window.addEventListener('load',()=>setTimeout(()=>mapa.invalidateSize(),400));
+window.addEventListener('resize',()=>mapa.invalidateSize());
 </script>
 </body>
 </html>

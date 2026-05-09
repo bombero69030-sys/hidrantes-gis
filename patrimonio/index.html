@@ -2,872 +2,944 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Patrimonio · Parque de Bomberos Los Palacios y Villafranca</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Patrimonio · Portal Bomberos Los Palacios</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --rojo: #C0392B;
-  --rojo-dark: #922B21;
-  --rojo-light: #FADBD8;
-  --naranja: #E67E22;
-  --verde: #1E8449;
-  --gris-oscuro: #1C2833;
-  --gris-medio: #2E4053;
-  --gris-panel: #F4F6F7;
-  --gris-borde: #D5D8DC;
-  --texto: #1C2833;
-  --texto-muted: #626567;
-  --blanco: #ffffff;
-  --font-display: 'Barlow Condensed', sans-serif;
-  --font-body: 'Barlow', sans-serif;
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --rojo:#C0392B;--rojo-dark:#7B241C;--rojo-glow:rgba(192,57,43,0.3);
+  --purpura:#6C3483;--purpura-claro:rgba(108,52,131,0.15);
+  --verde:#1E8449;--naranja:#E67E22;--azul:#1A5276;
+  --gris-fondo:#0D0F12;--gris-panel:#161A1F;--gris-panel2:#1E232B;
+  --gris-borde:#2A2F38;--gris-borde2:#353C47;
+  --texto:#F0F2F5;--texto-muted:#8892A0;--texto-dim:#5A6475;
+  --font-display:'Barlow Condensed',sans-serif;
+  --font-body:'Barlow',sans-serif;
 }
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font-body);background:var(--gris-fondo);color:var(--texto);display:flex;flex-direction:column}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* HEADER */
+header{
+  background:var(--rojo-dark);border-bottom:3px solid var(--rojo);
+  padding:0 20px;height:56px;display:flex;align-items:center;gap:12px;
+  flex-shrink:0;z-index:100;position:sticky;top:0;
+}
+.btn-back{
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);
+  color:white;padding:6px 14px;border-radius:6px;font-family:var(--font-display);
+  font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;
+  display:flex;align-items:center;gap:6px;transition:all 0.2s;letter-spacing:.03em;flex-shrink:0;
+}
+.btn-back:hover{background:rgba(255,255,255,0.2)}
+.header-titulo{font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:.05em;color:white;text-transform:uppercase}
+.header-titulo span{color:#F1948A}
+.header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.mode-toggle{display:flex;background:rgba(0,0,0,0.3);border-radius:6px;padding:3px;gap:3px}
+.mode-btn{font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:4px;border:none;background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s}
+.mode-btn.active{background:rgba(255,255,255,0.15);color:white}
+.usuario-badge{font-size:11px;color:#A9DFBF;background:rgba(30,132,73,0.2);border:1px solid rgba(30,132,73,0.3);padding:4px 10px;border-radius:20px;display:none}
+.btn-login-header{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:white;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;transition:all 0.2s}
+.btn-login-header:hover{background:rgba(255,255,255,0.2)}
+.btn-nuevo-header{background:white;color:var(--rojo-dark);border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font-display);letter-spacing:.04em;display:none;transition:all 0.2s}
+.btn-nuevo-header:hover{background:#F8F9FA}
 
-body {
-  font-family: var(--font-body);
-  background: var(--gris-oscuro);
-  color: var(--texto);
-  min-height: 100vh;
-}
+/* LAYOUT */
+.app{display:flex;flex:1;overflow:hidden;height:calc(100vh - 56px)}
 
-/* ── HEADER ── */
-header {
-  background: var(--rojo-dark);
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 56px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 3px solid var(--rojo);
-}
-.header-left { display: flex; align-items: center; gap: 14px; }
-.header-logo {
-  width: 32px; height: 32px;
-  background: var(--blanco);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-}
-.header-title {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--blanco);
-  letter-spacing: .04em;
-  text-transform: uppercase;
-}
-.header-subtitle {
-  font-size: 11px;
-  color: rgba(255,255,255,.6);
-  font-family: var(--font-display);
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-.mode-toggle {
-  display: flex;
-  background: rgba(0,0,0,.3);
-  border-radius: 6px;
-  padding: 3px;
-  gap: 3px;
-}
-.mode-btn {
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  padding: 6px 14px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all .2s;
-  color: rgba(255,255,255,.6);
-  background: transparent;
-}
-.mode-btn.active {
-  background: var(--rojo);
-  color: var(--blanco);
-}
+/* SIDEBAR */
+.sidebar{width:300px;background:var(--gris-panel);border-right:1px solid var(--gris-borde);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.sidebar-search{padding:12px;border-bottom:1px solid var(--gris-borde)}
+.sidebar-search input{width:100%;background:var(--gris-panel2);border:1px solid var(--gris-borde2);border-radius:6px;color:var(--texto);padding:8px 10px 8px 30px;font-family:var(--font-body);font-size:13px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%238892A0' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:9px center}
+.sidebar-search input:focus{outline:none;border-color:var(--rojo)}
+.sidebar-search input::placeholder{color:var(--texto-dim)}
+.lista{flex:1;overflow-y:auto;padding:6px}
+.lista::-webkit-scrollbar{width:4px}
+.lista::-webkit-scrollbar-thumb{background:var(--gris-borde2);border-radius:2px}
 
-/* ── LAYOUT ── */
-.app { display: flex; height: calc(100vh - 56px); }
+/* TARJETA EDIFICIO */
+.edificio-card{border-radius:8px;overflow:hidden;margin-bottom:6px;cursor:pointer;border:1px solid var(--gris-borde);background:var(--gris-panel2);transition:all 0.2s}
+.edificio-card:hover{border-color:var(--rojo)}
+.edificio-card.activo{border-color:var(--rojo);background:rgba(192,57,43,0.08)}
+.edificio-img{width:100%;height:90px;object-fit:cover}
+.edificio-placeholder{width:100%;height:90px;background:var(--gris-borde);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--texto-dim)}
+.edificio-info{padding:10px 12px}
+.edificio-nombre{font-weight:600;font-size:13px;color:var(--texto);margin-bottom:4px;line-height:1.2}
+.edificio-meta{display:flex;align-items:center;gap:6px}
+.badge-prior{padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:.05em}
+.badge-A{background:rgba(192,57,43,0.25);color:#EC7063}
+.badge-B{background:rgba(230,126,34,0.2);color:#F0A500}
+.badge-C{background:rgba(255,255,255,0.08);color:var(--texto-muted)}
+.edificio-tiempo{font-size:11px;color:var(--texto-dim)}
 
-/* ── SIDEBAR ── */
-.sidebar {
-  width: 300px;
-  flex-shrink: 0;
-  background: var(--gris-medio);
-  overflow-y: auto;
-  border-right: 1px solid rgba(255,255,255,.08);
-}
-.sidebar-search {
-  padding: 12px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-}
-.sidebar-search input {
-  width: 100%;
-  background: rgba(0,0,0,.3);
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 6px;
-  padding: 8px 12px;
-  color: var(--blanco);
-  font-family: var(--font-body);
-  font-size: 13px;
-  outline: none;
-}
-.sidebar-search input::placeholder { color: rgba(255,255,255,.35); }
-.sidebar-search input:focus { border-color: var(--rojo); }
+/* CONTENIDO PRINCIPAL */
+.main{flex:1;overflow-y:auto;background:var(--gris-fondo)}
+.main::-webkit-scrollbar{width:5px}
+.main::-webkit-scrollbar-thumb{background:var(--gris-borde2);border-radius:3px}
 
-.edificio-card {
-  border-bottom: 1px solid rgba(255,255,255,.06);
-  cursor: pointer;
-  transition: background .15s;
-  overflow: hidden;
-}
-.edificio-card:hover { background: rgba(255,255,255,.05); }
-.edificio-card.active { background: rgba(192,57,43,.2); border-left: 3px solid var(--rojo); }
-.edificio-img {
-  width: 100%;
-  height: 110px;
-  object-fit: cover;
-  display: block;
-  filter: brightness(.85);
-  transition: filter .2s;
-}
-.edificio-card:hover .edificio-img,
-.edificio-card.active .edificio-img { filter: brightness(1); }
-.edificio-img-placeholder {
-  width: 100%;
-  height: 110px;
-  background: linear-gradient(135deg, #2E4053, #1C2833);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  color: rgba(255,255,255,.2);
-}
-.edificio-info { padding: 10px 12px; }
-.edificio-nombre {
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--blanco);
-  text-transform: uppercase;
-  letter-spacing: .03em;
-  line-height: 1.2;
-  margin-bottom: 4px;
-}
-.edificio-meta { display: flex; align-items: center; gap: 8px; }
-.badge-prioridad {
-  font-family: var(--font-display);
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 3px;
-  letter-spacing: .06em;
-}
-.badge-A { background: var(--rojo); color: white; }
-.badge-B { background: var(--naranja); color: white; }
-.badge-C { background: var(--verde); color: white; }
-.edificio-tiempo {
-  font-size: 11px;
-  color: rgba(255,255,255,.5);
-  font-family: var(--font-display);
-}
+/* ESTADO VACÍO */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--texto-dim)}
+.empty-icon{font-size:48px;opacity:0.3}
+.empty-text{font-family:var(--font-display);font-size:16px;letter-spacing:.08em;text-transform:uppercase}
 
-/* ── MAIN CONTENT ── */
-.main { flex: 1; overflow-y: auto; background: var(--gris-panel); }
+/* FICHA DETALLE */
+.ficha{padding:20px;max-width:860px}
 
-/* ── FICHA INTERVENCIÓN ── */
-.ficha-intervencion { padding: 0; }
+/* GALERÍA FOTOS */
+.galeria-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sec-titulo{font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--rojo)}
+.galeria-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;margin-bottom:16px}
+.galeria-foto{position:relative;border-radius:6px;overflow:hidden;aspect-ratio:4/3}
+.galeria-foto img{width:100%;height:100%;object-fit:cover;cursor:pointer;transition:opacity 0.2s}
+.galeria-foto img:hover{opacity:0.85}
+.galeria-foto .btn-del-foto{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);border:none;color:white;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:12px;display:none;align-items:center;justify-content:center}
+.galeria-foto:hover .btn-del-foto.visible{display:flex}
+.btn-subir-foto{border:2px dashed var(--gris-borde2);border-radius:6px;aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--texto-dim);font-size:11px;gap:6px;transition:all 0.2s;background:none}
+.btn-subir-foto:hover{border-color:var(--rojo);color:var(--rojo)}
+.btn-subir-foto-icon{font-size:22px}
 
-.ficha-hero {
-  position: relative;
-  height: 200px;
-  overflow: hidden;
-  background: var(--gris-oscuro);
-}
-.ficha-hero img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  filter: brightness(.6);
-}
-.ficha-hero-placeholder {
-  width: 100%; height: 100%;
-  background: linear-gradient(135deg, #2E4053, #1C2833);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 64px; color: rgba(255,255,255,.1);
-}
-.ficha-hero-overlay {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 20px 24px 16px;
-  background: linear-gradient(transparent, rgba(0,0,0,.8));
-}
-.ficha-nombre {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--blanco);
-  text-transform: uppercase;
-  letter-spacing: .04em;
-  line-height: 1.1;
-}
-.ficha-tipo {
-  font-size: 12px;
-  color: rgba(255,255,255,.6);
-  font-family: var(--font-display);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-.ficha-badge-hero {
-  position: absolute; top: 16px; right: 16px;
-  font-family: var(--font-display);
-  font-size: 12px; font-weight: 700;
-  padding: 4px 12px; border-radius: 4px;
-  letter-spacing: .06em; text-transform: uppercase;
-}
+/* SECCIONES FICHA */
+.ficha-header{margin-bottom:16px}
+.ficha-nombre{font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:.03em;line-height:1.1;margin-bottom:4px}
+.ficha-tipo{font-size:13px;color:var(--texto-muted)}
+.ficha-badges{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.fbadge{padding:4px 10px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
 
-/* ── STATS ROW ── */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  background: var(--gris-oscuro);
-}
-.stat {
-  padding: 14px 20px;
-  border-right: 1px solid rgba(255,255,255,.08);
-  text-align: center;
-}
-.stat:last-child { border-right: none; }
-.stat-num {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--blanco);
-  line-height: 1;
-}
-.stat-label {
-  font-size: 10px;
-  color: rgba(255,255,255,.45);
-  font-family: var(--font-display);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  margin-top: 3px;
-}
-.stat-sub {
-  font-size: 11px;
-  color: rgba(255,255,255,.3);
-  margin-top: 2px;
-}
+/* GRID OPERATIVO */
+.ops-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.ops-card{background:var(--gris-panel);border:1px solid var(--gris-borde);border-radius:8px;padding:12px}
+.ops-card.full{grid-column:span 2}
+.ops-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-dim);margin-bottom:4px}
+.ops-valor{font-size:13px;color:var(--texto);line-height:1.4}
+.ops-alerta{background:rgba(192,57,43,0.1);border-color:rgba(192,57,43,0.3)}
+.ops-alerta .ops-valor{color:#EC7063;font-weight:600}
 
-/* ── SECCIONES ── */
-.seccion { padding: 16px 20px; border-bottom: 1px solid var(--gris-borde); background: var(--blanco); margin-bottom: 8px; }
-.seccion-titulo {
-  font-family: var(--font-display);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--texto-muted);
-  margin-bottom: 10px;
-  display: flex; align-items: center; gap: 8px;
-}
-.seccion-titulo::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--gris-borde);
-}
+/* HIDRANTES */
+.hidrante-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gris-borde);font-size:12px}
+.hidrante-row:last-child{border-bottom:none}
+.hid-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 
-.ruta-text {
-  font-size: 14px;
-  color: var(--texto);
-  line-height: 1.6;
-  padding: 10px 14px;
-  background: var(--gris-panel);
-  border-radius: 6px;
-  border-left: 3px solid var(--rojo);
-  font-family: var(--font-display);
-  letter-spacing: .02em;
-}
+/* RIESGOS */
+.riesgo-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:12px;border-bottom:1px solid var(--gris-borde)}
+.riesgo-item:last-child{border-bottom:none}
 
-.alerta-ops {
-  display: flex; gap: 10px; align-items: flex-start;
-  padding: 10px 14px;
-  background: #FEF9E7;
-  border-radius: 6px;
-  border-left: 3px solid var(--naranja);
-  margin-top: 8px;
-  font-size: 12px;
-  color: #784212;
-  line-height: 1.5;
-}
+/* BIENES MUEBLES */
+.bien-item{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid var(--gris-borde)}
+.bien-item:last-child{border-bottom:none}
+.bien-nombre{color:var(--texto)}
+.bien-siglo{color:var(--texto-muted);font-size:11px}
 
-.hidrante-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--gris-borde);
-  font-size: 13px;
-}
-.hidrante-item:last-child { border-bottom: none; }
-.hidrante-dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  flex-shrink: 0;
-}
-.hidrante-ok { background: var(--verde); }
-.hidrante-pending { background: var(--naranja); }
+/* DOCUMENTOS */
+.docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:16px}
+.doc-card{background:var(--gris-panel);border:1px solid var(--gris-borde);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.doc-tipo{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--texto-dim)}
+.doc-nombre{font-size:12px;color:var(--texto);font-weight:500;line-height:1.3}
+.doc-acciones{display:flex;gap:6px}
+.btn-doc{padding:5px 10px;border-radius:4px;font-size:11px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.btn-ver{background:rgba(26,82,118,0.3);color:#5DADE2}
+.btn-ver:hover{background:rgba(26,82,118,0.5)}
+.btn-del{background:rgba(192,57,43,0.2);color:#EC7063}
+.btn-del:hover{background:rgba(192,57,43,0.4)}
+.btn-subir-doc{border:2px dashed var(--gris-borde2);border-radius:8px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;color:var(--texto-dim);font-size:11px;background:none;transition:all 0.2s;text-align:center}
+.btn-subir-doc:hover{border-color:var(--rojo);color:var(--rojo)}
 
-.bien-item {
-  display: flex; align-items: flex-start; gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--gris-borde);
-}
-.bien-item:last-child { border-bottom: none; }
-.bien-num {
-  font-family: var(--font-display);
-  font-size: 18px; font-weight: 700;
-  color: var(--rojo);
-  line-height: 1;
-  min-width: 24px;
-}
-.bien-nombre { font-size: 13px; color: var(--texto); font-weight: 500; }
-.bien-siglo { font-size: 11px; color: var(--texto-muted); }
+/* ESTADO DOCS */
+.estado-docs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.estado-doc-item{background:var(--gris-panel);border:1px solid var(--gris-borde);border-radius:6px;padding:10px;text-align:center}
+.edo-label{font-size:10px;color:var(--texto-dim);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.edo-val{font-size:12px;font-weight:600;padding:3px 8px;border-radius:3px;display:inline-block}
+.edo-si{background:rgba(30,132,73,0.2);color:#58D68D}
+.edo-no{background:rgba(192,57,43,0.2);color:#EC7063}
+.edo-pendiente{background:rgba(230,126,34,0.15);color:#F0A500}
 
-.riesgo-tag {
-  display: inline-block;
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 4px;
-  background: #FADBD8;
-  color: var(--rojo-dark);
-  margin: 3px 3px 3px 0;
-  font-family: var(--font-display);
-  letter-spacing: .03em;
-}
+/* BOTONES EDITAR */
+.btn-editar-ficha{position:fixed;bottom:24px;right:24px;background:var(--rojo);color:white;border:none;border-radius:50px;padding:12px 20px;font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:.05em;cursor:pointer;box-shadow:0 4px 20px rgba(192,57,43,0.4);display:none;align-items:center;gap:8px;z-index:500;transition:all 0.2s}
+.btn-editar-ficha:hover{background:#E74C3C;transform:translateY(-2px)}
 
-.plan-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--gris-borde);
-}
-.plan-row:last-child { border-bottom: none; }
-.plan-nombre { font-size: 13px; color: var(--texto); }
-.plan-estado {
-  font-family: var(--font-display);
-  font-size: 11px; font-weight: 700;
-  padding: 3px 10px; border-radius: 4px;
-  letter-spacing: .04em; text-transform: uppercase;
-}
-.plan-no { background: #FADBD8; color: var(--rojo-dark); }
-.plan-si { background: #D5F5E3; color: #1E8449; }
-.plan-pendiente { background: #FDEBD0; color: #784212; }
+/* DIVIDER */
+.divider{border:none;border-top:1px solid var(--gris-borde);margin:16px 0}
 
-.btn-accion {
-  display: flex; align-items: center; gap: 8px;
-  width: 100%;
-  padding: 12px 16px;
-  border: 1.5px solid var(--gris-borde);
-  border-radius: 8px;
-  background: var(--blanco);
-  cursor: pointer;
-  font-family: var(--font-display);
-  font-size: 13px; font-weight: 600;
-  letter-spacing: .04em; text-transform: uppercase;
-  color: var(--texto);
-  transition: all .15s;
-  margin-bottom: 8px;
-  text-align: left;
-}
-.btn-accion:hover { background: var(--gris-panel); border-color: var(--rojo); color: var(--rojo); }
-.btn-accion.primary { background: var(--rojo); color: white; border-color: var(--rojo); }
-.btn-accion.primary:hover { background: var(--rojo-dark); }
+/* MODAL LOGIN */
+#modal-login{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+#modal-login.visible{display:flex}
+.login-box{background:var(--gris-panel);border:1px solid var(--gris-borde2);border-radius:12px;padding:28px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative}
+.login-titulo{font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:.04em;margin-bottom:6px}
+.login-desc{font-size:13px;color:var(--texto-muted);margin-bottom:20px;line-height:1.4}
+.login-input{width:100%;background:var(--gris-panel2);border:1px solid var(--gris-borde2);border-radius:6px;color:var(--texto);padding:10px 12px;font-family:var(--font-body);font-size:14px;margin-bottom:10px}
+.login-input:focus{outline:none;border-color:var(--rojo)}
+.login-input::placeholder{color:var(--texto-dim)}
+.login-btn{width:100%;background:var(--rojo);border:none;color:white;padding:11px;border-radius:6px;font-family:var(--font-display);font-size:15px;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:background 0.2s}
+.login-btn:hover{background:#E74C3C}
+.login-btn:disabled{background:#555;cursor:not-allowed}
+.login-msg{font-size:12px;color:var(--texto-muted);text-align:center;margin-top:10px;min-height:18px}
+.login-cerrar{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--texto-muted);font-size:22px;cursor:pointer}
 
-/* ── MODO SIN SELECCIÓN ── */
-.empty-state {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  height: 100%;
-  color: rgba(255,255,255,.2);
-  gap: 16px;
-}
-.empty-icon { font-size: 64px; }
-.empty-text { font-family: var(--font-display); font-size: 16px; letter-spacing: .06em; text-transform: uppercase; }
+/* MODAL FORMULARIO */
+#modal-form{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;display:none;align-items:flex-start;justify-content:center;backdrop-filter:blur(4px);overflow-y:auto;padding:20px}
+#modal-form.visible{display:flex}
+.form-box{background:var(--gris-panel);border:1px solid var(--gris-borde2);border-radius:12px;padding:24px;width:600px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative;margin:auto}
+.form-titulo{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:.04em;margin-bottom:16px;padding-right:30px}
+.form-cerrar{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--texto-muted);font-size:22px;cursor:pointer}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-campo{display:flex;flex-direction:column;gap:4px}
+.form-campo.full{grid-column:span 2}
+.form-label{font-size:12px;font-weight:600;color:var(--texto-muted);letter-spacing:.05em;text-transform:uppercase}
+.form-input{background:var(--gris-panel2);border:1px solid var(--gris-borde2);border-radius:6px;color:var(--texto);padding:8px 10px;font-family:var(--font-body);font-size:13px;width:100%}
+.form-input:focus{outline:none;border-color:var(--rojo)}
+.form-input::placeholder{color:var(--texto-dim)}
+.form-textarea{resize:vertical;min-height:70px}
+.form-select{background:var(--gris-panel2);border:1px solid var(--gris-borde2);border-radius:6px;color:var(--texto);padding:8px 10px;font-family:var(--font-body);font-size:13px;width:100%}
+.form-acciones{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.btn-guardar{background:var(--rojo);color:white;border:none;padding:10px 20px;border-radius:6px;font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:background 0.2s}
+.btn-guardar:hover{background:#E74C3C}
+.btn-guardar:disabled{background:#555;cursor:not-allowed}
+.btn-cancelar{background:var(--gris-borde2);color:var(--texto-muted);border:none;padding:10px 20px;border-radius:6px;font-family:var(--font-display);font-size:14px;font-weight:600;cursor:pointer}
+.form-hint{font-size:11px;color:var(--texto-dim);margin-top:2px}
+.form-divider{grid-column:span 2;border:none;border-top:1px solid var(--gris-borde);margin:4px 0}
 
-/* ── SUBIR FOTO ── */
-.upload-overlay {
-  position: absolute; top: 0; right: 0;
-  padding: 8px;
-}
-.btn-upload {
-  background: rgba(0,0,0,.5);
-  border: 1px solid rgba(255,255,255,.3);
-  border-radius: 4px;
-  color: white;
-  font-family: var(--font-display);
-  font-size: 10px; font-weight: 600;
-  letter-spacing: .06em; text-transform: uppercase;
-  padding: 5px 10px;
-  cursor: pointer;
-  transition: background .15s;
-}
-.btn-upload:hover { background: rgba(192,57,43,.7); }
+/* LIGHTBOX */
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:none;align-items:center;justify-content:center;cursor:zoom-out}
+#lightbox.visible{display:flex}
+#lightbox img{max-width:95vw;max-height:95vh;object-fit:contain;border-radius:4px}
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 3px; }
+/* TOAST */
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--gris-panel);color:var(--texto);padding:9px 18px;border-radius:30px;font-size:13px;z-index:9999;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.4);border:1px solid var(--gris-borde2)}
+
+/* CARGANDO */
+.cargando{display:flex;align-items:center;justify-content:center;height:100%;color:var(--texto-muted);gap:10px;font-size:13px}
+.spinner{width:24px;height:24px;border:2px solid var(--gris-borde);border-top-color:var(--rojo);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .sidebar{width:100%;height:180px;border-right:none;border-bottom:1px solid var(--gris-borde)}
+  .app{flex-direction:column}
+  .ops-grid{grid-template-columns:1fr}
+  .ops-card.full{grid-column:span 1}
+  .estado-docs{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .form-campo.full{grid-column:span 1}
+}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="header-left">
-    <a href="../index.html" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:white;padding:6px 14px;border-radius:6px;font-size:13px;text-decoration:none;font-family:inherit;font-weight:600;letter-spacing:.03em;flex-shrink:0">← Portal</a>
-    <div class="header-logo">🔥</div>
-    <div>
-      <div class="header-title">Patrimonio Histórico</div>
-      <div class="header-subtitle">Parque de Bomberos · Los Palacios y Villafranca</div>
-    </div>
-  </div>
-  <div style="display:flex;align-items:center;gap:10px">
-    <span id="pat-usuario-badge" style="display:none;font-size:11px;color:#A9DFBF;background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.3);padding:4px 10px;border-radius:20px"></span>
-    <button id="pat-btn-login" onclick="abrirLoginPatrimonio()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:white;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600">🔐 Acceso</button>
+  <a class="btn-back" href="../index.html">← Portal</a>
+  <div class="header-titulo">🏛️ Patrimonio <span>Histórico</span></div>
+  <div class="header-right">
     <div class="mode-toggle">
-      <button class="mode-btn active" id="btn-intervencion" onclick="setMode('intervencion')">Intervención</button>
-      <button class="mode-btn" id="btn-planificacion" onclick="setMode('planificacion')">Planificación</button>
+      <button class="mode-btn active" id="btn-intervencion" onclick="setModo('intervencion')">Intervención</button>
+      <button class="mode-btn" id="btn-planificacion" onclick="setModo('planificacion')">Planificación</button>
     </div>
+    <span class="usuario-badge" id="usuario-badge"></span>
+    <button class="btn-nuevo-header" id="btn-nuevo" onclick="abrirFormNuevo()">+ Añadir edificio</button>
+    <button class="btn-login-header" id="btn-login" onclick="abrirLogin()">🔐 Acceso</button>
   </div>
 </header>
 
 <div class="app">
   <div class="sidebar">
     <div class="sidebar-search">
-      <input type="text" placeholder="Buscar edificio..." id="buscador" oninput="filtrar(this.value)">
+      <input type="text" placeholder="Buscar edificio..." id="busqueda" oninput="filtrar()">
     </div>
-    <div id="lista-edificios"></div>
+    <div class="lista" id="lista">
+      <div class="cargando"><div class="spinner"></div>Cargando...</div>
+    </div>
   </div>
-  <div class="main" id="main-content">
-    <div class="empty-state" style="background: var(--gris-oscuro); height: 100%;">
+
+  <div class="main" id="main">
+    <div class="empty">
       <div class="empty-icon">🏛️</div>
       <div class="empty-text">Selecciona un edificio</div>
     </div>
   </div>
 </div>
 
+<!-- BOTÓN EDITAR FLOTANTE -->
+<button class="btn-editar-ficha" id="btn-editar-flotante" onclick="abrirFormEditar()">
+  ✏️ Editar ficha
+</button>
+
+<!-- MODAL LOGIN -->
+<div id="modal-login">
+  <div class="login-box">
+    <button class="login-cerrar" onclick="cerrarLogin()">×</button>
+    <div class="login-titulo">🔐 Acceso Admin</div>
+    <div class="login-desc">Solo el administrador puede modificar los datos.</div>
+    <input class="login-input" type="email" id="login-email" placeholder="tu@email.com">
+    <input class="login-input" type="password" id="login-password" placeholder="Contraseña">
+    <button class="login-btn" id="login-btn" onclick="hacerLogin()">Acceder</button>
+    <div class="login-msg" id="login-msg"></div>
+  </div>
+</div>
+
+<!-- MODAL FORMULARIO -->
+<div id="modal-form">
+  <div class="form-box">
+    <button class="form-cerrar" onclick="cerrarForm()">×</button>
+    <div class="form-titulo" id="form-titulo">Añadir edificio</div>
+    <div class="form-grid">
+      <div class="form-campo full">
+        <label class="form-label">Nombre *</label>
+        <input class="form-input" id="f-nombre" placeholder="Parroquia Santa María la Blanca">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Tipo</label>
+        <input class="form-input" id="f-tipo" placeholder="Iglesia parroquial · Siglo XV">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Prioridad</label>
+        <select class="form-select" id="f-prioridad">
+          <option value="A">A — Alta</option>
+          <option value="B">B — Media</option>
+          <option value="C">C — Baja</option>
+        </select>
+      </div>
+      <div class="form-campo full">
+        <label class="form-label">Dirección</label>
+        <input class="form-input" id="f-direccion" placeholder="C/ Abajo s/n">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Latitud</label>
+        <input class="form-input" id="f-lat" placeholder="37.1580" type="number" step="0.000001">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Longitud</label>
+        <input class="form-input" id="f-lon" placeholder="-5.9250" type="number" step="0.000001">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Distancia (km)</label>
+        <input class="form-input" id="f-km" placeholder="1,4">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Tiempo (min)</label>
+        <input class="form-input" id="f-min" placeholder="4">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Contacto</label>
+        <input class="form-input" id="f-contacto" placeholder="Parroquia — pendiente">
+      </div>
+      <hr class="form-divider">
+      <div class="form-campo full">
+        <label class="form-label">Ruta de acceso</label>
+        <textarea class="form-input form-textarea" id="f-ruta" placeholder="Avda. Miguel Ángel → Avda. de las Marismas → C/ Abajo"></textarea>
+      </div>
+      <div class="form-campo full">
+        <label class="form-label">Punto de entrada</label>
+        <input class="form-input" id="f-entrada" placeholder="Entrada principal confirmada — C/ Abajo">
+      </div>
+      <div class="form-campo full">
+        <label class="form-label">Tipo de acceso</label>
+        <input class="form-input" id="f-acceso" placeholder="Acceso directo en vehículo">
+      </div>
+      <div class="form-campo full">
+        <label class="form-label">⚠️ Nota operativa</label>
+        <textarea class="form-input form-textarea" id="f-nota" placeholder="Alertas importantes para la intervención..."></textarea>
+        <div class="form-hint">Deja vacío si no hay alertas especiales</div>
+      </div>
+      <hr class="form-divider">
+      <div class="form-campo full">
+        <label class="form-label">Hidrantes cercanos (uno por línea)</label>
+        <textarea class="form-input form-textarea" id="f-hidrantes" placeholder="C/ Cristóbal Colón (esquina)&#10;C/ Real nº 12"></textarea>
+      </div>
+      <div class="form-campo full">
+        <label class="form-label">Riesgos específicos (uno por línea)</label>
+        <textarea class="form-input form-textarea" id="f-riesgos" placeholder="Estructura de madera en cubierta&#10;Torre campanario — riesgo colapso"></textarea>
+      </div>
+      <div class="form-campo full">
+        <label class="form-label">Bienes muebles (nombre — fecha, uno por línea)</label>
+        <textarea class="form-input form-textarea" id="f-bienes" placeholder="Retablo mayor — Pablo Legot, 1631&#10;Órgano — Francisco de Ortiguez, 1747"></textarea>
+      </div>
+      <hr class="form-divider">
+      <div class="form-campo">
+        <label class="form-label">Plan de salvaguarda</label>
+        <select class="form-select" id="f-plan-s">
+          <option value="pendiente">Pendiente</option>
+          <option value="si">Sí consta</option>
+          <option value="no">No consta</option>
+        </select>
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Plan de emergencia</label>
+        <select class="form-select" id="f-plan-e">
+          <option value="pendiente">Pendiente</option>
+          <option value="si">Sí consta</option>
+          <option value="no">No consta</option>
+        </select>
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Planos</label>
+        <select class="form-select" id="f-planos">
+          <option value="pendiente">Pendiente</option>
+          <option value="si">Sí consta</option>
+          <option value="no">No consta</option>
+        </select>
+      </div>
+      <div class="form-campo">
+        <label class="form-label">URL imagen principal</label>
+        <input class="form-input" id="f-imagen" placeholder="https://...">
+        <div class="form-hint">Puedes subir fotos desde la ficha</div>
+      </div>
+    </div>
+    <div class="form-acciones">
+      <button class="btn-cancelar" onclick="cerrarForm()">Cancelar</button>
+      <button class="btn-guardar" id="btn-guardar-form" onclick="guardarEdificio()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="cerrarLightbox()">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<div id="toast"></div>
+
+<!-- INPUT OCULTOS PARA SUBIDA -->
+<input type="file" id="input-foto" accept="image/*" multiple style="display:none">
+<input type="file" id="input-doc" accept=".pdf,.doc,.docx" style="display:none">
+
 <script>
-const bienes = [
-  {
-    id: 1, nombre: "Parroquia Santa María la Blanca", tipo: "Iglesia parroquial · Siglo XV",
-    prioridad: "A", km: "1,4", min: "4",
-    ruta: "Avda. Miguel Ángel → Avda. de las Marismas → C/ Abajo",
-    entrada: "Entrada principal confirmada — C/ Abajo (pin rojo)",
-    acceso: "Acceso directo en vehículo",
-    nota_ops: null,
-    hidrantes: [{ loc: "C/ Cristóbal Colón (esquina)", ok: true, nota: "Único hidrante cercano" }],
-    bienes_muebles: [
-      { nombre: "Retablo mayor — Pablo Legot", siglo: "1631–36" },
-      { nombre: "Órgano — Francisco de Ortiguez", siglo: "1747" },
-      { nombre: "Virgen de las Nieves (patrona)", siglo: "Imagen titular" },
-      { nombre: "Custodia de madera", siglo: "S. XVII, reconstruida 2001" }
-    ],
-    riesgos: ["Estructura de madera en cubierta", "Torre campanario — riesgo colapso", "Bienes muebles de alto valor"],
-    plan_s: "no", plan_e: "no", planos: "pendiente",
-    contacto: "Parroquia — pendiente",
-    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Iglesia_de_Santa_Mar%C3%ADa_la_Blanca_%28Los_Palacios_y_Villafranca%29.jpg/640px-Iglesia_de_Santa_Mar%C3%ADa_la_Blanca_%28Los_Palacios_y_Villafranca%29.jpg"
-  },
-  {
-    id: 2, nombre: "Capilla de San Sebastián", tipo: "Ermita · Siglo XVI",
-    prioridad: "A", km: "1,1", min: "3",
-    ruta: "Avda. Miguel Ángel → Avda. Leonardo Da Vinci → C/ San Sebastián",
-    entrada: "C/ San Sebastián — entrada confirmada",
-    acceso: "Calle de un solo sentido — atención al posicionamiento",
-    nota_ops: "Boulevard con mediana — posicionamiento del vehículo condicionado",
-    hidrantes: [{ loc: "Intersección boulevard / C/ Virgen de los Remedios", ok: true, nota: "" }],
-    bienes_muebles: [
-      { nombre: "San Sebastián (patrón)", siglo: "S. XVI, anónima" },
-      { nombre: "Virgen de los Remedios", siglo: "S. XVI, anónima" }
-    ],
-    riesgos: ["Calle de un solo sentido", "Boulevard con mediana", "Bienes de gran antigüedad"],
-    plan_s: "no", plan_e: "no", planos: "pendiente",
-    contacto: "Hermandad Vera Cruz — pendiente",
-    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Capilla_de_San_Sebasti%C3%A1n_%28Los_Palacios_y_Villafranca%29.jpg/640px-Capilla_de_San_Sebasti%C3%A1n_%28Los_Palacios_y_Villafranca%29.jpg"
-  },
-  {
-    id: 3, nombre: "Capilla de La Aurora / Gran Poder", tipo: "Capilla · Siglo XVIII",
-    prioridad: "A", km: "1,5", min: "4",
-    ruta: "Avda. Miguel Ángel → C/ Rodrigo Caro → C/ Real de Villafranca",
-    entrada: "C/ Aurora (peatonal) — acceso a pie desde C/ Tartessos",
-    acceso: "Vehículo en C/ Tartessos",
-    nota_ops: "ENTRADA PEATONAL — tendido de manguera a pie obligatorio desde C/ Tartessos",
-    hidrantes: [{ loc: "Esquina C/ Tartessos / C/ Ntra. Sra. de la Aurora", ok: true, nota: "" }],
-    bienes_muebles: [
-      { nombre: "Virgen de la Asunción (Virgen de la Aurora)", siglo: "Imagen titular" },
-      { nombre: "Cristo del Gran Poder", siglo: "Imagen titular" },
-      { nombre: "Virgen de la Soledad", siglo: "" },
-      { nombre: "San Juan Evangelista", siglo: "" }
-    ],
-    riesgos: ["Entrada peatonal — manguera a pie", "Cúpula de media naranja", "Planta cruz latina — una nave"],
-    plan_s: "no", plan_e: "no", planos: "pendiente",
-    contacto: "Hermandad Gran Poder — pendiente",
-    img: null
-  },
-  {
-    id: 4, nombre: "Casa Palacio La Atalayuela", tipo: "Palacio señorial · Origen medieval",
-    prioridad: "A", km: "2,1", min: "6",
-    ruta: "Avda. Miguel Ángel → Avda. de las Marismas → C/ Alonso Cano → C/ Santiago Rusiñol → C/ Postas → C/ Felipe Cortínez Murube",
-    entrada: "Callejón del Antiguo Cerro — acceso a pie",
-    acceso: "Vehículo hasta C/ Felipe Cortínez Murube",
-    nota_ops: "EL CALLEJÓN NO ADMITE VEHÍCULOS — tendido de manguera a pie desde C/ Felipe Cortínez Murube",
-    hidrantes: [{ loc: "Esquina C/ Felipe Cortínez Murube (punto de llegada)", ok: true, nota: "" }],
-    bienes_muebles: [
-      { nombre: "Elementos arquitectónicos históricos", siglo: "Pendiente de inventariar" }
-    ],
-    riesgos: ["Callejón sin acceso para vehículos", "Tendido a pie obligatorio", "Estructura histórica — materiales desconocidos"],
-    plan_s: "no", plan_e: "no", planos: "pendiente",
-    contacto: "Pendiente",
-    img: null
-  },
-  {
-    id: 5, nombre: "Casa de la Cultura", tipo: "Edificio civil · Finales S. XIX",
-    prioridad: "B", km: "1,3", min: "4",
-    ruta: "Avda. Miguel Ángel → C/ Rodrigo Caro → C/ Real de Villafranca",
-    entrada: "C/ Real de Villafranca",
-    acceso: "C/ Real de Villafranca (sentido único) o C/ Juan José Baquero",
-    nota_ops: "La Capilla de La Aurora está en la calle contigua — un posicionamiento puede cubrir ambos",
-    hidrantes: [{ loc: "Esquina C/ Real de Villafranca / C/ Juan José Baquero", ok: true, nota: "" }],
-    bienes_muebles: [
-      { nombre: "Archivo documental municipal histórico", siglo: "" },
-      { nombre: "Fondo bibliográfico", siglo: "" }
-    ],
-    riesgos: ["Estructura fin S. XIX", "Documentación sensible a agua y fuego", "C/ Real de Villafranca en sentido único"],
-    plan_s: "no", plan_e: "no", planos: "pendiente",
-    contacto: "Delegación de Cultura — pendiente",
-    img: null
-  },
-  {
-    id: 6, nombre: "Ayuntamiento / Archivo Histórico", tipo: "Edificio institucional · 1986",
-    prioridad: "B", km: "2,7", min: "9",
-    ruta: "Avda. Miguel Ángel → Avda. Leonardo Da Vinci → Avda. de Sevilla → Avda. de Cádiz",
-    entrada: "Plaza de Andalucía — entrada principal confirmada",
-    acceso: "Avda. de Cádiz — acceso directo a la plaza",
-    nota_ops: "ARCHIVO HISTÓRICO en 4ª planta — evacuación de fondos muy dificultada",
-    hidrantes: [{ loc: "Esquina C/ del Cabrero / entrada Plaza de Andalucía", ok: true, nota: "" }],
-    bienes_muebles: [
-      { nombre: "Archivo histórico municipal", siglo: "4ª planta" },
-      { nombre: "Documentación de plenos municipales", siglo: "" }
-    ],
-    riesgos: ["Archivo en 4ª planta — evacuación difícil", "4 plantas — propagación vertical", "Alta ocupación en horario laboral"],
-    plan_s: "no", plan_e: "no", planos: "pendiente",
-    contacto: "Jefe de Archivos municipal — pendiente",
-    img: null
-  },
-  {
-    id: 7, nombre: "Iglesia del Sagrado Corazón", tipo: "Iglesia · 1992",
-    prioridad: "B", km: "—", min: "5",
-    ruta: "Avda. Miguel Ángel → Avda. de las Marismas → Avda. de Cádiz → C/ Bartolomé Esteban Murillo → C/ República Argentina",
-    entrada: "Plaza peatonal frente a la iglesia",
-    acceso: "Vehículo en C/ Cardenal Spínola o Avda. de Utrera",
-    nota_ops: "Amplia plaza peatonal — buen espacio de despliegue",
-    hidrantes: [{ loc: "Esquina Avda. de Utrera / C/ Cardenal Spínola (Puerta Líbano)", ok: true, nota: "" }],
-    bienes_muebles: [
-      { nombre: "Imágenes de culto contemporáneas", siglo: "" }
-    ],
-    riesgos: ["Entrada por plaza peatonal", "Planta octogonal — geometría compleja"],
-    plan_s: "no", plan_e: "no", planos: "pendiente",
-    contacto: "Parroquia — pendiente",
-    img: null
-  },
-  {
-    id: 8, nombre: "Torre del Agua (Mirador)", tipo: "Elemento patrimonial singular",
-    prioridad: "C", km: "—", min: "—",
-    ruta: "Pendiente de trazar",
-    entrada: "Pendiente de confirmar",
-    acceso: "Pendiente de verificar",
-    nota_ops: null,
-    hidrantes: [{ loc: "Pendiente de verificar", ok: false, nota: "" }],
-    bienes_muebles: [],
-    riesgos: ["Estructura elevada — intervención en altura", "Equipos de altura necesarios"],
-    plan_s: "no", plan_e: "no", planos: "pendiente",
-    contacto: "Ayuntamiento — pendiente",
-    img: null
-  }
+// ============================================
+// CONFIG SUPABASE
+// ============================================
+const SB = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
+let TOKEN = null;
+let USUARIO = null;
+let MODO = 'intervencion';
+let edificios = [];
+let seleccionado = null;
+let editandoId = null;
+let subiendoParaId = null;
+let subiendoTipoDoc = null;
+
+const H = (extra={}) => ({
+  'Content-Type':'application/json',
+  'apikey':KEY,
+  'Authorization':'Bearer '+(TOKEN||KEY),
+  ...extra
+});
+
+// DATOS SEED — los 8 edificios del HTML original
+const SEED = [
+  {nombre:"Parroquia Santa María la Blanca",tipo:"Iglesia parroquial · Siglo XV",prioridad:"A",direccion:"C/ Abajo s/n",lat:37.15800,lon:-5.92500,contacto:"Parroquia — pendiente",km:"1,4",minutos:"4",ruta:"Avda. Miguel Ángel → Avda. de las Marismas → C/ Abajo",entrada:"Entrada principal confirmada — C/ Abajo (pin rojo)",acceso:"Acceso directo en vehículo",nota_operativa:null,hidrantes:[{loc:"C/ Cristóbal Colón (esquina)",ok:true,nota:"Único hidrante cercano"}],bienes_muebles:[{nombre:"Retablo mayor — Pablo Legot",siglo:"1631–36"},{nombre:"Órgano — Francisco de Ortiguez",siglo:"1747"},{nombre:"Virgen de las Nieves (patrona)",siglo:"Imagen titular"},{nombre:"Custodia de madera",siglo:"S. XVII, reconstruida 2001"}],riesgos:["Estructura de madera en cubierta","Torre campanario — riesgo colapso","Bienes muebles de alto valor"],plan_salvaguarda:"no",plan_emergencia:"no",planos:"pendiente",imagen_url:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Iglesia_de_Santa_Mar%C3%ADa_la_Blanca_%28Los_Palacios_y_Villafranca%29.jpg/640px-Iglesia_de_Santa_Mar%C3%ADa_la_Blanca_%28Los_Palacios_y_Villafranca%29.jpg",fotos:[],doc_plan_salvaguarda:null,doc_ficha_intervencion:null,doc_planos:null,doc_otros:[]},
+  {nombre:"Capilla de San Sebastián",tipo:"Ermita · Siglo XVI",prioridad:"A",direccion:"C/ San Sebastián s/n",lat:37.15900,lon:-5.92300,contacto:"Hermandad Vera Cruz — pendiente",km:"1,1",minutos:"3",ruta:"Avda. Miguel Ángel → Avda. Leonardo Da Vinci → C/ San Sebastián",entrada:"C/ San Sebastián — entrada confirmada",acceso:"Calle de un solo sentido — atención al posicionamiento",nota_operativa:"Boulevard con mediana — posicionamiento del vehículo condicionado",hidrantes:[{loc:"Intersección boulevard / C/ Virgen de los Remedios",ok:true,nota:""}],bienes_muebles:[{nombre:"San Sebastián (patrón)",siglo:"S. XVI, anónima"},{nombre:"Virgen de los Remedios",siglo:"S. XVI, anónima"}],riesgos:["Calle de un solo sentido","Boulevard con mediana","Bienes de gran antigüedad"],plan_salvaguarda:"no",plan_emergencia:"no",planos:"pendiente",imagen_url:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Capilla_de_San_Sebasti%C3%A1n_%28Los_Palacios_y_Villafranca%29.jpg/640px-Capilla_de_San_Sebasti%C3%A1n_%28Los_Palacios_y_Villafranca%29.jpg",fotos:[],doc_plan_salvaguarda:null,doc_ficha_intervencion:null,doc_planos:null,doc_otros:[]},
+  {nombre:"Capilla de La Aurora / Gran Poder",tipo:"Capilla · Siglo XVIII",prioridad:"A",direccion:"C/ Aurora s/n",lat:37.15700,lon:-5.92600,contacto:"Hermandad Gran Poder — pendiente",km:"1,5",minutos:"4",ruta:"Avda. Miguel Ángel → C/ Rodrigo Caro → C/ Real de Villafranca",entrada:"C/ Aurora (peatonal) — acceso a pie desde C/ Tartessos",acceso:"Vehículo en C/ Tartessos",nota_operativa:"ENTRADA PEATONAL — tendido de manguera a pie obligatorio desde C/ Tartessos",hidrantes:[{loc:"Esquina C/ Tartessos / C/ Ntra. Sra. de la Aurora",ok:true,nota:""}],bienes_muebles:[{nombre:"Virgen de la Asunción (Virgen de la Aurora)",siglo:"Imagen titular"},{nombre:"Cristo del Gran Poder",siglo:"Imagen titular"},{nombre:"Virgen de la Soledad",siglo:""},{nombre:"San Juan Evangelista",siglo:""}],riesgos:["Entrada peatonal — manguera a pie","Cúpula de media naranja","Planta cruz latina — una nave"],plan_salvaguarda:"no",plan_emergencia:"no",planos:"pendiente",imagen_url:null,fotos:[],doc_plan_salvaguarda:null,doc_ficha_intervencion:null,doc_planos:null,doc_otros:[]},
+  {nombre:"Casa Palacio La Atalayuela",tipo:"Palacio señorial · Origen medieval",prioridad:"A",direccion:"Callejón del Antiguo Cerro s/n",lat:37.15850,lon:-5.92580,contacto:"Pendiente",km:"2,1",minutos:"6",ruta:"Avda. Miguel Ángel → Avda. de las Marismas → C/ Alonso Cano → C/ Santiago Rusiñol → C/ Postas → C/ Felipe Cortínez Murube",entrada:"Callejón del Antiguo Cerro — acceso a pie",acceso:"Vehículo hasta C/ Felipe Cortínez Murube",nota_operativa:"EL CALLEJÓN NO ADMITE VEHÍCULOS — tendido de manguera a pie desde C/ Felipe Cortínez Murube",hidrantes:[{loc:"Esquina C/ Felipe Cortínez Murube (punto de llegada)",ok:true,nota:""}],bienes_muebles:[{nombre:"Elementos arquitectónicos históricos",siglo:"Pendiente de inventariar"}],riesgos:["Callejón sin acceso para vehículos","Tendido a pie obligatorio","Estructura histórica — materiales desconocidos"],plan_salvaguarda:"no",plan_emergencia:"no",planos:"pendiente",imagen_url:null,fotos:[],doc_plan_salvaguarda:null,doc_ficha_intervencion:null,doc_planos:null,doc_otros:[]},
+  {nombre:"Casa de la Cultura",tipo:"Edificio civil · Finales S. XIX",prioridad:"B",direccion:"C/ Real de Villafranca s/n",lat:37.15720,lon:-5.92550,contacto:"Delegación de Cultura — pendiente",km:"1,3",minutos:"4",ruta:"Avda. Miguel Ángel → C/ Rodrigo Caro → C/ Real de Villafranca",entrada:"C/ Real de Villafranca",acceso:"C/ Real de Villafranca (sentido único) o C/ Juan José Baquero",nota_operativa:"La Capilla de La Aurora está en la calle contigua — un posicionamiento puede cubrir ambos",hidrantes:[{loc:"Esquina C/ Real de Villafranca / C/ Juan José Baquero",ok:true,nota:""}],bienes_muebles:[{nombre:"Archivo documental municipal histórico",siglo:""},{nombre:"Fondo bibliográfico",siglo:""}],riesgos:["Estructura fin S. XIX","Documentación sensible a agua y fuego","C/ Real de Villafranca en sentido único"],plan_salvaguarda:"no",plan_emergencia:"no",planos:"pendiente",imagen_url:null,fotos:[],doc_plan_salvaguarda:null,doc_ficha_intervencion:null,doc_planos:null,doc_otros:[]},
+  {nombre:"Ayuntamiento / Archivo Histórico",tipo:"Edificio institucional · 1986",prioridad:"B",direccion:"Plaza de Andalucía s/n",lat:37.15650,lon:-5.92400,contacto:"Jefe de Archivos municipal — pendiente",km:"2,7",minutos:"9",ruta:"Avda. Miguel Ángel → Avda. Leonardo Da Vinci → Avda. de Sevilla → Avda. de Cádiz",entrada:"Plaza de Andalucía — entrada principal confirmada",acceso:"Avda. de Cádiz — acceso directo a la plaza",nota_operativa:"ARCHIVO HISTÓRICO en 4ª planta — evacuación de fondos muy dificultada",hidrantes:[{loc:"Esquina C/ del Cabrero / entrada Plaza de Andalucía",ok:true,nota:""}],bienes_muebles:[{nombre:"Archivo histórico municipal",siglo:"4ª planta"},{nombre:"Documentación de plenos municipales",siglo:""}],riesgos:["Archivo en 4ª planta — evacuación difícil","4 plantas — propagación vertical","Alta ocupación en horario laboral"],plan_salvaguarda:"no",plan_emergencia:"no",planos:"pendiente",imagen_url:null,fotos:[],doc_plan_salvaguarda:null,doc_ficha_intervencion:null,doc_planos:null,doc_otros:[]},
+  {nombre:"Iglesia del Sagrado Corazón",tipo:"Iglesia · 1992",prioridad:"B",direccion:"Plaza peatonal C/ República Argentina",lat:37.16200,lon:-5.92100,contacto:"Parroquia — pendiente",km:"—",minutos:"5",ruta:"Avda. Miguel Ángel → Avda. de las Marismas → Avda. de Cádiz → C/ Bartolomé Esteban Murillo → C/ República Argentina",entrada:"Plaza peatonal frente a la iglesia",acceso:"Vehículo en C/ Cardenal Spínola o Avda. de Utrera",nota_operativa:"Amplia plaza peatonal — buen espacio de despliegue",hidrantes:[{loc:"Esquina Avda. de Utrera / C/ Cardenal Spínola (Puerta Líbano)",ok:true,nota:""}],bienes_muebles:[{nombre:"Imágenes de culto contemporáneas",siglo:""}],riesgos:["Entrada por plaza peatonal","Planta octogonal — geometría compleja"],plan_salvaguarda:"no",plan_emergencia:"no",planos:"pendiente",imagen_url:null,fotos:[],doc_plan_salvaguarda:null,doc_ficha_intervencion:null,doc_planos:null,doc_otros:[]},
+  {nombre:"Torre del Agua (Mirador)",tipo:"Elemento patrimonial singular",prioridad:"C",direccion:"Pendiente de confirmar",lat:null,lon:null,contacto:"Ayuntamiento — pendiente",km:"—",minutos:"—",ruta:"Pendiente de trazar",entrada:"Pendiente de confirmar",acceso:"Pendiente de verificar",nota_operativa:null,hidrantes:[{loc:"Pendiente de verificar",ok:false,nota:""}],bienes_muebles:[],riesgos:["Estructura elevada — intervención en altura","Equipos de altura necesarios"],plan_salvaguarda:"no",plan_emergencia:"no",planos:"pendiente",imagen_url:null,fotos:[],doc_plan_salvaguarda:null,doc_ficha_intervencion:null,doc_planos:null,doc_otros:[]}
 ];
 
-let modo = 'intervencion';
-let seleccionado = null;
-
-function setMode(m) {
-  modo = m;
-  document.getElementById('btn-intervencion').classList.toggle('active', m === 'intervencion');
-  document.getElementById('btn-planificacion').classList.toggle('active', m === 'planificacion');
-  if (seleccionado) mostrarFicha(seleccionado);
+// ============================================
+// CARGA DATOS
+// ============================================
+async function cargarDatos(){
+  try {
+    const r = await fetch(`${SB}/rest/v1/patrimonio?select=*&order=prioridad.asc,nombre.asc`,{headers:H()});
+    if(!r.ok) throw new Error();
+    const data = await r.json();
+    if(data.length === 0){
+      await sembrarDatos();
+    } else {
+      edificios = data;
+    }
+  } catch(e){
+    edificios = SEED.map((s,i)=>({...s,id:'local-'+i}));
+  }
+  renderizarLista();
+  if(edificios.length>0) mostrarFicha(edificios[0].id);
 }
 
-function filtrar(q) {
-  const lower = q.toLowerCase();
-  document.querySelectorAll('.edificio-card').forEach(el => {
-    const nombre = el.dataset.nombre.toLowerCase();
-    el.style.display = nombre.includes(lower) ? '' : 'none';
-  });
+async function sembrarDatos(){
+  try {
+    const r = await fetch(`${SB}/rest/v1/patrimonio`,{
+      method:'POST',
+      headers:{...H(),'Prefer':'return=representation'},
+      body:JSON.stringify(SEED)
+    });
+    if(r.ok) edificios = await r.json();
+    else edificios = SEED.map((s,i)=>({...s,id:'local-'+i}));
+  } catch(e){
+    edificios = SEED.map((s,i)=>({...s,id:'local-'+i}));
+  }
 }
 
-function renderSidebar() {
-  const lista = document.getElementById('lista-edificios');
-  lista.innerHTML = bienes.map(b => `
-    <div class="edificio-card" id="card-${b.id}" data-nombre="${b.nombre}" onclick="mostrarFicha(${b.id})">
-      ${b.img
-        ? `<img class="edificio-img" src="${b.img}" alt="${b.nombre}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+// ============================================
+// MODO
+// ============================================
+function setModo(m){
+  MODO = m;
+  document.getElementById('btn-intervencion').classList.toggle('active',m==='intervencion');
+  document.getElementById('btn-planificacion').classList.toggle('active',m==='planificacion');
+  if(seleccionado) mostrarFicha(seleccionado);
+}
+
+// ============================================
+// LISTA
+// ============================================
+function renderizarLista(lista){
+  const arr = lista || edificios;
+  const el = document.getElementById('lista');
+  el.innerHTML = arr.map(b=>`
+    <div class="edificio-card${seleccionado===b.id?' activo':''}" onclick="mostrarFicha('${b.id}')">
+      ${b.imagen_url
+        ? `<img class="edificio-img" src="${b.imagen_url}" alt="${b.nombre}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
         : ''}
-      <div class="edificio-img-placeholder" ${b.img ? 'style="display:none"' : ''}>🏛️</div>
+      <div class="edificio-placeholder" ${b.imagen_url?'style="display:none"':''}>🏛️</div>
       <div class="edificio-info">
         <div class="edificio-nombre">${b.nombre}</div>
         <div class="edificio-meta">
-          <span class="badge-prioridad badge-${b.prioridad}">${b.prioridad}</span>
-          <span class="edificio-tiempo">${b.min !== '—' ? b.min + ' min · ' + b.km + ' km' : 'Pendiente'}</span>
+          <span class="badge-prior badge-${b.prioridad}">${b.prioridad}</span>
+          <span class="edificio-tiempo">${b.minutos!=='—'?b.minutos+' min · '+b.km+' km':'Pendiente datos'}</span>
         </div>
       </div>
     </div>
   `).join('');
 }
 
-function planEstado(v) {
-  if (v === 'si') return '<span class="plan-estado plan-si">Sí</span>';
-  if (v === 'no') return '<span class="plan-estado plan-no">No consta</span>';
-  return '<span class="plan-estado plan-pendiente">Pendiente</span>';
+function filtrar(){
+  const q = document.getElementById('busqueda').value.toLowerCase();
+  const filtrados = q ? edificios.filter(b=>(b.nombre||'').toLowerCase().includes(q)||(b.tipo||'').toLowerCase().includes(q)) : edificios;
+  renderizarLista(filtrados);
 }
 
-function mostrarFicha(id) {
+// ============================================
+// FICHA DETALLE
+// ============================================
+function mostrarFicha(id){
+  const b = edificios.find(x=>x.id===id);
+  if(!b) return;
   seleccionado = id;
-  const b = bienes.find(x => x.id === id);
-  document.querySelectorAll('.edificio-card').forEach(c => c.classList.remove('active'));
-  document.getElementById('card-' + id).classList.add('active');
+  renderizarLista();
 
-  const badgeColor = b.prioridad === 'A' ? 'background:var(--rojo)' : b.prioridad === 'B' ? 'background:var(--naranja)' : 'background:var(--verde)';
+  const hidrantes = Array.isArray(b.hidrantes)?b.hidrantes:[];
+  const riesgos = Array.isArray(b.riesgos)?b.riesgos:[];
+  const bienes = Array.isArray(b.bienes_muebles)?b.bienes_muebles:[];
+  const fotos = Array.isArray(b.fotos)?b.fotos:[];
+  const docOtros = Array.isArray(b.doc_otros)?b.doc_otros:[];
 
-  if (modo === 'intervencion') {
-    document.getElementById('main-content').innerHTML = `
-      <div class="ficha-intervencion">
-        <div class="ficha-hero" style="position:relative">
-          ${b.img
-            ? `<img src="${b.img}" alt="${b.nombre}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-            : ''}
-          <div class="ficha-hero-placeholder" ${b.img ? 'style="display:none"' : ''}>🏛️</div>
-          <div class="ficha-hero-overlay">
-            <div class="ficha-nombre">${b.nombre}</div>
-            <div class="ficha-tipo">${b.tipo}</div>
-          </div>
-          <div class="upload-overlay">
-            <button class="btn-upload" onclick="subirFoto(${b.id})">📷 Cambiar foto</button>
-          </div>
-          <span class="ficha-badge-hero" style="${badgeColor};color:white;font-family:var(--font-display);font-size:12px;font-weight:700;padding:4px 12px;border-radius:4px;letter-spacing:.06em">PRIORIDAD ${b.prioridad}</span>
+  const badgePrior = `<span class="fbadge" style="background:${b.prioridad==='A'?'rgba(192,57,43,0.2)':b.prioridad==='B'?'rgba(230,126,34,0.15)':'rgba(255,255,255,0.06)'};color:${b.prioridad==='A'?'#EC7063':b.prioridad==='B'?'#F0A500':'var(--texto-muted)'}">Prioridad ${b.prioridad}</span>`;
+
+  // Galería fotos
+  const galeriaHTML = MODO==='planificacion' ? `
+    <div class="galeria-header">
+      <div class="sec-titulo">📷 Fotografías</div>
+    </div>
+    <div class="galeria-grid" id="galeria-${id}">
+      ${fotos.map(f=>`
+        <div class="galeria-foto">
+          <img src="${f.url}" alt="foto" onclick="abrirLightbox('${f.url}')">
+          ${USUARIO?`<button class="btn-del-foto visible" onclick="eliminarFoto('${id}','${f.url}')">×</button>`:''}
         </div>
+      `).join('')}
+      ${USUARIO?`<button class="btn-subir-foto" onclick="iniciarSubidaFoto('${id}')"><span class="btn-subir-foto-icon">📷</span>Añadir foto</button>`:''}
+      ${fotos.length===0&&!USUARIO?`<div style="grid-column:span 4;text-align:center;color:var(--texto-dim);font-size:12px;padding:16px">Sin fotografías registradas</div>`:''}
+    </div>
+    <hr class="divider">
+  ` : '';
 
-        <div class="stats-row">
-          <div class="stat">
-            <div class="stat-num" style="color:${b.min !== '—' ? '#E74C3C' : 'rgba(255,255,255,.3)'}">${b.min !== '—' ? b.min + ' min' : '—'}</div>
-            <div class="stat-label">Tiempo llegada</div>
-            <div class="stat-sub">${b.km !== '—' ? b.km + ' km' : ''}</div>
-          </div>
-          <div class="stat">
-            <div class="stat-num" style="color:${b.hidrantes[0].ok ? '#27AE60' : 'rgba(255,255,255,.3)'}">
-              ${b.hidrantes[0].ok ? b.hidrantes.length : '?'}
-            </div>
-            <div class="stat-label">Hidrantes cercanos</div>
-          </div>
-          <div class="stat">
-            <div class="stat-num" style="color:${b.bienes_muebles.length ? '#E67E22' : 'rgba(255,255,255,.3)'}">
-              ${b.bienes_muebles.length || '?'}
-            </div>
-            <div class="stat-label">Bienes a rescatar</div>
-          </div>
-        </div>
+  // Documentos
+  const docsHTML = MODO==='planificacion' ? `
+    <hr class="divider">
+    <div class="sec-titulo" style="margin-bottom:10px">📄 Documentación</div>
+    <div class="estado-docs">
+      <div class="estado-doc-item"><div class="edo-label">Plan salvaguarda</div><span class="edo-val ${b.plan_salvaguarda==='si'?'edo-si':b.plan_salvaguarda==='no'?'edo-no':'edo-pendiente'}">${b.plan_salvaguarda==='si'?'✓ Sí':b.plan_salvaguarda==='no'?'✗ No consta':'⏳ Pendiente'}</span></div>
+      <div class="estado-doc-item"><div class="edo-label">Plan emergencia</div><span class="edo-val ${b.plan_emergencia==='si'?'edo-si':b.plan_emergencia==='no'?'edo-no':'edo-pendiente'}">${b.plan_emergencia==='si'?'✓ Sí':b.plan_emergencia==='no'?'✗ No consta':'⏳ Pendiente'}</span></div>
+      <div class="estado-doc-item"><div class="edo-label">Planos</div><span class="edo-val ${b.planos==='si'?'edo-si':b.planos==='no'?'edo-no':'edo-pendiente'}">${b.planos==='si'?'✓ Sí':b.planos==='no'?'✗ No consta':'⏳ Pendiente'}</span></div>
+    </div>
+    <div class="docs-grid">
+      ${b.doc_plan_salvaguarda?`<div class="doc-card"><div class="doc-tipo">Plan de salvaguarda</div><div class="doc-nombre">📄 Documento adjunto</div><div class="doc-acciones"><button class="btn-doc btn-ver" onclick="window.open('${b.doc_plan_salvaguarda}','_blank')">Ver</button>${USUARIO?`<button class="btn-doc btn-del" onclick="eliminarDoc('${id}','plan_salvaguarda')">Quitar</button>`:''}</div></div>`:''}
+      ${b.doc_ficha_intervencion?`<div class="doc-card"><div class="doc-tipo">Ficha de intervención</div><div class="doc-nombre">📄 Documento adjunto</div><div class="doc-acciones"><button class="btn-doc btn-ver" onclick="window.open('${b.doc_ficha_intervencion}','_blank')">Ver</button>${USUARIO?`<button class="btn-doc btn-del" onclick="eliminarDoc('${id}','ficha_intervencion')">Quitar</button>`:''}</div></div>`:''}
+      ${b.doc_planos?`<div class="doc-card"><div class="doc-tipo">Planos</div><div class="doc-nombre">📄 Documento adjunto</div><div class="doc-acciones"><button class="btn-doc btn-ver" onclick="window.open('${b.doc_planos}','_blank')">Ver</button>${USUARIO?`<button class="btn-doc btn-del" onclick="eliminarDoc('${id}','planos')">Quitar</button>`:''}</div></div>`:''}
+      ${docOtros.map(d=>`<div class="doc-card"><div class="doc-tipo">Otro documento</div><div class="doc-nombre">📄 ${d.nombre||'Documento'}</div><div class="doc-acciones"><button class="btn-doc btn-ver" onclick="window.open('${d.url}','_blank')">Ver</button></div></div>`).join('')}
+      ${USUARIO?`
+        <button class="btn-subir-doc" onclick="iniciarSubidaDoc('${id}','plan_salvaguarda')">📎<span>Plan salvaguarda</span></button>
+        <button class="btn-subir-doc" onclick="iniciarSubidaDoc('${id}','ficha_intervencion')">📎<span>Ficha intervención</span></button>
+        <button class="btn-subir-doc" onclick="iniciarSubidaDoc('${id}','planos')">📎<span>Planos</span></button>
+        <button class="btn-subir-doc" onclick="iniciarSubidaDoc('${id}','otro')">📎<span>Otro documento</span></button>
+      `:''}
+    </div>
+  ` : '';
 
-        <div class="seccion">
-          <div class="seccion-titulo">Ruta desde el parque</div>
-          <div class="ruta-text">${b.ruta}</div>
-          ${b.nota_ops ? `<div class="alerta-ops">⚠️ ${b.nota_ops}</div>` : ''}
-          <div style="margin-top:8px;font-size:12px;color:var(--texto-muted)">
-            <strong>Acceso rodado:</strong> ${b.acceso}<br>
-            <strong>Entrada principal:</strong> ${b.entrada}
-          </div>
-        </div>
-
-        <div class="seccion">
-          <div class="seccion-titulo">Hidrantes cercanos</div>
-          ${b.hidrantes.map(h => `
-            <div class="hidrante-item">
-              <div class="hidrante-dot ${h.ok ? 'hidrante-ok' : 'hidrante-pending'}"></div>
-              <div>
-                <div style="font-size:13px;font-weight:500">${h.loc}</div>
-                ${h.nota ? `<div style="font-size:11px;color:var(--texto-muted)">${h.nota}</div>` : ''}
-              </div>
-            </div>
-          `).join('')}
-        </div>
-
-        <div class="seccion">
-          <div class="seccion-titulo">Bienes a rescatar</div>
-          ${b.bienes_muebles.length
-            ? b.bienes_muebles.map((bm, i) => `
-              <div class="bien-item">
-                <div class="bien-num">${i + 1}</div>
-                <div>
-                  <div class="bien-nombre">${bm.nombre}</div>
-                  ${bm.siglo ? `<div class="bien-siglo">${bm.siglo}</div>` : ''}
-                </div>
-              </div>
-            `).join('')
-            : '<div style="font-size:12px;color:var(--texto-muted)">Pendiente de inventariar</div>'}
-        </div>
-
-        <div class="seccion">
-          <div class="seccion-titulo">Riesgos específicos</div>
-          <div>${b.riesgos.map(r => `<span class="riesgo-tag">${r}</span>`).join('')}</div>
-        </div>
-
-        <div class="seccion" style="border-bottom:none">
-          <div class="seccion-titulo">Documentación</div>
-          <div class="plan-row"><span class="plan-nombre">Plan de salvaguarda</span>${planEstado(b.plan_s)}</div>
-          <div class="plan-row"><span class="plan-nombre">Plan de emergencia</span>${planEstado(b.plan_e)}</div>
-          <div class="plan-row"><span class="plan-nombre">Planos del interior</span>${planEstado(b.planos)}</div>
-          <div style="margin-top:12px">
-            <button class="btn-accion" onclick="alert('Función disponible en versión completa')">📄 Ver planos del interior</button>
-            <button class="btn-accion" onclick="alert('Función disponible en versión completa')">📋 Ver plan de salvaguarda</button>
-            <button class="btn-accion primary" onclick="window.print()">🖨️ Imprimir ficha</button>
-          </div>
+  document.getElementById('main').innerHTML = `
+    <div class="ficha">
+      <div class="ficha-header">
+        ${b.imagen_url?`<img src="${b.imagen_url}" alt="${b.nombre}" style="width:100%;height:200px;object-fit:cover;border-radius:10px;margin-bottom:14px">`:''}
+        <div class="ficha-nombre">${b.nombre}</div>
+        <div class="ficha-tipo">${b.tipo||''}</div>
+        <div class="ficha-badges">
+          ${badgePrior}
+          ${b.contacto?`<span class="fbadge" style="background:rgba(255,255,255,0.06);color:var(--texto-muted)">📞 ${b.contacto}</span>`:''}
         </div>
       </div>
-    `;
-  } else {
-    document.getElementById('main-content').innerHTML = `
-      <div style="padding:20px">
-        <div style="font-family:var(--font-display);font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">${b.nombre}</div>
-        <div style="font-size:13px;color:var(--texto-muted);margin-bottom:20px">${b.tipo}</div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
-          <div class="seccion" style="border-radius:8px">
-            <div class="seccion-titulo">Datos operativos</div>
-            <div class="plan-row"><span class="plan-nombre">Tiempo desde parque</span><strong>${b.min} min</strong></div>
-            <div class="plan-row"><span class="plan-nombre">Distancia</span><strong>${b.km} km</strong></div>
-            <div class="plan-row"><span class="plan-nombre">Prioridad</span><span class="badge-prioridad badge-${b.prioridad}">${b.prioridad}</span></div>
-          </div>
-          <div class="seccion" style="border-radius:8px">
-            <div class="seccion-titulo">Estado de documentación</div>
-            <div class="plan-row"><span class="plan-nombre">Plan salvaguarda</span>${planEstado(b.plan_s)}</div>
-            <div class="plan-row"><span class="plan-nombre">Plan emergencia</span>${planEstado(b.plan_e)}</div>
-            <div class="plan-row"><span class="plan-nombre">Planos interiores</span>${planEstado(b.planos)}</div>
-          </div>
-        </div>
+      ${galeriaHTML}
 
-        <div class="seccion" style="border-radius:8px;margin-bottom:16px">
-          <div class="seccion-titulo">Acciones de planificación</div>
-          <button class="btn-accion" onclick="subirFoto(${b.id})">📷 Actualizar foto del edificio</button>
-          <button class="btn-accion" onclick="alert('Función disponible en versión completa')">📄 Subir plan de salvaguarda (PDF)</button>
-          <button class="btn-accion" onclick="alert('Función disponible en versión completa')">📋 Subir plan de emergencia (PDF)</button>
-          <button class="btn-accion" onclick="alert('Función disponible en versión completa')">🗺️ Subir planos del interior</button>
-          <button class="btn-accion" onclick="alert('Función disponible en versión completa')">📸 Gestionar galería de fotos</button>
-          <button class="btn-accion" onclick="alert('Función disponible en versión completa')">✏️ Editar ficha completa</button>
-          <button class="btn-accion primary" onclick="window.print()">🖨️ Exportar ficha a PDF</button>
+      <div class="sec-titulo" style="margin-bottom:10px">🚒 Datos operativos</div>
+      <div class="ops-grid">
+        <div class="ops-card">
+          <div class="ops-label">Distancia desde parque</div>
+          <div class="ops-valor">${b.minutos!=='—'?b.minutos+' min · '+b.km+' km':'Pendiente de medir'}</div>
         </div>
-
-        <div class="seccion" style="border-radius:8px">
-          <div class="seccion-titulo">Contacto responsable</div>
-          <div style="font-size:13px;color:${b.contacto.includes('pendiente') ? 'var(--naranja)' : 'var(--verde)'}">${b.contacto}</div>
+        <div class="ops-card">
+          <div class="ops-label">Punto de entrada</div>
+          <div class="ops-valor">${b.entrada||'—'}</div>
         </div>
+        <div class="ops-card full">
+          <div class="ops-label">Ruta recomendada</div>
+          <div class="ops-valor">${b.ruta||'—'}</div>
+        </div>
+        <div class="ops-card full">
+          <div class="ops-label">Tipo de acceso</div>
+          <div class="ops-valor">${b.acceso||'—'}</div>
+        </div>
+        ${b.nota_operativa?`<div class="ops-card full ops-alerta"><div class="ops-label">⚠️ Nota operativa</div><div class="ops-valor">${b.nota_operativa}</div></div>`:''}
       </div>
-    `;
+
+      <hr class="divider">
+      <div class="sec-titulo" style="margin-bottom:10px">💧 Hidrantes cercanos</div>
+      ${hidrantes.map(h=>`<div class="hidrante-row"><div class="hid-dot" style="background:${h.ok?'#27AE60':'#E74C3C'}"></div><span>${h.loc}</span>${h.nota?`<span style="color:var(--texto-dim);font-size:11px">— ${h.nota}</span>`:''}</div>`).join('')||'<p style="font-size:12px;color:var(--texto-dim);padding:8px 0">Sin hidrantes registrados</p>'}
+
+      <hr class="divider">
+      <div class="sec-titulo" style="margin-bottom:10px">⚠️ Riesgos específicos</div>
+      ${riesgos.map(r=>`<div class="riesgo-item"><span style="color:#EC7063;flex-shrink:0">▶</span><span>${r}</span></div>`).join('')||'<p style="font-size:12px;color:var(--texto-dim)">Sin riesgos registrados</p>'}
+
+      ${MODO==='planificacion'?`
+      <hr class="divider">
+      <div class="sec-titulo" style="margin-bottom:10px">🏺 Bienes muebles a proteger</div>
+      ${bienes.map(bm=>`<div class="bien-item"><span class="bien-nombre">${bm.nombre}</span><span class="bien-siglo">${bm.siglo||''}</span></div>`).join('')||'<p style="font-size:12px;color:var(--texto-dim)">Sin inventario registrado</p>'}
+      `:''}
+
+      ${docsHTML}
+    </div>
+  `;
+
+  // Mostrar botón editar flotante
+  if(USUARIO){
+    document.getElementById('btn-editar-flotante').style.display='flex';
   }
 }
 
-function subirFoto(id) {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const b = bienes.find(x => x.id === id);
-      b.img = ev.target.result;
-      renderSidebar();
-      mostrarFicha(id);
-    };
-    reader.readAsDataURL(file);
+// ============================================
+// SUBIDA FOTOS
+// ============================================
+function iniciarSubidaFoto(id){
+  subiendoParaId = id;
+  document.getElementById('input-foto').click();
+}
+
+document.getElementById('input-foto').addEventListener('change', async function(){
+  const files = Array.from(this.files);
+  if(!files.length) return;
+  mostrarToast('📤 Subiendo fotos...',10000);
+  const b = edificios.find(x=>x.id===subiendoParaId);
+  const fotos = Array.isArray(b.fotos)?[...b.fotos]:[];
+
+  for(const file of files){
+    const ext = file.name.split('.').pop();
+    const path = `${subiendoParaId}/${Date.now()}.${ext}`;
+    try {
+      const r = await fetch(`${SB}/storage/v1/object/patrimonio-fotos/${path}`,{
+        method:'POST',
+        headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':file.type},
+        body:file
+      });
+      if(r.ok){
+        const url = `${SB}/storage/v1/object/public/patrimonio-fotos/${path}`;
+        fotos.push({url,path});
+      }
+    } catch(e){}
+  }
+
+  await actualizarCampo(subiendoParaId,{fotos});
+  mostrarToast('✅ Fotos subidas correctamente');
+  mostrarFicha(subiendoParaId);
+  this.value='';
+});
+
+async function eliminarFoto(id, url){
+  if(!confirm('¿Eliminar esta foto?')) return;
+  const b = edificios.find(x=>x.id===id);
+  const fotos = (b.fotos||[]).filter(f=>f.url!==url);
+  await actualizarCampo(id,{fotos});
+  mostrarFicha(id);
+  mostrarToast('🗑 Foto eliminada');
+}
+
+// ============================================
+// SUBIDA DOCUMENTOS
+// ============================================
+function iniciarSubidaDoc(id, tipo){
+  subiendoParaId = id;
+  subiendoTipoDoc = tipo;
+  document.getElementById('input-doc').click();
+}
+
+document.getElementById('input-doc').addEventListener('change', async function(){
+  const file = this.files[0];
+  if(!file) return;
+  mostrarToast('📤 Subiendo documento...',10000);
+  const ext = file.name.split('.').pop();
+  const path = `${subiendoParaId}/${subiendoTipoDoc}_${Date.now()}.${ext}`;
+
+  try {
+    const r = await fetch(`${SB}/storage/v1/object/patrimonio-docs/${path}`,{
+      method:'POST',
+      headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':file.type},
+      body:file
+    });
+    if(r.ok){
+      const url = `${SB}/storage/v1/object/public/patrimonio-docs/${path}`;
+      const b = edificios.find(x=>x.id===subiendoParaId);
+      const update = {};
+      if(subiendoTipoDoc==='plan_salvaguarda'){update.doc_plan_salvaguarda=url;update.plan_salvaguarda='si';}
+      else if(subiendoTipoDoc==='ficha_intervencion'){update.doc_ficha_intervencion=url;}
+      else if(subiendoTipoDoc==='planos'){update.doc_planos=url;update.planos='si';}
+      else if(subiendoTipoDoc==='otro'){
+        const otros = Array.isArray(b.doc_otros)?[...b.doc_otros]:[];
+        otros.push({url,nombre:file.name,path});
+        update.doc_otros=otros;
+      }
+      await actualizarCampo(subiendoParaId,update);
+      mostrarToast('✅ Documento subido correctamente');
+      mostrarFicha(subiendoParaId);
+    } else { mostrarToast('❌ Error al subir el documento'); }
+  } catch(e){ mostrarToast('❌ Error de conexión'); }
+  this.value='';
+});
+
+async function eliminarDoc(id, tipo){
+  if(!confirm('¿Quitar este documento?')) return;
+  const update = {};
+  if(tipo==='plan_salvaguarda') update.doc_plan_salvaguarda=null;
+  else if(tipo==='ficha_intervencion') update.doc_ficha_intervencion=null;
+  else if(tipo==='planos') update.doc_planos=null;
+  await actualizarCampo(id,update);
+  mostrarFicha(id);
+  mostrarToast('🗑 Documento eliminado');
+}
+
+// ============================================
+// FORMULARIO AÑADIR / EDITAR
+// ============================================
+function abrirFormNuevo(){
+  editandoId = null;
+  document.getElementById('form-titulo').textContent = '➕ Añadir edificio';
+  limpiarForm();
+  document.getElementById('modal-form').classList.add('visible');
+}
+
+function abrirFormEditar(){
+  const b = edificios.find(x=>x.id===seleccionado);
+  if(!b) return;
+  editandoId = b.id;
+  document.getElementById('form-titulo').textContent = '✏️ Editar — '+b.nombre;
+  document.getElementById('f-nombre').value = b.nombre||'';
+  document.getElementById('f-tipo').value = b.tipo||'';
+  document.getElementById('f-prioridad').value = b.prioridad||'A';
+  document.getElementById('f-direccion').value = b.direccion||'';
+  document.getElementById('f-lat').value = b.lat||'';
+  document.getElementById('f-lon').value = b.lon||'';
+  document.getElementById('f-km').value = b.km||'';
+  document.getElementById('f-min').value = b.minutos||'';
+  document.getElementById('f-contacto').value = b.contacto||'';
+  document.getElementById('f-ruta').value = b.ruta||'';
+  document.getElementById('f-entrada').value = b.entrada||'';
+  document.getElementById('f-acceso').value = b.acceso||'';
+  document.getElementById('f-nota').value = b.nota_operativa||'';
+  document.getElementById('f-hidrantes').value = (b.hidrantes||[]).map(h=>h.loc).join('\n');
+  document.getElementById('f-riesgos').value = (b.riesgos||[]).join('\n');
+  document.getElementById('f-bienes').value = (b.bienes_muebles||[]).map(bm=>bm.nombre+(bm.siglo?', '+bm.siglo:'')).join('\n');
+  document.getElementById('f-plan-s').value = b.plan_salvaguarda||'pendiente';
+  document.getElementById('f-plan-e').value = b.plan_emergencia||'pendiente';
+  document.getElementById('f-planos').value = b.planos||'pendiente';
+  document.getElementById('f-imagen').value = b.imagen_url||'';
+  document.getElementById('modal-form').classList.add('visible');
+}
+
+function cerrarForm(){
+  document.getElementById('modal-form').classList.remove('visible');
+}
+
+function limpiarForm(){
+  ['f-nombre','f-tipo','f-direccion','f-lat','f-lon','f-km','f-min','f-contacto','f-ruta','f-entrada','f-acceso','f-nota','f-hidrantes','f-riesgos','f-bienes','f-imagen'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('f-prioridad').value='A';
+  document.getElementById('f-plan-s').value='pendiente';
+  document.getElementById('f-plan-e').value='pendiente';
+  document.getElementById('f-planos').value='pendiente';
+}
+
+async function guardarEdificio(){
+  const nombre = document.getElementById('f-nombre').value.trim();
+  if(!nombre){ mostrarToast('⚠️ El nombre es obligatorio'); return; }
+
+  const hidrantesRaw = document.getElementById('f-hidrantes').value.trim();
+  const riesgosRaw = document.getElementById('f-riesgos').value.trim();
+  const bienesRaw = document.getElementById('f-bienes').value.trim();
+
+  const datos = {
+    nombre,
+    tipo: document.getElementById('f-tipo').value.trim()||null,
+    prioridad: document.getElementById('f-prioridad').value,
+    direccion: document.getElementById('f-direccion').value.trim()||null,
+    lat: parseFloat(document.getElementById('f-lat').value)||null,
+    lon: parseFloat(document.getElementById('f-lon').value)||null,
+    km: document.getElementById('f-km').value.trim()||'—',
+    minutos: document.getElementById('f-min').value.trim()||'—',
+    contacto: document.getElementById('f-contacto').value.trim()||null,
+    ruta: document.getElementById('f-ruta').value.trim()||null,
+    entrada: document.getElementById('f-entrada').value.trim()||null,
+    acceso: document.getElementById('f-acceso').value.trim()||null,
+    nota_operativa: document.getElementById('f-nota').value.trim()||null,
+    hidrantes: hidrantesRaw ? hidrantesRaw.split('\n').filter(Boolean).map(l=>({loc:l.trim(),ok:true,nota:''})) : [],
+    riesgos: riesgosRaw ? riesgosRaw.split('\n').filter(Boolean).map(l=>l.trim()) : [],
+    bienes_muebles: bienesRaw ? bienesRaw.split('\n').filter(Boolean).map(l=>{
+      const [nombre,...resto] = l.split(',');
+      return {nombre:nombre.trim(),siglo:resto.join(',').trim()};
+    }) : [],
+    plan_salvaguarda: document.getElementById('f-plan-s').value,
+    plan_emergencia: document.getElementById('f-plan-e').value,
+    planos: document.getElementById('f-planos').value,
+    imagen_url: document.getElementById('f-imagen').value.trim()||null,
+    updated_at: new Date().toISOString()
   };
-  input.click();
+
+  const btn = document.getElementById('btn-guardar-form');
+  btn.disabled=true; btn.textContent='Guardando...';
+
+  try {
+    if(editandoId){
+      const r = await fetch(`${SB}/rest/v1/patrimonio?id=eq.${editandoId}`,{
+        method:'PATCH',
+        headers:{...H(),'Prefer':'return=representation'},
+        body:JSON.stringify(datos)
+      });
+      if(!r.ok) throw new Error(await r.text());
+      const [updated] = await r.json();
+      const idx = edificios.findIndex(x=>x.id===editandoId);
+      edificios[idx] = {...edificios[idx],...updated};
+      mostrarToast('✅ Edificio actualizado');
+    } else {
+      const r = await fetch(`${SB}/rest/v1/patrimonio`,{
+        method:'POST',
+        headers:{...H(),'Prefer':'return=representation'},
+        body:JSON.stringify({...datos,fotos:[],doc_otros:[]})
+      });
+      if(!r.ok) throw new Error(await r.text());
+      const [nuevo] = await r.json();
+      edificios.unshift(nuevo);
+      seleccionado = nuevo.id;
+      mostrarToast('✅ Edificio añadido');
+    }
+    cerrarForm();
+    renderizarLista();
+    mostrarFicha(seleccionado||edificios[0].id);
+  } catch(e){
+    mostrarToast('❌ Error al guardar: '+e.message,4000);
+  }
+  btn.disabled=false; btn.textContent='💾 Guardar';
 }
 
-renderSidebar();
-</script>
-
-<!-- MODAL LOGIN PATRIMONIO -->
-<div id="pat-modal-login" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
-  <div style="background:#1C2833;border:1px solid #2E4053;border-radius:12px;padding:28px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative">
-    <button onclick="document.getElementById('pat-modal-login').style.display='none'" style="position:absolute;top:12px;right:16px;background:none;border:none;color:#888;font-size:22px;cursor:pointer">×</button>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;letter-spacing:.04em;margin-bottom:6px;color:white">🔐 Acceso Admin</div>
-    <div style="font-size:13px;color:#888;margin-bottom:20px;line-height:1.4">Solo el administrador puede modificar los datos.</div>
-    <input id="pat-login-email" type="email" placeholder="tu@email.com" style="width:100%;background:#2E4053;border:1px solid #3D5168;border-radius:6px;color:white;padding:10px 12px;font-size:14px;margin-bottom:8px;font-family:inherit">
-    <input id="pat-login-password" type="password" placeholder="Contraseña" style="width:100%;background:#2E4053;border:1px solid #3D5168;border-radius:6px;color:white;padding:10px 12px;font-size:14px;margin-bottom:12px;font-family:inherit">
-    <button id="pat-login-btn" onclick="enviarLoginPatrimonio()" style="width:100%;background:#922B21;border:none;color:white;padding:11px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.05em;cursor:pointer">Acceder</button>
-    <div id="pat-login-msg" style="font-size:12px;color:#888;text-align:center;margin-top:10px;min-height:18px"></div>
-  </div>
-</div>
-
-<script>
-const PAT_SB_URL = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
-const PAT_SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
-
-function abrirLoginPatrimonio(){
-  document.getElementById('pat-modal-login').style.display='flex';
+async function actualizarCampo(id, datos){
+  try {
+    const r = await fetch(`${SB}/rest/v1/patrimonio?id=eq.${id}`,{
+      method:'PATCH',
+      headers:{...H(),'Prefer':'return=representation'},
+      body:JSON.stringify({...datos,updated_at:new Date().toISOString()})
+    });
+    if(r.ok){
+      const [updated] = await r.json();
+      const idx = edificios.findIndex(x=>x.id===id);
+      if(idx>=0) edificios[idx]={...edificios[idx],...updated};
+    }
+  } catch(e){}
 }
 
-async function enviarLoginPatrimonio(){
-  const email = document.getElementById('pat-login-email').value.trim();
-  const password = document.getElementById('pat-login-password').value;
-  const msg = document.getElementById('pat-login-msg');
-  const btn = document.getElementById('pat-login-btn');
+// ============================================
+// AUTH — EMAIL + CONTRASEÑA
+// ============================================
+function abrirLogin(){ document.getElementById('modal-login').classList.add('visible'); }
+function cerrarLogin(){ document.getElementById('modal-login').classList.remove('visible'); }
+
+async function hacerLogin(){
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const msg = document.getElementById('login-msg');
+  const btn = document.getElementById('login-btn');
   if(!email||!password){ msg.textContent='Rellena email y contraseña'; return; }
   btn.disabled=true; btn.textContent='Accediendo...';
   try {
-    const r = await fetch(`${PAT_SB_URL}/auth/v1/token?grant_type=password`,{
+    const r = await fetch(`${SB}/auth/v1/token?grant_type=password`,{
       method:'POST',
-      headers:{'Content-Type':'application/json','apikey':PAT_SB_KEY},
+      headers:{'Content-Type':'application/json','apikey':KEY},
       body:JSON.stringify({email,password})
     });
     const data = await r.json();
     if(r.ok && data.access_token){
-      sessionStorage.setItem('sb_token', data.access_token);
-      sessionStorage.setItem('sb_user', email);
-      document.getElementById('pat-usuario-badge').textContent = '● '+email;
-      document.getElementById('pat-usuario-badge').style.display = 'inline-block';
-      document.getElementById('pat-btn-login').style.display = 'none';
-      document.getElementById('pat-modal-login').style.display = 'none';
-      msg.textContent = '';
+      TOKEN = data.access_token;
+      USUARIO = email;
+      sessionStorage.setItem('sb_token',TOKEN);
+      sessionStorage.setItem('sb_user',USUARIO);
+      document.getElementById('usuario-badge').textContent='● '+email;
+      document.getElementById('usuario-badge').style.display='inline-block';
+      document.getElementById('btn-login').style.display='none';
+      document.getElementById('btn-nuevo').style.display='inline-block';
+      cerrarLogin();
+      if(seleccionado) mostrarFicha(seleccionado);
+      mostrarToast('✅ Sesión iniciada correctamente');
     } else {
       msg.style.color='#EC7063';
-      msg.textContent = 'Email o contraseña incorrectos';
+      msg.textContent='Email o contraseña incorrectos';
     }
   } catch(e){ msg.textContent='Error de conexión'; }
   btn.disabled=false; btn.textContent='Acceder';
 }
 
-// Detectar sesión desde sessionStorage
-(function(){
+function detectarSesion(){
+  const token = sessionStorage.getItem('sb_token');
   const user = sessionStorage.getItem('sb_user');
-  if(user){
-    document.getElementById('pat-usuario-badge').textContent = '● '+user;
-    document.getElementById('pat-usuario-badge').style.display = 'inline-block';
-    document.getElementById('pat-btn-login').style.display = 'none';
+  if(token && user){
+    TOKEN = token; USUARIO = user;
+    document.getElementById('usuario-badge').textContent='● '+user;
+    document.getElementById('usuario-badge').style.display='inline-block';
+    document.getElementById('btn-login').style.display='none';
+    document.getElementById('btn-nuevo').style.display='inline-block';
   }
-})();
-</script>
+}
 
+// ============================================
+// LIGHTBOX
+// ============================================
+function abrirLightbox(src){
+  document.getElementById('lightbox-img').src=src;
+  document.getElementById('lightbox').classList.add('visible');
+}
+function cerrarLightbox(){
+  document.getElementById('lightbox').classList.remove('visible');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){cerrarLightbox();cerrarForm();cerrarLogin();}});
+
+// ============================================
+// TOAST
+// ============================================
+function mostrarToast(msg,dur=2500){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  clearTimeout(window._tT);window._tT=setTimeout(()=>t.style.display='none',dur);
+}
+
+// ============================================
+// INICIO
+// ============================================
+detectarSesion();
+cargarDatos();
+</script>
 </body>
 </html>

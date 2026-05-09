@@ -169,31 +169,30 @@
 
   .sidebar{width:340px;background:var(--blanco);border-right:1px solid #dde;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width 0.3s ease}
   .sidebar.contraido{width:0;border-right:none}
-  #btn-toggle-sidebar:hover{background:var(--rojo-claro);color:var(--rojo-oscuro)}
 
   #btn-toggle-sidebar{
     position:absolute;
     top:50%;
     left:0;
     transform:translateY(-50%);
-    z-index:950;
-    background:white;
-    border:1px solid #dde;
-    border-left:none;
-    border-radius:0 6px 6px 0;
-    width:18px;
-    height:48px;
+    z-index:1000;
+    background:var(--rojo-oscuro);
+    color:white;
+    border:none;
+    border-radius:0 8px 8px 0;
+    width:22px;
+    height:64px;
     cursor:pointer;
+    font-size:13px;
+    box-shadow:3px 0 8px rgba(0,0,0,0.25);
+    padding:0;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:11px;
-    color:var(--gris-medio);
-    box-shadow:2px 0 6px rgba(0,0,0,0.08);
-    padding:0;
-    transition:background 0.2s;
+    transition:background 0.2s, width 0.2s;
+    writing-mode:horizontal-tb;
   }
-  #btn-toggle-sidebar:hover{background:var(--rojo-claro);color:var(--rojo-oscuro)}
+  #btn-toggle-sidebar:hover{background:var(--rojo);width:26px}
 </style>
 </head>
 <body>

@@ -875,47 +875,47 @@ function abrirLoginHidrantes(){
 
 async function enviarLoginHidrantes(){
   const email = document.getElementById('h-login-email').value.trim();
-  if(!email) return;
+  const password = document.getElementById('h-login-password').value;
+  if(!email||!password){ document.getElementById('h-login-msg').textContent='Rellena email y contraseña'; return; }
   const msg = document.getElementById('h-login-msg');
   const btn = document.getElementById('h-login-btn');
-  btn.disabled=true; msg.textContent='Enviando...';
+  btn.disabled=true; msg.style.color='#666'; msg.textContent='Accediendo...';
   try {
-    const r = await fetch(`${SB_URL}/auth/v1/otp`,{
+    const r = await fetch(`${SB_URL}/auth/v1/token?grant_type=password`,{
       method:'POST',
       headers:{'Content-Type':'application/json','apikey':SB_KEY},
-      body:JSON.stringify({email, create_user:false})
+      body:JSON.stringify({email,password})
     });
-    if(r.ok){
-      msg.style.color='#58D68D';
-      msg.textContent='✓ Enlace enviado — revisa tu email';
+    const data = await r.json();
+    if(r.ok && data.access_token){
+      TOKEN_H = data.access_token;
+      USUARIO_H = email;
+      sessionStorage.setItem('sb_token',TOKEN_H);
+      sessionStorage.setItem('sb_user',USUARIO_H);
+      document.getElementById('h-usuario-badge').textContent='● '+email;
+      document.getElementById('h-usuario-badge').style.display='inline-block';
+      document.getElementById('h-btn-login').style.display='none';
+      document.getElementById('btn-modo-añadir').style.display='inline-block';
+      document.getElementById('h-modal-login').style.display='none';
+      msg.textContent='';
     } else {
-      msg.style.color='#EC7063';
-      msg.textContent='Email no autorizado';
+      msg.style.color='#E74C3C';
+      msg.textContent='Email o contraseña incorrectos';
     }
   } catch(e){ msg.textContent='Error de conexión'; }
   btn.disabled=false;
 }
 
-async function detectarSesionHidrantes(){
-  const hash = window.location.hash;
-  const params = new URLSearchParams(hash.replace('#',''));
-  const token = params.get('access_token');
-  if(token){
+function detectarSesionHidrantes(){
+  const token = sessionStorage.getItem('sb_token');
+  const user = sessionStorage.getItem('sb_user');
+  if(token && user){
     TOKEN_H = token;
-    try {
-      const r = await fetch(`${SB_URL}/auth/v1/user`,{
-        headers:{'apikey':SB_KEY,'Authorization':'Bearer '+token}
-      });
-      const user = await r.json();
-      if(user.email){
-        USUARIO_H = user.email;
-        document.getElementById('h-usuario-badge').textContent = '● '+user.email;
-        document.getElementById('h-usuario-badge').style.display = 'inline-block';
-        document.getElementById('h-btn-login').style.display = 'none';
-        document.getElementById('btn-modo-añadir').style.display = 'inline-block';
-        window.history.replaceState(null,'',window.location.pathname);
-      }
-    } catch(e){}
+    USUARIO_H = user;
+    document.getElementById('h-usuario-badge').textContent = '● '+user;
+    document.getElementById('h-usuario-badge').style.display = 'inline-block';
+    document.getElementById('h-btn-login').style.display = 'none';
+    document.getElementById('btn-modo-añadir').style.display = 'inline-block';
   }
 }
 
@@ -1093,9 +1093,10 @@ window.addEventListener('resize',()=>mapa.invalidateSize());
   <div style="background:#fff;border-radius:12px;padding:28px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative">
     <button onclick="document.getElementById('h-modal-login').style.display='none'" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#666">×</button>
     <div style="font-size:18px;font-weight:700;margin-bottom:6px;color:#1C2833">🔐 Acceso Admin</div>
-    <div style="font-size:13px;color:#666;margin-bottom:16px;line-height:1.4">Solo el administrador puede modificar los datos. Introduce tu email para recibir un enlace de acceso.</div>
-    <input id="h-login-email" type="email" placeholder="tu@email.com" style="width:100%;border:1px solid #dde;border-radius:6px;padding:10px 12px;font-size:14px;margin-bottom:10px;font-family:inherit">
-    <button id="h-login-btn" onclick="enviarLoginHidrantes()" style="width:100%;background:#922B21;border:none;color:white;padding:11px;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer">Enviar enlace de acceso</button>
+    <div style="font-size:13px;color:#666;margin-bottom:16px;line-height:1.4">Solo el administrador puede modificar los datos.</div>
+    <input id="h-login-email" type="email" placeholder="tu@email.com" style="width:100%;border:1px solid #dde;border-radius:6px;padding:10px 12px;font-size:14px;margin-bottom:8px;font-family:inherit">
+    <input id="h-login-password" type="password" placeholder="Contraseña" style="width:100%;border:1px solid #dde;border-radius:6px;padding:10px 12px;font-size:14px;margin-bottom:10px;font-family:inherit">
+    <button id="h-login-btn" onclick="enviarLoginHidrantes()" style="width:100%;background:#922B21;border:none;color:white;padding:11px;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer">Acceder</button>
     <div id="h-login-msg" style="font-size:12px;color:#666;text-align:center;margin-top:10px;min-height:18px"></div>
   </div>
 </div>

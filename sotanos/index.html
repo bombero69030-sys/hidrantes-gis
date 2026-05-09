@@ -11,255 +11,172 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --naranja:#E67E22;--naranja-dark:#A04000;--naranja-glow:rgba(230,126,34,0.3);
-  --naranja-claro:rgba(230,126,34,0.12);
   --rojo:#C0392B;--verde:#1E8449;--azul:#1A5276;
   --gris-fondo:#0D0F12;--gris-panel:#161A1F;--gris-panel2:#1E232B;
   --gris-borde:#2A2F38;--gris-borde2:#353C47;
   --texto:#F0F2F5;--texto-muted:#8892A0;--texto-dim:#5A6475;
-  --font-display:'Barlow Condensed',sans-serif;
-  --font-body:'Barlow',sans-serif;
+  --font-display:'Barlow Condensed',sans-serif;--font-body:'Barlow',sans-serif;
 }
 html,body{height:100%;overflow:hidden}
 body{font-family:var(--font-body);background:var(--gris-fondo);color:var(--texto);display:flex;flex-direction:column}
 
-/* HEADER */
-header{
-  background:rgba(13,15,18,0.95);border-bottom:1px solid var(--gris-borde);
-  padding:0 20px;height:54px;display:flex;align-items:center;gap:14px;
-  flex-shrink:0;z-index:100;position:relative;
-}
-.btn-back{
-  background:rgba(255,255,255,0.06);border:1px solid var(--gris-borde);
-  color:var(--texto-muted);padding:6px 12px;border-radius:6px;
-  font-family:var(--font-display);font-size:13px;font-weight:600;
-  cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px;
-  transition:all 0.2s;letter-spacing:.04em;
-}
+header{background:rgba(13,15,18,0.95);border-bottom:1px solid var(--gris-borde);padding:0 20px;height:54px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:100}
+.btn-back{background:rgba(255,255,255,0.06);border:1px solid var(--gris-borde);color:var(--texto-muted);padding:6px 12px;border-radius:6px;font-family:var(--font-display);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;letter-spacing:.04em}
 .btn-back:hover{background:rgba(255,255,255,0.1);color:var(--texto)}
-.header-titulo{
-  font-family:var(--font-display);font-size:20px;font-weight:800;
-  letter-spacing:.05em;text-transform:uppercase;
-}
+.header-titulo{font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
 .header-titulo span{color:var(--naranja)}
 .header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
-.btn-login{
-  background:rgba(230,126,34,0.15);border:1px solid rgba(230,126,34,0.3);
-  color:var(--naranja);padding:6px 14px;border-radius:6px;
-  font-family:var(--font-display);font-size:13px;font-weight:600;
-  cursor:pointer;letter-spacing:.04em;transition:all 0.2s;
-}
-.btn-login:hover{background:rgba(230,126,34,0.25)}
-.btn-nuevo{
-  background:var(--naranja);border:none;color:white;
-  padding:6px 14px;border-radius:6px;
-  font-family:var(--font-display);font-size:13px;font-weight:700;
-  cursor:pointer;letter-spacing:.04em;display:none;
-  transition:all 0.2s;
-}
-.btn-nuevo:hover{background:#D35400}
-.usuario-badge{
-  font-size:11px;color:var(--naranja);
-  background:rgba(230,126,34,0.1);border:1px solid rgba(230,126,34,0.2);
-  padding:4px 10px;border-radius:20px;display:none;
-}
+.usuario-badge{font-size:11px;color:#A9DFBF;background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.3);padding:4px 10px;border-radius:20px;display:none}
+.btn-login-h{background:rgba(230,126,34,0.15);border:1px solid rgba(230,126,34,0.3);color:var(--naranja);padding:6px 14px;border-radius:6px;font-family:var(--font-display);font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all 0.2s}
+.btn-login-h:hover{background:rgba(230,126,34,0.25)}
+.btn-nuevo-h{background:var(--naranja);border:none;color:white;padding:6px 14px;border-radius:6px;font-family:var(--font-display);font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.04em;display:none;transition:all 0.2s}
+.btn-nuevo-h:hover{background:#D35400}
 
-/* LAYOUT */
 .app-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 54px)}
 
-/* SIDEBAR */
-.sidebar{
-  width:320px;background:var(--gris-panel);
-  border-right:1px solid var(--gris-borde);
-  display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;
-}
+.sidebar{width:320px;background:var(--gris-panel);border-right:1px solid var(--gris-borde);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width 0.3s}
+.sidebar.oculto{width:0;border:none}
 .sidebar-search{padding:12px;border-bottom:1px solid var(--gris-borde)}
-.sidebar-search input{
-  width:100%;background:var(--gris-panel2);
-  border:1px solid var(--gris-borde2);border-radius:6px;
-  color:var(--texto);padding:8px 10px 8px 32px;
-  font-family:var(--font-body);font-size:13px;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238892A0' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:10px center;
-}
+.sidebar-search input{width:100%;background:var(--gris-panel2);border:1px solid var(--gris-borde2);border-radius:6px;color:var(--texto);padding:8px 10px 8px 30px;font-family:var(--font-body);font-size:13px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%238892A0' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:9px center}
 .sidebar-search input:focus{outline:none;border-color:var(--naranja)}
 .sidebar-search input::placeholder{color:var(--texto-dim)}
 .lista-sotanos{flex:1;overflow-y:auto;padding:8px}
 .lista-sotanos::-webkit-scrollbar{width:4px}
 .lista-sotanos::-webkit-scrollbar-thumb{background:var(--gris-borde2);border-radius:2px}
 
-/* TARJETA SÓTANO EN LISTA */
-.sotano-card{
-  padding:12px 14px;border-radius:8px;border:1px solid var(--gris-borde);
-  margin-bottom:6px;cursor:pointer;transition:all 0.2s;
-  background:var(--gris-panel2);
-}
+.sotano-card{padding:12px 14px;border-radius:8px;border:1px solid var(--gris-borde);margin-bottom:6px;cursor:pointer;transition:all 0.2s;background:var(--gris-panel2)}
 .sotano-card:hover{border-color:var(--naranja);background:rgba(230,126,34,0.05)}
 .sotano-card.activo{border-color:var(--naranja);background:rgba(230,126,34,0.08)}
 .sc-dir{font-weight:600;font-size:13px;color:var(--texto);margin-bottom:4px}
-.sc-chips{display:flex;gap:5px;flex-wrap:wrap}
-.sc-chip{
-  font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600;
-  letter-spacing:.04em;text-transform:uppercase;
-}
+.sc-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:4px}
+.sc-chip{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
 .chip-ok{background:rgba(30,132,73,0.2);color:#58D68D}
 .chip-warn{background:rgba(230,126,34,0.2);color:#F0A500}
 .chip-alert{background:rgba(192,57,43,0.2);color:#EC7063}
 .chip-gris{background:rgba(255,255,255,0.06);color:var(--texto-muted)}
-.sc-fecha{font-size:11px;color:var(--texto-dim);margin-top:4px}
+.sc-fecha{font-size:11px;color:var(--texto-dim)}
 
-/* MAPA */
-.mapa-wrapper{position:relative;flex:1}
-#mapa{width:100%;height:100%;z-index:1}
+.mapa-wrapper{position:relative;flex:1;display:flex;flex-direction:column}
+#mapa{width:100%;flex:1;z-index:1}
+
+#btn-toggle{position:absolute;top:50%;left:0;transform:translateY(-50%);z-index:950;background:var(--naranja);border:none;border-radius:0 8px 8px 0;width:20px;height:56px;cursor:pointer;color:white;font-size:12px;box-shadow:3px 0 8px rgba(0,0,0,0.3)}
 
 /* PANEL DETALLE */
-#panel-detalle{
-  position:absolute;top:12px;right:12px;
-  width:330px;max-height:calc(100% - 24px);
-  background:var(--gris-panel);border:1px solid var(--gris-borde2);
-  border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.5);
-  z-index:900;display:none;overflow:hidden;
-  flex-direction:column;
-}
-.pd-header{
-  background:var(--naranja-dark);
-  padding:13px 16px;display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;
-}
+#panel-detalle{position:absolute;top:12px;right:12px;width:340px;max-height:calc(100% - 24px);background:var(--gris-panel);border:1px solid var(--gris-borde2);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:900;display:none;flex-direction:column;overflow:hidden}
+.pd-header{background:var(--naranja-dark);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .pd-titulo{font-family:var(--font-display);font-size:15px;font-weight:700;color:white;letter-spacing:.03em}
-.pd-cerrar{background:none;border:none;color:rgba(255,255,255,0.7);font-size:22px;cursor:pointer;line-height:1;padding:0}
+.pd-cerrar{background:none;border:none;color:rgba(255,255,255,0.7);font-size:22px;cursor:pointer;line-height:1}
 .pd-cerrar:hover{color:white}
 .pd-scroll{overflow-y:auto;flex:1}
 .pd-scroll::-webkit-scrollbar{width:4px}
 .pd-scroll::-webkit-scrollbar-thumb{background:var(--gris-borde2)}
 
-/* GALERÍA FOTOS */
-.galeria{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--gris-fondo)}
-.galeria img{width:100%;height:90px;object-fit:cover;cursor:pointer;transition:opacity 0.2s}
-.galeria img:hover{opacity:0.85}
-.galeria-placeholder{
-  height:90px;background:var(--gris-panel2);
-  display:flex;align-items:center;justify-content:center;
-  color:var(--texto-dim);font-size:22px;
-}
+/* GALERÍA EN PANEL */
+.galeria{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.galeria-foto{position:relative;aspect-ratio:4/3}
+.galeria-foto img{width:100%;height:100%;object-fit:cover;cursor:pointer;transition:opacity 0.2s}
+.galeria-foto img:hover{opacity:0.85}
+.galeria-foto .btn-del-foto{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);border:none;color:white;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:12px;align-items:center;justify-content:center;display:none}
+.galeria-foto:hover .btn-del-foto.admin{display:flex}
+.btn-add-foto{aspect-ratio:4/3;border:2px dashed var(--gris-borde2);background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--texto-dim);font-size:11px;gap:4px;transition:all 0.2s}
+.btn-add-foto:hover{border-color:var(--naranja);color:var(--naranja)}
+.sin-fotos{grid-column:span 2;padding:16px;text-align:center;color:var(--texto-dim);font-size:12px}
 
-/* SECCIONES DEL DETALLE */
+/* SECCIONES DETALLE */
 .pd-seccion{padding:12px 14px;border-bottom:1px solid var(--gris-borde)}
 .pd-seccion:last-child{border-bottom:none}
-.pd-sec-titulo{
-  font-family:var(--font-display);font-size:11px;font-weight:600;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--naranja);margin-bottom:8px;
-}
+.pd-sec-titulo{font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--naranja);margin-bottom:8px}
 .pd-fila{display:flex;justify-content:space-between;align-items:flex-start;padding:4px 0;gap:8px}
 .pd-clave{font-size:12px;color:var(--texto-muted);flex-shrink:0}
 .pd-valor{font-size:12px;color:var(--texto);font-weight:500;text-align:right;word-break:break-word}
-.acceso-item{
-  background:var(--gris-panel2);border:1px solid var(--gris-borde);
-  border-radius:6px;padding:7px 10px;margin-bottom:5px;
-  font-size:12px;display:flex;align-items:center;gap:8px;
-}
-.acceso-num{
-  width:22px;height:22px;border-radius:50%;
-  background:rgba(230,126,34,0.2);border:1px solid rgba(230,126,34,0.3);
-  color:var(--naranja);font-size:11px;font-weight:700;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.condicion-fila{display:flex;align-items:center;justify-content:space-between;padding:5px 0}
+.acceso-item{background:var(--gris-panel2);border:1px solid var(--gris-borde);border-radius:6px;padding:7px 10px;margin-bottom:5px;font-size:12px;display:flex;align-items:center;gap:8px}
+.acceso-num{width:22px;height:22px;border-radius:50%;background:rgba(230,126,34,0.2);border:1px solid rgba(230,126,34,0.3);color:var(--naranja);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cond-fila{display:flex;align-items:center;justify-content:space-between;padding:5px 0}
 .cond-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.obs-box{margin-top:8px;background:rgba(192,57,43,0.1);border:1px solid rgba(192,57,43,0.3);border-radius:6px;padding:9px 10px;font-size:12px;color:var(--texto);line-height:1.4}
+.obs-box.normal{background:rgba(255,255,255,0.04);border-color:var(--gris-borde)}
 
-/* BOTONES DETALLE */
+/* DOCUMENTOS EN PANEL */
+.doc-item{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gris-borde);font-size:12px}
+.doc-item:last-child{border-bottom:none}
+.doc-nombre{color:var(--texto);flex:1}
+.doc-acciones-small{display:flex;gap:4px}
+.btn-doc-small{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;border:none;cursor:pointer}
+.btn-ver-s{background:rgba(26,82,118,0.3);color:#5DADE2}
+.btn-del-s{background:rgba(192,57,43,0.2);color:#EC7063}
+.btn-add-doc{width:100%;padding:8px;border:2px dashed var(--gris-borde2);border-radius:6px;background:none;color:var(--texto-dim);font-size:11px;cursor:pointer;margin-top:8px;transition:all 0.2s}
+.btn-add-doc:hover{border-color:var(--naranja);color:var(--naranja)}
+
+/* ACCIONES PANEL */
 .pd-acciones{display:flex;gap:6px;padding:12px 14px}
-.pd-btn{flex:1;padding:8px;border-radius:6px;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-display);letter-spacing:.04em;transition:all 0.2s}
-.pd-btn-mapa{background:rgba(26,82,118,0.3);color:#5DADE2}
-.pd-btn-mapa:hover{background:rgba(26,82,118,0.5)}
+.pd-btn{flex:1;padding:8px;border-radius:6px;border:none;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-display);letter-spacing:.04em;transition:all 0.2s}
+.pd-btn-osm{background:rgba(26,82,118,0.3);color:#5DADE2}
+.pd-btn-osm:hover{background:rgba(26,82,118,0.5)}
 .pd-btn-editar{background:rgba(230,126,34,0.2);color:var(--naranja);display:none}
 .pd-btn-editar:hover{background:rgba(230,126,34,0.35)}
-.pd-btn-osm{background:rgba(255,255,255,0.06);color:var(--texto-muted)}
-.pd-btn-osm:hover{background:rgba(255,255,255,0.1)}
+.pd-btn-borrar{background:rgba(192,57,43,0.2);color:#EC7063;display:none}
+.pd-btn-borrar:hover{background:rgba(192,57,43,0.35)}
 
 /* BARRA ESTADO */
-#barra-estado{
-  position:absolute;bottom:16px;left:50%;transform:translateX(-50%);
-  background:var(--gris-panel);border:1px solid var(--gris-borde2);
-  border-radius:30px;padding:7px 18px;
-  box-shadow:0 4px 20px rgba(0,0,0,0.4);
-  z-index:900;display:flex;gap:14px;align-items:center;font-size:12px;white-space:nowrap;
-}
+#barra-estado{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:var(--gris-panel);border:1px solid var(--gris-borde2);border-radius:30px;padding:7px 18px;box-shadow:0 4px 20px rgba(0,0,0,0.4);z-index:900;display:flex;gap:14px;align-items:center;font-size:12px;white-space:nowrap}
 .be-item{display:flex;align-items:center;gap:5px;color:var(--texto-muted)}
 .be-num{font-weight:700;font-size:14px;font-family:var(--font-display);color:var(--naranja)}
 
 /* MODAL LOGIN */
-#modal-login{
-  position:fixed;inset:0;background:rgba(0,0,0,0.7);
-  z-index:9000;display:none;align-items:center;justify-content:center;
-  backdrop-filter:blur(4px);
-}
+#modal-login{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 #modal-login.visible{display:flex}
-.login-box{
-  background:var(--gris-panel);border:1px solid var(--gris-borde2);
-  border-radius:12px;padding:28px;width:340px;max-width:90vw;
-  box-shadow:0 20px 60px rgba(0,0,0,0.6);
-}
+.login-box{background:var(--gris-panel);border:1px solid var(--gris-borde2);border-radius:12px;padding:28px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative}
 .login-titulo{font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:.04em;margin-bottom:6px}
 .login-desc{font-size:13px;color:var(--texto-muted);margin-bottom:20px;line-height:1.4}
-.login-input{
-  width:100%;background:var(--gris-panel2);border:1px solid var(--gris-borde2);
-  border-radius:6px;color:var(--texto);padding:10px 12px;
-  font-family:var(--font-body);font-size:14px;margin-bottom:12px;
-}
+.login-input{width:100%;background:var(--gris-panel2);border:1px solid var(--gris-borde2);border-radius:6px;color:var(--texto);padding:10px 12px;font-family:var(--font-body);font-size:14px;margin-bottom:10px}
 .login-input:focus{outline:none;border-color:var(--naranja)}
 .login-input::placeholder{color:var(--texto-dim)}
-.login-btn{
-  width:100%;background:var(--naranja);border:none;color:white;
-  padding:11px;border-radius:6px;font-family:var(--font-display);
-  font-size:15px;font-weight:700;letter-spacing:.05em;cursor:pointer;
-  transition:background 0.2s;
-}
-.login-btn:hover{background:#D35400}
-.login-btn:disabled{background:#555;cursor:not-allowed}
+.login-btn-modal{width:100%;background:var(--naranja);border:none;color:white;padding:11px;border-radius:6px;font-family:var(--font-display);font-size:15px;font-weight:700;letter-spacing:.05em;cursor:pointer}
+.login-btn-modal:hover{background:#D35400}
+.login-btn-modal:disabled{background:#555;cursor:not-allowed}
 .login-msg{font-size:12px;color:var(--texto-muted);text-align:center;margin-top:10px;min-height:18px}
-.login-cerrar{background:none;border:none;color:var(--texto-muted);font-size:22px;cursor:pointer;float:right;margin-top:-4px}
+.login-cerrar{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--texto-muted);font-size:22px;cursor:pointer}
 
-/* LIGHTBOX FOTOS */
-#lightbox{
-  position:fixed;inset:0;background:rgba(0,0,0,0.92);
-  z-index:9999;display:none;align-items:center;justify-content:center;
-  cursor:zoom-out;
-}
+/* MODAL FORMULARIO */
+#modal-form{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;display:none;align-items:flex-start;justify-content:center;backdrop-filter:blur(4px);overflow-y:auto;padding:20px}
+#modal-form.visible{display:flex}
+.form-box{background:var(--gris-panel);border:1px solid var(--gris-borde2);border-radius:12px;padding:24px;width:560px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative;margin:auto}
+.form-titulo{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:.04em;margin-bottom:16px;padding-right:30px}
+.form-cerrar{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--texto-muted);font-size:22px;cursor:pointer}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-campo{display:flex;flex-direction:column;gap:4px}
+.form-campo.full{grid-column:span 2}
+.form-label{font-size:11px;font-weight:600;color:var(--texto-muted);letter-spacing:.06em;text-transform:uppercase}
+.form-input{background:var(--gris-panel2);border:1px solid var(--gris-borde2);border-radius:6px;color:var(--texto);padding:8px 10px;font-family:var(--font-body);font-size:13px;width:100%}
+.form-input:focus{outline:none;border-color:var(--naranja)}
+.form-input::placeholder{color:var(--texto-dim)}
+.form-textarea{resize:vertical;min-height:65px}
+.form-select{background:var(--gris-panel2);border:1px solid var(--gris-borde2);border-radius:6px;color:var(--texto);padding:8px 10px;font-family:var(--font-body);font-size:13px;width:100%}
+.form-divider{grid-column:span 2;border:none;border-top:1px solid var(--gris-borde);margin:4px 0}
+.form-acciones{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.btn-guardar{background:var(--naranja);color:white;border:none;padding:10px 20px;border-radius:6px;font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:.04em;cursor:pointer}
+.btn-guardar:disabled{background:#555;cursor:not-allowed}
+.btn-cancelar{background:var(--gris-borde2);color:var(--texto-muted);border:none;padding:10px 20px;border-radius:6px;font-family:var(--font-display);font-size:14px;cursor:pointer}
+
+/* LIGHTBOX */
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:none;align-items:center;justify-content:center;cursor:zoom-out}
 #lightbox.visible{display:flex}
 #lightbox img{max-width:95vw;max-height:95vh;object-fit:contain;border-radius:4px}
 
-/* MARCADOR MAPA */
-.marcador-sotano{
-  width:32px;height:32px;border-radius:50%;
-  background:var(--naranja-dark);border:2px solid var(--naranja);
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer;
-  transition:transform 0.2s;
-}
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--gris-panel);color:var(--texto);padding:9px 18px;border-radius:30px;font-size:13px;z-index:9999;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.4);border:1px solid var(--gris-borde2)}
+
+.marcador-sotano{width:32px;height:32px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer;transition:transform 0.2s}
 .marcador-sotano:hover{transform:scale(1.2)}
-.marcador-sotano.activo{transform:scale(1.3);border-color:white}
+.marcador-sotano.activo{transform:scale(1.3);border-color:var(--naranja)}
+.m-normal{background:var(--naranja-dark)}
+.m-gas{background:#7B241C}
 
-/* TOGGLE SIDEBAR */
-#btn-toggle{
-  position:absolute;top:50%;left:0;transform:translateY(-50%);
-  z-index:950;background:var(--naranja);border:none;
-  border-radius:0 8px 8px 0;width:20px;height:56px;
-  cursor:pointer;color:white;font-size:12px;
-  box-shadow:3px 0 8px rgba(0,0,0,0.3);transition:background 0.2s;
-}
-#btn-toggle:hover{background:#D35400}
-.sidebar.oculto{width:0;border:none;overflow:hidden}
-
-/* RESPONSIVE */
 @media(max-width:600px){
   .sidebar{width:100%;height:200px;border-right:none;border-bottom:1px solid var(--gris-borde)}
   .app-body{flex-direction:column}
-  #panel-detalle{width:calc(100% - 24px);top:8px;right:12px}
+  #panel-detalle{width:calc(100% - 24px);right:12px}
   #btn-toggle{display:none}
 }
-
-/* LEAFLET DARK */
-.leaflet-tile{filter:brightness(0.85) saturate(0.9)}
 </style>
 </head>
 <body>
@@ -268,15 +185,13 @@ header{
   <a class="btn-back" href="../index.html">← Portal</a>
   <div class="header-titulo">🅿️ Sótanos <span>& Garajes</span></div>
   <div class="header-right">
-    <span class="usuario-badge" id="usuario-badge">●</span>
-    <button class="btn-nuevo" id="btn-nuevo" onclick="abrirFormNuevo()">+ Añadir</button>
-    <button class="btn-login" id="btn-login" onclick="abrirLogin()">🔐 Acceso equipo</button>
+    <span class="usuario-badge" id="usuario-badge"></span>
+    <button class="btn-nuevo-h" id="btn-nuevo" onclick="abrirFormNuevo()">+ Añadir sótano</button>
+    <button class="btn-login-h" id="btn-login" onclick="abrirLogin()">🔐 Acceso</button>
   </div>
 </header>
 
 <div class="app-body">
-
-  <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
     <div class="sidebar-search">
       <input type="text" id="busqueda" placeholder="Buscar sótano..." oninput="filtrar()">
@@ -284,12 +199,10 @@ header{
     <div class="lista-sotanos" id="lista"></div>
   </div>
 
-  <!-- MAPA -->
   <div class="mapa-wrapper">
     <button id="btn-toggle" onclick="toggleSidebar()">◀</button>
     <div id="mapa"></div>
 
-    <!-- PANEL DETALLE -->
     <div id="panel-detalle" style="display:flex">
       <div class="pd-header">
         <span class="pd-titulo" id="pd-titulo">Sótano</span>
@@ -299,11 +212,11 @@ header{
     </div>
 
     <div id="barra-estado">
-      <div class="be-item"><span class="be-num" id="be-total">0</span> sótanos</div>
+      <div class="be-item"><span class="be-num" id="be-total">0</span>sótanos</div>
       <span style="color:var(--gris-borde2)">|</span>
-      <div class="be-item"><span class="be-num" style="color:#58D68D" id="be-vent">0</span> ventilados</div>
+      <div class="be-item"><span class="be-num" style="color:#58D68D" id="be-vent">0</span>ventilados</div>
       <span style="color:var(--gris-borde2)">|</span>
-      <div class="be-item"><span class="be-num" style="color:#EC7063" id="be-gas">0</span> gases</div>
+      <div class="be-item"><span class="be-num" style="color:#EC7063" id="be-gas">0</span>con gases</div>
     </div>
   </div>
 </div>
@@ -312,12 +225,101 @@ header{
 <div id="modal-login">
   <div class="login-box">
     <button class="login-cerrar" onclick="cerrarLogin()">×</button>
-    <div class="login-titulo">🔐 Acceso Equipo</div>
-    <div class="login-desc">Introduce tu email y contraseña de administrador.</div>
+    <div class="login-titulo">🔐 Acceso Admin</div>
+    <div class="login-desc">Solo el administrador puede modificar los datos.</div>
     <input class="login-input" type="email" id="login-email" placeholder="tu@email.com">
-  <input class="login-input" type="password" id="login-password" placeholder="Contraseña">
-    <button class="login-btn" id="login-btn" onclick="enviarMagicLink()">Acceder</button>
+    <input class="login-input" type="password" id="login-password" placeholder="Contraseña">
+    <button class="login-btn-modal" id="login-btn" onclick="hacerLogin()">Acceder</button>
     <div class="login-msg" id="login-msg"></div>
+  </div>
+</div>
+
+<!-- MODAL FORMULARIO -->
+<div id="modal-form">
+  <div class="form-box">
+    <button class="form-cerrar" onclick="cerrarForm()">×</button>
+    <div class="form-titulo" id="form-titulo">Añadir sótano</div>
+    <div class="form-grid">
+      <div class="form-campo full">
+        <label class="form-label">Dirección *</label>
+        <input class="form-input" id="f-direccion" placeholder="C/ Ejemplo nº 12">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Nº Ficha</label>
+        <input class="form-input" id="f-ficha" placeholder="7">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Tipo inmueble</label>
+        <select class="form-select" id="f-tipo">
+          <option value="Residencial">Residencial</option>
+          <option value="Comercial">Comercial</option>
+          <option value="Industrial">Industrial</option>
+          <option value="Mixto">Mixto</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Latitud</label>
+        <input class="form-input" id="f-lat" placeholder="37.1580" type="number" step="0.000001">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Longitud</label>
+        <input class="form-input" id="f-lon" placeholder="-5.9250" type="number" step="0.000001">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Contacto</label>
+        <input class="form-input" id="f-contacto" placeholder="Nombre propietario / encargado">
+      </div>
+      <hr class="form-divider">
+      <div class="form-campo">
+        <label class="form-label">Nº de accesos</label>
+        <input class="form-input" id="f-num-accesos" type="number" placeholder="2" min="1" max="10">
+      </div>
+      <div class="form-campo full">
+        <label class="form-label">Accesos (uno por línea)</label>
+        <textarea class="form-input form-textarea" id="f-accesos" placeholder="Por la puerta del garaje&#10;Escalera interior portal 1&#10;Acceso peatonal C/ lateral"></textarea>
+      </div>
+      <hr class="form-divider">
+      <div class="form-campo">
+        <label class="form-label">Ventilación</label>
+        <select class="form-select" id="f-ventilacion">
+          <option value="true">Sí</option>
+          <option value="false">No</option>
+        </select>
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Iluminación</label>
+        <select class="form-select" id="f-iluminacion">
+          <option value="Adecuada">Adecuada</option>
+          <option value="Deficiente">Deficiente</option>
+          <option value="Sin iluminación">Sin iluminación</option>
+        </select>
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Humedad / Gases</label>
+        <select class="form-select" id="f-gases">
+          <option value="false">No</option>
+          <option value="true">Sí detectados</option>
+        </select>
+      </div>
+      <div class="form-campo full">
+        <label class="form-label">Observaciones</label>
+        <textarea class="form-input form-textarea" id="f-obs" placeholder="Extintores, cámaras, sistema contra incendios..."></textarea>
+      </div>
+      <hr class="form-divider">
+      <div class="form-campo">
+        <label class="form-label">Inspector</label>
+        <input class="form-input" id="f-inspector" placeholder="B-31" value="B-31">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Fecha inspección</label>
+        <input class="form-input" id="f-fecha" placeholder="DD/MM/AAAA">
+      </div>
+    </div>
+    <div class="form-acciones">
+      <button class="btn-cancelar" onclick="cerrarForm()">Cancelar</button>
+      <button class="btn-guardar" id="btn-guardar-form" onclick="guardarSotano()">💾 Guardar</button>
+    </div>
   </div>
 </div>
 
@@ -326,121 +328,26 @@ header{
   <img id="lightbox-img" src="" alt="">
 </div>
 
+<div id="toast"></div>
+<input type="file" id="input-foto" accept="image/*" multiple style="display:none">
+<input type="file" id="input-doc" accept=".pdf,.doc,.docx" style="display:none">
+
 <script>
-// ============================================
-// SUPABASE
-// ============================================
-const SB_URL = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
-let TOKEN = null;
-let USUARIO = null;
-
-const H = (extra={}) => ({
-  'Content-Type':'application/json',
-  'apikey':SB_KEY,
-  'Authorization':'Bearer '+(TOKEN||SB_KEY),
-  ...extra
-});
-
-// ============================================
-// DATOS INICIALES (de las fichas PDF)
-// ============================================
-const SOTANOS_SEED = [
-  {
-    ficha_num:'1', direccion:'Calle Mulhacén, 22',
-    lat:37.1610704456904, lon:-5.9243906583109665,
-    tipo_inmueble:'Residencial', contacto:null,
-    num_accesos:2,
-    acceso_1:'Por la puerta del garaje',
-    acceso_2:'Por la escalera colindante al garaje',
-    acceso_3:null,acceso_4:null,acceso_5:null,
-    ventilacion:false, iluminacion:'Adecuada', humedad_gases:true,
-    observaciones:'Fuerte olor a hidrocarburos',
-    inspector:'B-31', fecha_inspeccion:'14/08/2025',
-    foto_fachada:null, foto_acceso:null, foto_interior:null
-  },
-  {
-    ficha_num:'2', direccion:'Calle Felipe Cortínez Murube, 8',
-    lat:37.15858725345885, lon:-5.925854377299145,
-    tipo_inmueble:'Residencial', contacto:null,
-    num_accesos:3,
-    acceso_1:'Puerta Garaje',
-    acceso_2:'Ascensor 8-A',
-    acceso_3:'Ascensor 8-B',
-    acceso_4:null,acceso_5:null,
-    ventilacion:true, iluminacion:'Adecuada', humedad_gases:false,
-    observaciones:'Sistema contra incendios instalado',
-    inspector:'B-31', fecha_inspeccion:'28/08/2025',
-    foto_fachada:null, foto_acceso:null, foto_interior:null
-  },
-  {
-    ficha_num:'3', direccion:'Avenida de Sevilla, 54',
-    lat:37.163948453251066, lon:-5.924228712078699,
-    tipo_inmueble:'Residencial', contacto:'Manolo Cerezuela',
-    num_accesos:1,
-    acceso_1:'Por la puerta del garaje',
-    acceso_2:null,acceso_3:null,acceso_4:null,acceso_5:null,
-    ventilacion:true, iluminacion:'Adecuada', humedad_gases:false,
-    observaciones:'Cámaras de seguridad, extintores',
-    inspector:'B-31', fecha_inspeccion:'18/08/2025',
-    foto_fachada:null, foto_acceso:null, foto_interior:null
-  },
-  {
-    ficha_num:'4', direccion:'Calle Federico Bustillo, 2',
-    lat:37.16196673685225, lon:-5.926049094655012,
-    tipo_inmueble:'Residencial', contacto:null,
-    num_accesos:5,
-    acceso_1:'Puerta Garaje',
-    acceso_2:'Portal 1', acceso_3:'Portal 2',
-    acceso_4:'Portal 3', acceso_5:'Portal 4',
-    ventilacion:true, iluminacion:'Adecuada', humedad_gases:false,
-    observaciones:'Cada portal tiene entrada directa al garaje',
-    inspector:'B-31', fecha_inspeccion:'28/08/2025',
-    foto_fachada:null, foto_acceso:null, foto_interior:null
-  },
-  {
-    ficha_num:null, direccion:'Calle Argensola, 12',
-    lat:37.16680598131592, lon:-5.924727733805738,
-    tipo_inmueble:'Residencial', contacto:'Witan',
-    num_accesos:2,
-    acceso_1:'Puerta Garaje',
-    acceso_2:'Puerta peatonal por vivienda',
-    acceso_3:null,acceso_4:null,acceso_5:null,
-    ventilacion:false, iluminacion:'Adecuada', humedad_gases:false,
-    observaciones:'1 extintor. Sin ventilación',
-    inspector:'B-31', fecha_inspeccion:'22/09/2025',
-    foto_fachada:null, foto_acceso:null, foto_interior:null
-  },
-  {
-    ficha_num:null, direccion:'Calle Jacinto Benavente, 15',
-    lat:37.16046786944039, lon:-5.922198805010128,
-    tipo_inmueble:'Residencial', contacto:null,
-    num_accesos:2,
-    acceso_1:'Entrada garaje',
-    acceso_2:'Entrada peatonal — se desconoce',
-    acceso_3:null,acceso_4:null,acceso_5:null,
-    ventilacion:true, iluminacion:'Adecuada', humedad_gases:true,
-    observaciones:'⚠️ No hay hidrantes cercanos. Presencia de humedad/gases.',
-    inspector:'B-31', fecha_inspeccion:'06/10/2025',
-    foto_fachada:null, foto_acceso:null, foto_interior:null
-  }
-];
-
-// ============================================
-// ESTADO
-// ============================================
-let sotanos = [];
-let seleccionado = null;
-let marcadores = {};
+const SB = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
+let TOKEN = null, USUARIO = null;
+let sotanos = [], marcadores = {};
+let seleccionado = null, editandoId = null;
+let subiendoParaId = null, subiendoTipoDoc = null;
 let sidebarOculto = false;
+
+const H = (x={})=>({'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+(TOKEN||KEY),...x});
 
 // ============================================
 // MAPA
 // ============================================
 const mapa = L.map('mapa').setView([37.162,-5.924],15);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-  maxZoom:19,attribution:'© OpenStreetMap'
-}).addTo(mapa);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(mapa);
 L.control.layers({
   'Callejero':L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}),
   'Satélite':L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19})
@@ -449,9 +356,8 @@ setTimeout(()=>mapa.invalidateSize(),400);
 window.addEventListener('resize',()=>mapa.invalidateSize());
 
 function crearMarcador(s){
-  const alerta = s.humedad_gases ? '⚠️' : '🅿️';
   const icon = L.divIcon({
-    html:`<div class="marcador-sotano" title="${s.direccion}">${alerta}</div>`,
+    html:`<div class="marcador-sotano ${s.humedad_gases?'m-gas':'m-normal'}" title="${s.direccion}">${s.humedad_gases?'⚠️':'🅿️'}</div>`,
     iconSize:[32,32],iconAnchor:[16,16],className:''
   });
   const m = L.marker([s.lat,s.lon],{icon}).addTo(mapa);
@@ -460,64 +366,34 @@ function crearMarcador(s){
 }
 
 // ============================================
-// CARGA DE DATOS
+// DATOS
 // ============================================
 async function cargarDatos(){
   try {
-    const r = await fetch(`${SB_URL}/rest/v1/sotanos?select=*&order=ficha_num.asc,created_at.asc`,{headers:H()});
-    if(r.ok){
-      const data = await r.json();
-      if(data.length > 0){
-        sotanos = data;
-      } else {
-        // Primera vez: sembrar datos
-        await sembrarDatos();
-      }
-    } else { throw new Error('error'); }
-  } catch(e){
-    // Sin conexión: usar seed local
-    sotanos = SOTANOS_SEED.map((s,i)=>({...s,id:'local-'+i}));
-  }
+    const r = await fetch(`${SB}/rest/v1/sotanos?select=*&order=ficha_num.asc,created_at.asc`,{headers:H()});
+    if(!r.ok) throw new Error();
+    sotanos = await r.json();
+  } catch(e){ sotanos = []; }
   renderizarTodo();
 }
 
-async function sembrarDatos(){
-  try {
-    const r = await fetch(`${SB_URL}/rest/v1/sotanos`,{
-      method:'POST',
-      headers:{...H(),'Prefer':'return=representation'},
-      body:JSON.stringify(SOTANOS_SEED)
-    });
-    if(r.ok) sotanos = await r.json();
-    else sotanos = SOTANOS_SEED.map((s,i)=>({...s,id:'local-'+i}));
-  } catch(e){
-    sotanos = SOTANOS_SEED.map((s,i)=>({...s,id:'local-'+i}));
-  }
-}
-
-// ============================================
-// RENDER
-// ============================================
 function renderizarTodo(){
   Object.values(marcadores).forEach(m=>mapa.removeLayer(m));
   marcadores = {};
-  sotanos.forEach(s=>{
-    marcadores[s.id] = crearMarcador(s);
-  });
+  sotanos.forEach(s=>{ if(s.lat&&s.lon) marcadores[s.id]=crearMarcador(s); });
   renderizarLista(sotanos);
   actualizarBarra(sotanos);
   if(sotanos.length>0) mostrarDetalle(sotanos[0].id);
 }
 
 function renderizarLista(lista){
-  const el = document.getElementById('lista');
-  el.innerHTML = lista.map(s=>`
+  document.getElementById('lista').innerHTML = lista.map(s=>`
     <div class="sotano-card${seleccionado===s.id?' activo':''}" onclick="mostrarDetalle('${s.id}')">
       <div class="sc-dir">${s.ficha_num?`<span style="color:var(--naranja);font-size:11px">FICHA ${s.ficha_num} · </span>`:''}${s.direccion}</div>
       <div class="sc-chips">
         ${s.ventilacion?'<span class="sc-chip chip-ok">Ventilado</span>':'<span class="sc-chip chip-alert">Sin ventilación</span>'}
         ${s.humedad_gases?'<span class="sc-chip chip-warn">⚠ Gases</span>':''}
-        <span class="sc-chip chip-gris">${s.num_accesos} acceso${s.num_accesos!==1?'s':''}</span>
+        <span class="sc-chip chip-gris">${s.num_accesos||1} acceso${(s.num_accesos||1)!==1?'s':''}</span>
         ${s.contacto?`<span class="sc-chip chip-gris">📞 ${s.contacto}</span>`:''}
       </div>
       <div class="sc-fecha">Inspector: ${s.inspector||'—'} · ${s.fecha_inspeccion||'—'}</div>
@@ -527,25 +403,20 @@ function renderizarLista(lista){
 
 function filtrar(){
   const q = document.getElementById('busqueda').value.toLowerCase();
-  const filtrados = q ? sotanos.filter(s=>
-    (s.direccion||'').toLowerCase().includes(q) ||
-    (s.observaciones||'').toLowerCase().includes(q) ||
-    (s.contacto||'').toLowerCase().includes(q)
-  ) : sotanos;
-  renderizarLista(filtrados);
-  // Marcadores
+  const f = q ? sotanos.filter(s=>[(s.direccion||''),(s.observaciones||''),(s.contacto||'')].some(x=>x.toLowerCase().includes(q))) : sotanos;
+  renderizarLista(f);
   Object.entries(marcadores).forEach(([id,m])=>{
-    const visible = filtrados.some(s=>s.id===id);
-    if(visible && !mapa.hasLayer(m)) m.addTo(mapa);
-    else if(!visible && mapa.hasLayer(m)) mapa.removeLayer(m);
+    const vis = f.some(s=>s.id===id);
+    if(vis&&!mapa.hasLayer(m)) m.addTo(mapa);
+    else if(!vis&&mapa.hasLayer(m)) mapa.removeLayer(m);
   });
-  actualizarBarra(filtrados);
+  actualizarBarra(f);
 }
 
 function actualizarBarra(lista){
-  document.getElementById('be-total').textContent = lista.length;
-  document.getElementById('be-vent').textContent = lista.filter(s=>s.ventilacion).length;
-  document.getElementById('be-gas').textContent = lista.filter(s=>s.humedad_gases).length;
+  document.getElementById('be-total').textContent=lista.length;
+  document.getElementById('be-vent').textContent=lista.filter(s=>s.ventilacion).length;
+  document.getElementById('be-gas').textContent=lista.filter(s=>s.humedad_gases).length;
 }
 
 // ============================================
@@ -555,78 +426,85 @@ function mostrarDetalle(id){
   const s = sotanos.find(x=>x.id===id);
   if(!s) return;
   seleccionado = id;
-
-  // Resaltar marcador
   Object.entries(marcadores).forEach(([mid,m])=>{
     m.getElement()?.querySelector('.marcador-sotano')?.classList.toggle('activo',mid===id);
   });
-
-  // Mover mapa si es necesario
-  if(!mapa.getBounds().contains([s.lat,s.lon])){
+  if(s.lat&&s.lon&&!mapa.getBounds().contains([s.lat,s.lon])){
     mapa.flyTo([s.lat,s.lon],16,{animate:true,duration:0.8});
   }
 
-  document.getElementById('pd-titulo').textContent = s.direccion;
+  document.getElementById('pd-titulo').textContent=s.direccion;
   document.getElementById('panel-detalle').style.display='flex';
 
-  // Galería fotos
-  const fotos = [s.foto_fachada,s.foto_acceso,s.foto_interior,s.foto_extra_1,s.foto_extra_2].filter(Boolean);
-  const galeriaHtml = fotos.length > 0
-    ? `<div class="galeria">${fotos.map(f=>`<img src="${f}" loading="lazy" onclick="abrirLightbox('${f}')" alt="foto">`).join('')}</div>`
-    : `<div style="background:var(--gris-panel2);padding:20px;text-align:center;color:var(--texto-dim);font-size:13px">
-        📷 Sin fotografías cargadas aún${USUARIO?`<br><button onclick="abrirSubirFoto('${s.id}')" style="margin-top:8px;background:rgba(230,126,34,0.2);border:1px solid rgba(230,126,34,0.3);color:var(--naranja);padding:5px 12px;border-radius:4px;cursor:pointer;font-size:11px">Añadir fotos</button>`:''}
-      </div>`;
-
-  // Accesos
+  const fotos = Array.isArray(s.fotos)?s.fotos:[];
+  const docs = Array.isArray(s.documentos)?s.documentos:[];
   const accesosArr = [s.acceso_1,s.acceso_2,s.acceso_3,s.acceso_4,s.acceso_5].filter(Boolean);
-  const accesosHtml = accesosArr.map((a,i)=>`
-    <div class="acceso-item"><div class="acceso-num">${i+1}</div><span>${a}</span></div>
-  `).join('');
 
-  // Condiciones
-  const condColor = (v,inv=false)=>{
-    const ok = inv ? !v : v;
-    return ok ? 'chip-ok' : 'chip-alert';
-  };
-
-  document.getElementById('pd-body').innerHTML = `
-    ${galeriaHtml}
-
-    <div class="pd-seccion">
-      <div class="pd-sec-titulo">Información general</div>
-      ${s.ficha_num?`<div class="pd-fila"><span class="pd-clave">Nº ficha</span><span class="pd-valor">${s.ficha_num}</span></div>`:''}
-      <div class="pd-fila"><span class="pd-clave">Tipo</span><span class="pd-valor">${s.tipo_inmueble||'—'}</span></div>
-      <div class="pd-fila"><span class="pd-clave">Contacto</span><span class="pd-valor">${s.contacto||'No registrado'}</span></div>
-      <div class="pd-fila"><span class="pd-clave">Coordenadas</span><span class="pd-valor">${s.lat.toFixed(5)}, ${s.lon.toFixed(5)}</span></div>
-      <div class="pd-fila"><span class="pd-clave">Inspector</span><span class="pd-valor">${s.inspector||'—'} · ${s.fecha_inspeccion||'—'}</span></div>
-    </div>
-
-    <div class="pd-seccion">
-      <div class="pd-sec-titulo">Accesos (${accesosArr.length})</div>
-      ${accesosHtml}
-    </div>
-
-    <div class="pd-seccion">
-      <div class="pd-sec-titulo">Condiciones</div>
-      <div class="condicion-fila"><span class="pd-clave">Ventilación</span><span class="cond-badge ${condColor(s.ventilacion)}">${s.ventilacion?'✓ Sí':'✗ No'}</span></div>
-      <div class="condicion-fila"><span class="pd-clave">Iluminación</span><span class="cond-badge chip-ok">${s.iluminacion||'Adecuada'}</span></div>
-      <div class="condicion-fila"><span class="pd-clave">Humedad / Gases</span><span class="cond-badge ${s.humedad_gases?'chip-alert':'chip-ok'}">${s.humedad_gases?'⚠ Detectados':'✓ No'}</span></div>
-      ${s.observaciones?`<div style="margin-top:8px;background:${s.humedad_gases?'rgba(192,57,43,0.1)':'rgba(255,255,255,0.04)'};border:1px solid ${s.humedad_gases?'rgba(192,57,43,0.3)':'var(--gris-borde)'};border-radius:6px;padding:9px 10px;font-size:12px;color:var(--texto);line-height:1.4">${s.observaciones}</div>`:''}
-    </div>
-
-    <div class="pd-acciones">
-      <button class="pd-btn pd-btn-mapa" onclick="verEnOSM('${id}')">🗺 Ver en OSM</button>
-      <button class="pd-btn pd-btn-editar" id="btn-editar-det" onclick="editarSotano('${id}')">✏️ Editar</button>
-      <button class="pd-btn pd-btn-osm" onclick="copiarCoords('${id}')">📋 Coords</button>
+  const galeriaHTML = `
+    <div class="galeria">
+      ${fotos.map(f=>`
+        <div class="galeria-foto">
+          <img src="${f.url}" loading="lazy" onclick="abrirLightbox('${f.url}')">
+          <button class="btn-del-foto${USUARIO?' admin':''}" onclick="eliminarFoto('${id}','${f.url}')">×</button>
+        </div>
+      `).join('')}
+      ${USUARIO?`<button class="btn-add-foto" onclick="iniciarFoto('${id}')">📷<br>Añadir foto</button>`:''}
+      ${fotos.length===0&&!USUARIO?`<div class="sin-fotos">Sin fotografías registradas</div>`:''}
     </div>
   `;
 
-  // Mostrar botón editar solo si hay sesión
-  if(USUARIO) document.getElementById('btn-editar-det').style.display='block';
+  const docsHTML = docs.length>0||USUARIO ? `
+    <div class="pd-seccion">
+      <div class="pd-sec-titulo">📄 Documentos</div>
+      ${docs.map(d=>`
+        <div class="doc-item">
+          <span class="doc-nombre">📄 ${d.nombre||'Documento'}</span>
+          <div class="doc-acciones-small">
+            <button class="btn-doc-small btn-ver-s" onclick="window.open('${d.url}','_blank')">Ver</button>
+            ${USUARIO?`<button class="btn-doc-small btn-del-s" onclick="eliminarDoc('${id}','${d.url}')">×</button>`:''}
+          </div>
+        </div>
+      `).join('')}
+      ${USUARIO?`<button class="btn-add-doc" onclick="iniciarDoc('${id}')">📎 Añadir documento (PDF, plano...)</button>`:''}
+    </div>
+  ` : '';
 
+  document.getElementById('pd-body').innerHTML = `
+    ${galeriaHTML}
+    <div class="pd-seccion">
+      <div class="pd-sec-titulo">Información general</div>
+      ${s.ficha_num?`<div class="pd-fila"><span class="pd-clave">Nº ficha</span><span class="pd-valor">${s.ficha_num}</span></div>`:''}
+      <div class="pd-fila"><span class="pd-clave">Tipo</span><span class="pd-valor">${s.tipo_inmueble||'Residencial'}</span></div>
+      <div class="pd-fila"><span class="pd-clave">Contacto</span><span class="pd-valor">${s.contacto||'No registrado'}</span></div>
+      <div class="pd-fila"><span class="pd-clave">Coordenadas</span><span class="pd-valor">${s.lat?s.lat.toFixed(5)+', '+s.lon.toFixed(5):'—'}</span></div>
+      <div class="pd-fila"><span class="pd-clave">Inspector</span><span class="pd-valor">${s.inspector||'—'} · ${s.fecha_inspeccion||'—'}</span></div>
+    </div>
+    <div class="pd-seccion">
+      <div class="pd-sec-titulo">Accesos (${accesosArr.length})</div>
+      ${accesosArr.map((a,i)=>`<div class="acceso-item"><div class="acceso-num">${i+1}</div><span>${a}</span></div>`).join('')}
+    </div>
+    <div class="pd-seccion">
+      <div class="pd-sec-titulo">Condiciones</div>
+      <div class="cond-fila"><span class="pd-clave">Ventilación</span><span class="cond-badge ${s.ventilacion?'chip-ok':'chip-alert'}">${s.ventilacion?'✓ Sí':'✗ No'}</span></div>
+      <div class="cond-fila"><span class="pd-clave">Iluminación</span><span class="cond-badge chip-ok">${s.iluminacion||'Adecuada'}</span></div>
+      <div class="cond-fila"><span class="pd-clave">Humedad / Gases</span><span class="cond-badge ${s.humedad_gases?'chip-alert':'chip-ok'}">${s.humedad_gases?'⚠ Detectados':'✓ No'}</span></div>
+      ${s.observaciones?`<div class="${s.humedad_gases?'obs-box':'obs-box normal'}">${s.observaciones}</div>`:''}
+    </div>
+    ${docsHTML}
+    <div class="pd-acciones">
+      <button class="pd-btn pd-btn-osm" onclick="verOSM('${id}')">🗺 OSM</button>
+      <button class="pd-btn pd-btn-editar" id="pd-editar" onclick="abrirFormEditar('${id}')">✏️ Editar</button>
+      <button class="pd-btn pd-btn-borrar" id="pd-borrar" onclick="borrarSotano('${id}')">🗑 Borrar</button>
+    </div>
+  `;
+
+  if(USUARIO){
+    document.getElementById('pd-editar').style.display='block';
+    document.getElementById('pd-borrar').style.display='block';
+  }
   renderizarLista(sotanos.filter(s=>{
-    const q = document.getElementById('busqueda').value.toLowerCase();
-    return !q || (s.direccion||'').toLowerCase().includes(q);
+    const q=document.getElementById('busqueda').value.toLowerCase();
+    return !q||(s.direccion||'').toLowerCase().includes(q);
   }));
 }
 
@@ -635,117 +513,269 @@ function cerrarDetalle(){
   seleccionado=null;
 }
 
-function verEnOSM(id){
-  const s = sotanos.find(x=>x.id===id);
-  if(s) window.open(`https://www.openstreetmap.org/?mlat=${s.lat}&mlon=${s.lon}&zoom=18`,'_blank');
+function verOSM(id){
+  const s=sotanos.find(x=>x.id===id);
+  if(s&&s.lat) window.open(`https://www.openstreetmap.org/?mlat=${s.lat}&mlon=${s.lon}&zoom=18`,'_blank');
 }
 
-function copiarCoords(id){
-  const s = sotanos.find(x=>x.id===id);
-  if(s){
-    navigator.clipboard?.writeText(`${s.lat}, ${s.lon}`);
-    mostrarToast('📋 Coordenadas copiadas');
-  }
-}
-
-// ============================================
-// AUTH — MAGIC LINK
-// ============================================
-async function enviarMagicLink(){
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  if(!email||!password){ document.getElementById('login-msg').textContent='Rellena email y contraseña'; return; }
-  const btn = document.getElementById('login-btn');
-  btn.disabled=true; btn.textContent='Accediendo...';
+async function borrarSotano(id){
+  if(!confirm('¿Eliminar este sótano? Esta acción no se puede deshacer.')) return;
   try {
-    const r = await fetch(`${SB_URL}/auth/v1/token?grant_type=password`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SB_KEY},
-      body:JSON.stringify({email,password})
-    });
-    const data = await r.json();
-    if(r.ok && data.access_token){
-      TOKEN = data.access_token;
-      USUARIO = email;
-      sessionStorage.setItem('sb_token',TOKEN);
-      sessionStorage.setItem('sb_user',USUARIO);
-      mostrarUsuario();
-      cerrarLogin();
-    } else {
-      document.getElementById('login-msg').style.color='#EC7063';
-      document.getElementById('login-msg').textContent='Email o contraseña incorrectos';
-    }
-  } catch(e){
-    document.getElementById('login-msg').textContent='Error de conexión';
-  }
-  btn.disabled=false; btn.textContent='Acceder';
+    await fetch(`${SB}/rest/v1/sotanos?id=eq.${id}`,{method:'DELETE',headers:H()});
+    sotanos=sotanos.filter(s=>s.id!==id);
+    if(marcadores[id]){mapa.removeLayer(marcadores[id]);delete marcadores[id];}
+    cerrarDetalle();
+    renderizarLista(sotanos);
+    actualizarBarra(sotanos);
+    mostrarToast('🗑 Sótano eliminado');
+  } catch(e){mostrarToast('❌ Error al eliminar');}
 }
-
-// Detectar token en URL (redirect de magic link)
-function detectarSesion(){
-  const token = sessionStorage.getItem('sb_token');
-  const user = sessionStorage.getItem('sb_user');
-  if(token && user){
-    TOKEN = token;
-    USUARIO = user;
-    mostrarUsuario();
-  }
-}
-
-function mostrarUsuario(){
-  document.getElementById('usuario-badge').textContent = '● '+USUARIO;
-  document.getElementById('usuario-badge').style.display='inline-block';
-  document.getElementById('btn-login').style.display='none';
-  document.getElementById('btn-nuevo').style.display='inline-block';
-  // Actualizar panel detalle si está abierto
-  if(seleccionado) mostrarDetalle(seleccionado);
-}
-
-function abrirLogin(){ document.getElementById('modal-login').classList.add('visible') }
-function cerrarLogin(){ document.getElementById('modal-login').classList.remove('visible') }
 
 // ============================================
-// FORMULARIO NUEVO/EDITAR (básico)
+// FOTOS
+// ============================================
+function iniciarFoto(id){subiendoParaId=id;document.getElementById('input-foto').click();}
+
+document.getElementById('input-foto').addEventListener('change',async function(){
+  const files=Array.from(this.files);if(!files.length)return;
+  mostrarToast('📤 Subiendo fotos...',10000);
+  const s=sotanos.find(x=>x.id===subiendoParaId);
+  const fotos=Array.isArray(s.fotos)?[...s.fotos]:[];
+  for(const file of files){
+    const ext=file.name.split('.').pop();
+    const path=`${subiendoParaId}/${Date.now()}.${ext}`;
+    try {
+      const r=await fetch(`${SB}/storage/v1/object/sotanos-fotos/${path}`,{
+        method:'POST',headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':file.type},body:file
+      });
+      if(r.ok) fotos.push({url:`${SB}/storage/v1/object/public/sotanos-fotos/${path}`,path});
+    }catch(e){}
+  }
+  await patchSotano(subiendoParaId,{fotos});
+  mostrarToast('✅ Fotos subidas');
+  mostrarDetalle(subiendoParaId);
+  this.value='';
+});
+
+async function eliminarFoto(id,url){
+  if(!confirm('¿Eliminar esta foto?'))return;
+  const s=sotanos.find(x=>x.id===id);
+  const fotos=(s.fotos||[]).filter(f=>f.url!==url);
+  await patchSotano(id,{fotos});
+  mostrarDetalle(id);mostrarToast('🗑 Foto eliminada');
+}
+
+// ============================================
+// DOCUMENTOS
+// ============================================
+function iniciarDoc(id){subiendoParaId=id;document.getElementById('input-doc').click();}
+
+document.getElementById('input-doc').addEventListener('change',async function(){
+  const file=this.files[0];if(!file)return;
+  mostrarToast('📤 Subiendo documento...',10000);
+  const ext=file.name.split('.').pop();
+  const path=`${subiendoParaId}/${Date.now()}.${ext}`;
+  try {
+    const r=await fetch(`${SB}/storage/v1/object/sotanos-fotos/${path}`,{
+      method:'POST',headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':file.type},body:file
+    });
+    if(r.ok){
+      const url=`${SB}/storage/v1/object/public/sotanos-fotos/${path}`;
+      const s=sotanos.find(x=>x.id===subiendoParaId);
+      const docs=Array.isArray(s.documentos)?[...s.documentos]:[];
+      docs.push({url,nombre:file.name,path});
+      await patchSotano(subiendoParaId,{documentos:docs});
+      mostrarToast('✅ Documento subido');
+      mostrarDetalle(subiendoParaId);
+    }else{mostrarToast('❌ Error al subir');}
+  }catch(e){mostrarToast('❌ Error de conexión');}
+  this.value='';
+});
+
+async function eliminarDoc(id,url){
+  if(!confirm('¿Quitar este documento?'))return;
+  const s=sotanos.find(x=>x.id===id);
+  const docs=(s.documentos||[]).filter(d=>d.url!==url);
+  await patchSotano(id,{documentos:docs});
+  mostrarDetalle(id);mostrarToast('🗑 Documento eliminado');
+}
+
+// ============================================
+// FORMULARIO
 // ============================================
 function abrirFormNuevo(){
-  mostrarToast('Función en desarrollo — próximamente');
+  editandoId=null;
+  document.getElementById('form-titulo').textContent='➕ Añadir sótano';
+  limpiarForm();
+  document.getElementById('modal-form').classList.add('visible');
 }
-function editarSotano(id){
-  mostrarToast('Función en desarrollo — próximamente');
+
+function abrirFormEditar(id){
+  const s=sotanos.find(x=>x.id===id);if(!s)return;
+  editandoId=id;
+  document.getElementById('form-titulo').textContent='✏️ Editar — '+s.direccion;
+  document.getElementById('f-direccion').value=s.direccion||'';
+  document.getElementById('f-ficha').value=s.ficha_num||'';
+  document.getElementById('f-tipo').value=s.tipo_inmueble||'Residencial';
+  document.getElementById('f-lat').value=s.lat||'';
+  document.getElementById('f-lon').value=s.lon||'';
+  document.getElementById('f-contacto').value=s.contacto||'';
+  document.getElementById('f-num-accesos').value=s.num_accesos||'';
+  const accesos=[s.acceso_1,s.acceso_2,s.acceso_3,s.acceso_4,s.acceso_5].filter(Boolean);
+  document.getElementById('f-accesos').value=accesos.join('\n');
+  document.getElementById('f-ventilacion').value=s.ventilacion?'true':'false';
+  document.getElementById('f-iluminacion').value=s.iluminacion||'Adecuada';
+  document.getElementById('f-gases').value=s.humedad_gases?'true':'false';
+  document.getElementById('f-obs').value=s.observaciones||'';
+  document.getElementById('f-inspector').value=s.inspector||'B-31';
+  document.getElementById('f-fecha').value=s.fecha_inspeccion||'';
+  document.getElementById('modal-form').classList.add('visible');
 }
-function abrirSubirFoto(id){
-  mostrarToast('Función en desarrollo — próximamente');
+
+function cerrarForm(){document.getElementById('modal-form').classList.remove('visible');}
+
+function limpiarForm(){
+  ['f-direccion','f-ficha','f-lat','f-lon','f-contacto','f-num-accesos','f-accesos','f-obs','f-fecha'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-tipo').value='Residencial';
+  document.getElementById('f-ventilacion').value='true';
+  document.getElementById('f-iluminacion').value='Adecuada';
+  document.getElementById('f-gases').value='false';
+  document.getElementById('f-inspector').value='B-31';
+}
+
+async function guardarSotano(){
+  const dir=document.getElementById('f-direccion').value.trim();
+  if(!dir){mostrarToast('⚠️ La dirección es obligatoria');return;}
+  const accesosRaw=document.getElementById('f-accesos').value.trim();
+  const accesosList=accesosRaw?accesosRaw.split('\n').filter(Boolean):[];
+  const datos={
+    direccion:dir,
+    ficha_num:document.getElementById('f-ficha').value.trim()||null,
+    tipo_inmueble:document.getElementById('f-tipo').value,
+    lat:parseFloat(document.getElementById('f-lat').value)||null,
+    lon:parseFloat(document.getElementById('f-lon').value)||null,
+    contacto:document.getElementById('f-contacto').value.trim()||null,
+    num_accesos:parseInt(document.getElementById('f-num-accesos').value)||accesosList.length||1,
+    acceso_1:accesosList[0]||null,acceso_2:accesosList[1]||null,
+    acceso_3:accesosList[2]||null,acceso_4:accesosList[3]||null,acceso_5:accesosList[4]||null,
+    ventilacion:document.getElementById('f-ventilacion').value==='true',
+    iluminacion:document.getElementById('f-iluminacion').value,
+    humedad_gases:document.getElementById('f-gases').value==='true',
+    observaciones:document.getElementById('f-obs').value.trim()||null,
+    inspector:document.getElementById('f-inspector').value.trim()||'B-31',
+    fecha_inspeccion:document.getElementById('f-fecha').value.trim()||null,
+    updated_at:new Date().toISOString()
+  };
+  const btn=document.getElementById('btn-guardar-form');
+  btn.disabled=true;btn.textContent='Guardando...';
+  try {
+    if(editandoId){
+      const r=await fetch(`${SB}/rest/v1/sotanos?id=eq.${editandoId}`,{
+        method:'PATCH',headers:{...H(),'Prefer':'return=representation'},body:JSON.stringify(datos)
+      });
+      if(!r.ok)throw new Error(await r.text());
+      const [u]=await r.json();
+      const idx=sotanos.findIndex(x=>x.id===editandoId);
+      sotanos[idx]={...sotanos[idx],...u};
+      // Actualizar marcador
+      if(marcadores[editandoId]){mapa.removeLayer(marcadores[editandoId]);delete marcadores[editandoId];}
+      if(u.lat&&u.lon) marcadores[u.id]=crearMarcador(u);
+      mostrarToast('✅ Sótano actualizado');
+      mostrarDetalle(editandoId);
+    } else {
+      const r=await fetch(`${SB}/rest/v1/sotanos`,{
+        method:'POST',headers:{...H(),'Prefer':'return=representation'},body:JSON.stringify({...datos,fotos:[],documentos:[]})
+      });
+      if(!r.ok)throw new Error(await r.text());
+      const [nuevo]=await r.json();
+      sotanos.push(nuevo);
+      if(nuevo.lat&&nuevo.lon) marcadores[nuevo.id]=crearMarcador(nuevo);
+      seleccionado=nuevo.id;
+      mostrarToast('✅ Sótano añadido');
+      mostrarDetalle(nuevo.id);
+    }
+    cerrarForm();
+    renderizarLista(sotanos);
+    actualizarBarra(sotanos);
+  }catch(e){mostrarToast('❌ Error: '+e.message,4000);}
+  btn.disabled=false;btn.textContent='💾 Guardar';
+}
+
+async function patchSotano(id,datos){
+  try {
+    const r=await fetch(`${SB}/rest/v1/sotanos?id=eq.${id}`,{
+      method:'PATCH',headers:{...H(),'Prefer':'return=representation'},
+      body:JSON.stringify({...datos,updated_at:new Date().toISOString()})
+    });
+    if(r.ok){const [u]=await r.json();const idx=sotanos.findIndex(x=>x.id===id);if(idx>=0)sotanos[idx]={...sotanos[idx],...u};}
+  }catch(e){}
 }
 
 // ============================================
-// LIGHTBOX
+// AUTH
 // ============================================
-function abrirLightbox(src){
-  document.getElementById('lightbox-img').src=src;
-  document.getElementById('lightbox').classList.add('visible');
+function abrirLogin(){document.getElementById('modal-login').classList.add('visible');}
+function cerrarLogin(){document.getElementById('modal-login').classList.remove('visible');}
+
+async function hacerLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const password=document.getElementById('login-password').value;
+  const msg=document.getElementById('login-msg');
+  const btn=document.getElementById('login-btn');
+  if(!email||!password){msg.textContent='Rellena email y contraseña';return;}
+  btn.disabled=true;btn.textContent='Accediendo...';
+  try {
+    const r=await fetch(`${SB}/auth/v1/token?grant_type=password`,{
+      method:'POST',headers:{'Content-Type':'application/json','apikey':KEY},
+      body:JSON.stringify({email,password})
+    });
+    const data=await r.json();
+    if(r.ok&&data.access_token){
+      TOKEN=data.access_token;USUARIO=email;
+      sessionStorage.setItem('sb_token',TOKEN);sessionStorage.setItem('sb_user',USUARIO);
+      document.getElementById('usuario-badge').textContent='● '+email;
+      document.getElementById('usuario-badge').style.display='inline-block';
+      document.getElementById('btn-login').style.display='none';
+      document.getElementById('btn-nuevo').style.display='inline-block';
+      cerrarLogin();
+      if(seleccionado)mostrarDetalle(seleccionado);
+      mostrarToast('✅ Sesión iniciada');
+    }else{msg.style.color='#EC7063';msg.textContent='Email o contraseña incorrectos';}
+  }catch(e){msg.textContent='Error de conexión';}
+  btn.disabled=false;btn.textContent='Acceder';
 }
-function cerrarLightbox(){
-  document.getElementById('lightbox').classList.remove('visible');
+
+function detectarSesion(){
+  const token=sessionStorage.getItem('sb_token');
+  const user=sessionStorage.getItem('sb_user');
+  if(token&&user){
+    TOKEN=token;USUARIO=user;
+    document.getElementById('usuario-badge').textContent='● '+user;
+    document.getElementById('usuario-badge').style.display='inline-block';
+    document.getElementById('btn-login').style.display='none';
+    document.getElementById('btn-nuevo').style.display='inline-block';
+  }
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){cerrarLightbox();cerrarDetalle()}});
 
 // ============================================
 // TOGGLE SIDEBAR
 // ============================================
 function toggleSidebar(){
-  sidebarOculto = !sidebarOculto;
+  sidebarOculto=!sidebarOculto;
   document.getElementById('sidebar').classList.toggle('oculto',sidebarOculto);
-  document.getElementById('btn-toggle').textContent = sidebarOculto ? '▶' : '◀';
+  document.getElementById('btn-toggle').textContent=sidebarOculto?'▶':'◀';
   setTimeout(()=>mapa.invalidateSize(),320);
 }
 
 // ============================================
-// TOAST
+// LIGHTBOX / TOAST
 // ============================================
+function abrirLightbox(src){document.getElementById('lightbox-img').src=src;document.getElementById('lightbox').classList.add('visible');}
+function cerrarLightbox(){document.getElementById('lightbox').classList.remove('visible');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){cerrarLightbox();cerrarForm();cerrarLogin();}});
+
 function mostrarToast(msg,dur=2500){
-  let t=document.getElementById('_toast');
-  if(!t){t=document.createElement('div');t.id='_toast';Object.assign(t.style,{position:'fixed',bottom:'30px',left:'50%',transform:'translateX(-50%)',background:'#1E232B',color:'#F0F2F5',padding:'9px 18px',borderRadius:'30px',fontSize:'13px',zIndex:'9999',boxShadow:'0 4px 20px rgba(0,0,0,0.4)',border:'1px solid #2A2F38'});document.body.appendChild(t)}
-  t.textContent=msg;t.style.display='block';
+  const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';
   clearTimeout(window._tT);window._tT=setTimeout(()=>t.style.display='none',dur);
 }
 

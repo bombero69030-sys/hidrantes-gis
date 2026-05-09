@@ -169,7 +169,30 @@
 
   .sidebar{width:340px;background:var(--blanco);border-right:1px solid #dde;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width 0.3s ease}
   .sidebar.contraido{width:0;border-right:none}
-  #btn-toggle-sidebar{position:absolute;top:50%;left:340px;transform:translateY(-50%);z-index:950;background:white;border:1px solid #dde;border-left:none;border-radius:0 6px 6px 0;width:18px;height:48px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gris-medio);transition:left 0.3s ease;box-shadow:2px 0 6px rgba(0,0,0,0.08);padding:0}
+  #btn-toggle-sidebar:hover{background:var(--rojo-claro);color:var(--rojo-oscuro)}
+
+  #btn-toggle-sidebar{
+    position:absolute;
+    top:50%;
+    left:0;
+    transform:translateY(-50%);
+    z-index:950;
+    background:white;
+    border:1px solid #dde;
+    border-left:none;
+    border-radius:0 6px 6px 0;
+    width:18px;
+    height:48px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    color:var(--gris-medio);
+    box-shadow:2px 0 6px rgba(0,0,0,0.08);
+    padding:0;
+    transition:background 0.2s;
+  }
   #btn-toggle-sidebar:hover{background:var(--rojo-claro);color:var(--rojo-oscuro)}
 </style>
 </head>
@@ -992,10 +1015,8 @@ function toggleSidebar(){
   const sidebar = document.querySelector('.sidebar');
   const btn = document.getElementById('btn-toggle-sidebar');
   const contraido = sidebar.classList.toggle('contraido');
-  btn.style.left = contraido ? '0' : '340px';
   btn.textContent = contraido ? '▶' : '◀';
   btn.title = contraido ? 'Expandir panel' : 'Contraer panel';
-  // Recalcular mapa tras animación
   setTimeout(() => mapa.invalidateSize(), 320);
 }
 

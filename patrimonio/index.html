@@ -428,15 +428,18 @@ header {
 
 <header>
   <div class="header-left">
+    <a href="../index.html" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:white;padding:6px 14px;border-radius:6px;font-size:13px;text-decoration:none;font-family:inherit;font-weight:600;letter-spacing:.03em;flex-shrink:0">← Portal</a>
     <div class="header-logo">🔥</div>
     <div>
       <div class="header-title">Patrimonio Histórico</div>
       <div class="header-subtitle">Parque de Bomberos · Los Palacios y Villafranca</div>
     </div>
   </div>
-  <div class="mode-toggle">
-    <button class="mode-btn active" id="btn-intervencion" onclick="setMode('intervencion')">Intervención</button>
-    <button class="mode-btn" id="btn-planificacion" onclick="setMode('planificacion')">Planificación</button>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="btn-intervencion" onclick="setMode('intervencion')">Intervención</button>
+      <button class="mode-btn" id="btn-planificacion" onclick="setMode('planificacion')">Planificación</button>
+    </div>
   </div>
 </header>
 
@@ -803,4 +806,3 @@ renderSidebar();
 </script>
 </body>
 </html>
-

@@ -1,1 +1,806 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patrimonio · Parque de Bomberos Los Palacios y Villafranca</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --rojo: #C0392B;
+  --rojo-dark: #922B21;
+  --rojo-light: #FADBD8;
+  --naranja: #E67E22;
+  --verde: #1E8449;
+  --gris-oscuro: #1C2833;
+  --gris-medio: #2E4053;
+  --gris-panel: #F4F6F7;
+  --gris-borde: #D5D8DC;
+  --texto: #1C2833;
+  --texto-muted: #626567;
+  --blanco: #ffffff;
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-body: 'Barlow', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--gris-oscuro);
+  color: var(--texto);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--rojo-dark);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 3px solid var(--rojo);
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-logo {
+  width: 32px; height: 32px;
+  background: var(--blanco);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.header-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--blanco);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.header-subtitle {
+  font-size: 11px;
+  color: rgba(255,255,255,.6);
+  font-family: var(--font-display);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.mode-toggle {
+  display: flex;
+  background: rgba(0,0,0,.3);
+  border-radius: 6px;
+  padding: 3px;
+  gap: 3px;
+}
+.mode-btn {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all .2s;
+  color: rgba(255,255,255,.6);
+  background: transparent;
+}
+.mode-btn.active {
+  background: var(--rojo);
+  color: var(--blanco);
+}
+
+/* ── LAYOUT ── */
+.app { display: flex; height: calc(100vh - 56px); }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  background: var(--gris-medio);
+  overflow-y: auto;
+  border-right: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-search {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-search input {
+  width: 100%;
+  background: rgba(0,0,0,.3);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--blanco);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+}
+.sidebar-search input::placeholder { color: rgba(255,255,255,.35); }
+.sidebar-search input:focus { border-color: var(--rojo); }
+
+.edificio-card {
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  cursor: pointer;
+  transition: background .15s;
+  overflow: hidden;
+}
+.edificio-card:hover { background: rgba(255,255,255,.05); }
+.edificio-card.active { background: rgba(192,57,43,.2); border-left: 3px solid var(--rojo); }
+.edificio-img {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  display: block;
+  filter: brightness(.85);
+  transition: filter .2s;
+}
+.edificio-card:hover .edificio-img,
+.edificio-card.active .edificio-img { filter: brightness(1); }
+.edificio-img-placeholder {
+  width: 100%;
+  height: 110px;
+  background: linear-gradient(135deg, #2E4053, #1C2833);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: rgba(255,255,255,.2);
+}
+.edificio-info { padding: 10px 12px; }
+.edificio-nombre {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blanco);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.edificio-meta { display: flex; align-items: center; gap: 8px; }
+.badge-prioridad {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: .06em;
+}
+.badge-A { background: var(--rojo); color: white; }
+.badge-B { background: var(--naranja); color: white; }
+.badge-C { background: var(--verde); color: white; }
+.edificio-tiempo {
+  font-size: 11px;
+  color: rgba(255,255,255,.5);
+  font-family: var(--font-display);
+}
+
+/* ── MAIN CONTENT ── */
+.main { flex: 1; overflow-y: auto; background: var(--gris-panel); }
+
+/* ── FICHA INTERVENCIÓN ── */
+.ficha-intervencion { padding: 0; }
+
+.ficha-hero {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  background: var(--gris-oscuro);
+}
+.ficha-hero img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: brightness(.6);
+}
+.ficha-hero-placeholder {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #2E4053, #1C2833);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 64px; color: rgba(255,255,255,.1);
+}
+.ficha-hero-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 20px 24px 16px;
+  background: linear-gradient(transparent, rgba(0,0,0,.8));
+}
+.ficha-nombre {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--blanco);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  line-height: 1.1;
+}
+.ficha-tipo {
+  font-size: 12px;
+  color: rgba(255,255,255,.6);
+  font-family: var(--font-display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.ficha-badge-hero {
+  position: absolute; top: 16px; right: 16px;
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 700;
+  padding: 4px 12px; border-radius: 4px;
+  letter-spacing: .06em; text-transform: uppercase;
+}
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--gris-oscuro);
+}
+.stat {
+  padding: 14px 20px;
+  border-right: 1px solid rgba(255,255,255,.08);
+  text-align: center;
+}
+.stat:last-child { border-right: none; }
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--blanco);
+  line-height: 1;
+}
+.stat-label {
+  font-size: 10px;
+  color: rgba(255,255,255,.45);
+  font-family: var(--font-display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+.stat-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  margin-top: 2px;
+}
+
+/* ── SECCIONES ── */
+.seccion { padding: 16px 20px; border-bottom: 1px solid var(--gris-borde); background: var(--blanco); margin-bottom: 8px; }
+.seccion-titulo {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--texto-muted);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.seccion-titulo::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gris-borde);
+}
+
+.ruta-text {
+  font-size: 14px;
+  color: var(--texto);
+  line-height: 1.6;
+  padding: 10px 14px;
+  background: var(--gris-panel);
+  border-radius: 6px;
+  border-left: 3px solid var(--rojo);
+  font-family: var(--font-display);
+  letter-spacing: .02em;
+}
+
+.alerta-ops {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 14px;
+  background: #FEF9E7;
+  border-radius: 6px;
+  border-left: 3px solid var(--naranja);
+  margin-top: 8px;
+  font-size: 12px;
+  color: #784212;
+  line-height: 1.5;
+}
+
+.hidrante-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--gris-borde);
+  font-size: 13px;
+}
+.hidrante-item:last-child { border-bottom: none; }
+.hidrante-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.hidrante-ok { background: var(--verde); }
+.hidrante-pending { background: var(--naranja); }
+
+.bien-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--gris-borde);
+}
+.bien-item:last-child { border-bottom: none; }
+.bien-num {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 700;
+  color: var(--rojo);
+  line-height: 1;
+  min-width: 24px;
+}
+.bien-nombre { font-size: 13px; color: var(--texto); font-weight: 500; }
+.bien-siglo { font-size: 11px; color: var(--texto-muted); }
+
+.riesgo-tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: #FADBD8;
+  color: var(--rojo-dark);
+  margin: 3px 3px 3px 0;
+  font-family: var(--font-display);
+  letter-spacing: .03em;
+}
+
+.plan-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--gris-borde);
+}
+.plan-row:last-child { border-bottom: none; }
+.plan-nombre { font-size: 13px; color: var(--texto); }
+.plan-estado {
+  font-family: var(--font-display);
+  font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: 4px;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+.plan-no { background: #FADBD8; color: var(--rojo-dark); }
+.plan-si { background: #D5F5E3; color: #1E8449; }
+.plan-pendiente { background: #FDEBD0; color: #784212; }
+
+.btn-accion {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--gris-borde);
+  border-radius: 8px;
+  background: var(--blanco);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 600;
+  letter-spacing: .04em; text-transform: uppercase;
+  color: var(--texto);
+  transition: all .15s;
+  margin-bottom: 8px;
+  text-align: left;
+}
+.btn-accion:hover { background: var(--gris-panel); border-color: var(--rojo); color: var(--rojo); }
+.btn-accion.primary { background: var(--rojo); color: white; border-color: var(--rojo); }
+.btn-accion.primary:hover { background: var(--rojo-dark); }
+
+/* ── MODO SIN SELECCIÓN ── */
+.empty-state {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 100%;
+  color: rgba(255,255,255,.2);
+  gap: 16px;
+}
+.empty-icon { font-size: 64px; }
+.empty-text { font-family: var(--font-display); font-size: 16px; letter-spacing: .06em; text-transform: uppercase; }
+
+/* ── SUBIR FOTO ── */
+.upload-overlay {
+  position: absolute; top: 0; right: 0;
+  padding: 8px;
+}
+.btn-upload {
+  background: rgba(0,0,0,.5);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 4px;
+  color: white;
+  font-family: var(--font-display);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn-upload:hover { background: rgba(192,57,43,.7); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="header-logo">🔥</div>
+    <div>
+      <div class="header-title">Patrimonio Histórico</div>
+      <div class="header-subtitle">Parque de Bomberos · Los Palacios y Villafranca</div>
+    </div>
+  </div>
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="btn-intervencion" onclick="setMode('intervencion')">Intervención</button>
+    <button class="mode-btn" id="btn-planificacion" onclick="setMode('planificacion')">Planificación</button>
+  </div>
+</header>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-search">
+      <input type="text" placeholder="Buscar edificio..." id="buscador" oninput="filtrar(this.value)">
+    </div>
+    <div id="lista-edificios"></div>
+  </div>
+  <div class="main" id="main-content">
+    <div class="empty-state" style="background: var(--gris-oscuro); height: 100%;">
+      <div class="empty-icon">🏛️</div>
+      <div class="empty-text">Selecciona un edificio</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const bienes = [
+  {
+    id: 1, nombre: "Parroquia Santa María la Blanca", tipo: "Iglesia parroquial · Siglo XV",
+    prioridad: "A", km: "1,4", min: "4",
+    ruta: "Avda. Miguel Ángel → Avda. de las Marismas → C/ Abajo",
+    entrada: "Entrada principal confirmada — C/ Abajo (pin rojo)",
+    acceso: "Acceso directo en vehículo",
+    nota_ops: null,
+    hidrantes: [{ loc: "C/ Cristóbal Colón (esquina)", ok: true, nota: "Único hidrante cercano" }],
+    bienes_muebles: [
+      { nombre: "Retablo mayor — Pablo Legot", siglo: "1631–36" },
+      { nombre: "Órgano — Francisco de Ortiguez", siglo: "1747" },
+      { nombre: "Virgen de las Nieves (patrona)", siglo: "Imagen titular" },
+      { nombre: "Custodia de madera", siglo: "S. XVII, reconstruida 2001" }
+    ],
+    riesgos: ["Estructura de madera en cubierta", "Torre campanario — riesgo colapso", "Bienes muebles de alto valor"],
+    plan_s: "no", plan_e: "no", planos: "pendiente",
+    contacto: "Parroquia — pendiente",
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Iglesia_de_Santa_Mar%C3%ADa_la_Blanca_%28Los_Palacios_y_Villafranca%29.jpg/640px-Iglesia_de_Santa_Mar%C3%ADa_la_Blanca_%28Los_Palacios_y_Villafranca%29.jpg"
+  },
+  {
+    id: 2, nombre: "Capilla de San Sebastián", tipo: "Ermita · Siglo XVI",
+    prioridad: "A", km: "1,1", min: "3",
+    ruta: "Avda. Miguel Ángel → Avda. Leonardo Da Vinci → C/ San Sebastián",
+    entrada: "C/ San Sebastián — entrada confirmada",
+    acceso: "Calle de un solo sentido — atención al posicionamiento",
+    nota_ops: "Boulevard con mediana — posicionamiento del vehículo condicionado",
+    hidrantes: [{ loc: "Intersección boulevard / C/ Virgen de los Remedios", ok: true, nota: "" }],
+    bienes_muebles: [
+      { nombre: "San Sebastián (patrón)", siglo: "S. XVI, anónima" },
+      { nombre: "Virgen de los Remedios", siglo: "S. XVI, anónima" }
+    ],
+    riesgos: ["Calle de un solo sentido", "Boulevard con mediana", "Bienes de gran antigüedad"],
+    plan_s: "no", plan_e: "no", planos: "pendiente",
+    contacto: "Hermandad Vera Cruz — pendiente",
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Capilla_de_San_Sebasti%C3%A1n_%28Los_Palacios_y_Villafranca%29.jpg/640px-Capilla_de_San_Sebasti%C3%A1n_%28Los_Palacios_y_Villafranca%29.jpg"
+  },
+  {
+    id: 3, nombre: "Capilla de La Aurora / Gran Poder", tipo: "Capilla · Siglo XVIII",
+    prioridad: "A", km: "1,5", min: "4",
+    ruta: "Avda. Miguel Ángel → C/ Rodrigo Caro → C/ Real de Villafranca",
+    entrada: "C/ Aurora (peatonal) — acceso a pie desde C/ Tartessos",
+    acceso: "Vehículo en C/ Tartessos",
+    nota_ops: "ENTRADA PEATONAL — tendido de manguera a pie obligatorio desde C/ Tartessos",
+    hidrantes: [{ loc: "Esquina C/ Tartessos / C/ Ntra. Sra. de la Aurora", ok: true, nota: "" }],
+    bienes_muebles: [
+      { nombre: "Virgen de la Asunción (Virgen de la Aurora)", siglo: "Imagen titular" },
+      { nombre: "Cristo del Gran Poder", siglo: "Imagen titular" },
+      { nombre: "Virgen de la Soledad", siglo: "" },
+      { nombre: "San Juan Evangelista", siglo: "" }
+    ],
+    riesgos: ["Entrada peatonal — manguera a pie", "Cúpula de media naranja", "Planta cruz latina — una nave"],
+    plan_s: "no", plan_e: "no", planos: "pendiente",
+    contacto: "Hermandad Gran Poder — pendiente",
+    img: null
+  },
+  {
+    id: 4, nombre: "Casa Palacio La Atalayuela", tipo: "Palacio señorial · Origen medieval",
+    prioridad: "A", km: "2,1", min: "6",
+    ruta: "Avda. Miguel Ángel → Avda. de las Marismas → C/ Alonso Cano → C/ Santiago Rusiñol → C/ Postas → C/ Felipe Cortínez Murube",
+    entrada: "Callejón del Antiguo Cerro — acceso a pie",
+    acceso: "Vehículo hasta C/ Felipe Cortínez Murube",
+    nota_ops: "EL CALLEJÓN NO ADMITE VEHÍCULOS — tendido de manguera a pie desde C/ Felipe Cortínez Murube",
+    hidrantes: [{ loc: "Esquina C/ Felipe Cortínez Murube (punto de llegada)", ok: true, nota: "" }],
+    bienes_muebles: [
+      { nombre: "Elementos arquitectónicos históricos", siglo: "Pendiente de inventariar" }
+    ],
+    riesgos: ["Callejón sin acceso para vehículos", "Tendido a pie obligatorio", "Estructura histórica — materiales desconocidos"],
+    plan_s: "no", plan_e: "no", planos: "pendiente",
+    contacto: "Pendiente",
+    img: null
+  },
+  {
+    id: 5, nombre: "Casa de la Cultura", tipo: "Edificio civil · Finales S. XIX",
+    prioridad: "B", km: "1,3", min: "4",
+    ruta: "Avda. Miguel Ángel → C/ Rodrigo Caro → C/ Real de Villafranca",
+    entrada: "C/ Real de Villafranca",
+    acceso: "C/ Real de Villafranca (sentido único) o C/ Juan José Baquero",
+    nota_ops: "La Capilla de La Aurora está en la calle contigua — un posicionamiento puede cubrir ambos",
+    hidrantes: [{ loc: "Esquina C/ Real de Villafranca / C/ Juan José Baquero", ok: true, nota: "" }],
+    bienes_muebles: [
+      { nombre: "Archivo documental municipal histórico", siglo: "" },
+      { nombre: "Fondo bibliográfico", siglo: "" }
+    ],
+    riesgos: ["Estructura fin S. XIX", "Documentación sensible a agua y fuego", "C/ Real de Villafranca en sentido único"],
+    plan_s: "no", plan_e: "no", planos: "pendiente",
+    contacto: "Delegación de Cultura — pendiente",
+    img: null
+  },
+  {
+    id: 6, nombre: "Ayuntamiento / Archivo Histórico", tipo: "Edificio institucional · 1986",
+    prioridad: "B", km: "2,7", min: "9",
+    ruta: "Avda. Miguel Ángel → Avda. Leonardo Da Vinci → Avda. de Sevilla → Avda. de Cádiz",
+    entrada: "Plaza de Andalucía — entrada principal confirmada",
+    acceso: "Avda. de Cádiz — acceso directo a la plaza",
+    nota_ops: "ARCHIVO HISTÓRICO en 4ª planta — evacuación de fondos muy dificultada",
+    hidrantes: [{ loc: "Esquina C/ del Cabrero / entrada Plaza de Andalucía", ok: true, nota: "" }],
+    bienes_muebles: [
+      { nombre: "Archivo histórico municipal", siglo: "4ª planta" },
+      { nombre: "Documentación de plenos municipales", siglo: "" }
+    ],
+    riesgos: ["Archivo en 4ª planta — evacuación difícil", "4 plantas — propagación vertical", "Alta ocupación en horario laboral"],
+    plan_s: "no", plan_e: "no", planos: "pendiente",
+    contacto: "Jefe de Archivos municipal — pendiente",
+    img: null
+  },
+  {
+    id: 7, nombre: "Iglesia del Sagrado Corazón", tipo: "Iglesia · 1992",
+    prioridad: "B", km: "—", min: "5",
+    ruta: "Avda. Miguel Ángel → Avda. de las Marismas → Avda. de Cádiz → C/ Bartolomé Esteban Murillo → C/ República Argentina",
+    entrada: "Plaza peatonal frente a la iglesia",
+    acceso: "Vehículo en C/ Cardenal Spínola o Avda. de Utrera",
+    nota_ops: "Amplia plaza peatonal — buen espacio de despliegue",
+    hidrantes: [{ loc: "Esquina Avda. de Utrera / C/ Cardenal Spínola (Puerta Líbano)", ok: true, nota: "" }],
+    bienes_muebles: [
+      { nombre: "Imágenes de culto contemporáneas", siglo: "" }
+    ],
+    riesgos: ["Entrada por plaza peatonal", "Planta octogonal — geometría compleja"],
+    plan_s: "no", plan_e: "no", planos: "pendiente",
+    contacto: "Parroquia — pendiente",
+    img: null
+  },
+  {
+    id: 8, nombre: "Torre del Agua (Mirador)", tipo: "Elemento patrimonial singular",
+    prioridad: "C", km: "—", min: "—",
+    ruta: "Pendiente de trazar",
+    entrada: "Pendiente de confirmar",
+    acceso: "Pendiente de verificar",
+    nota_ops: null,
+    hidrantes: [{ loc: "Pendiente de verificar", ok: false, nota: "" }],
+    bienes_muebles: [],
+    riesgos: ["Estructura elevada — intervención en altura", "Equipos de altura necesarios"],
+    plan_s: "no", plan_e: "no", planos: "pendiente",
+    contacto: "Ayuntamiento — pendiente",
+    img: null
+  }
+];
+
+let modo = 'intervencion';
+let seleccionado = null;
+
+function setMode(m) {
+  modo = m;
+  document.getElementById('btn-intervencion').classList.toggle('active', m === 'intervencion');
+  document.getElementById('btn-planificacion').classList.toggle('active', m === 'planificacion');
+  if (seleccionado) mostrarFicha(seleccionado);
+}
+
+function filtrar(q) {
+  const lower = q.toLowerCase();
+  document.querySelectorAll('.edificio-card').forEach(el => {
+    const nombre = el.dataset.nombre.toLowerCase();
+    el.style.display = nombre.includes(lower) ? '' : 'none';
+  });
+}
+
+function renderSidebar() {
+  const lista = document.getElementById('lista-edificios');
+  lista.innerHTML = bienes.map(b => `
+    <div class="edificio-card" id="card-${b.id}" data-nombre="${b.nombre}" onclick="mostrarFicha(${b.id})">
+      ${b.img
+        ? `<img class="edificio-img" src="${b.img}" alt="${b.nombre}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        : ''}
+      <div class="edificio-img-placeholder" ${b.img ? 'style="display:none"' : ''}>🏛️</div>
+      <div class="edificio-info">
+        <div class="edificio-nombre">${b.nombre}</div>
+        <div class="edificio-meta">
+          <span class="badge-prioridad badge-${b.prioridad}">${b.prioridad}</span>
+          <span class="edificio-tiempo">${b.min !== '—' ? b.min + ' min · ' + b.km + ' km' : 'Pendiente'}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function planEstado(v) {
+  if (v === 'si') return '<span class="plan-estado plan-si">Sí</span>';
+  if (v === 'no') return '<span class="plan-estado plan-no">No consta</span>';
+  return '<span class="plan-estado plan-pendiente">Pendiente</span>';
+}
+
+function mostrarFicha(id) {
+  seleccionado = id;
+  const b = bienes.find(x => x.id === id);
+  document.querySelectorAll('.edificio-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('card-' + id).classList.add('active');
+
+  const badgeColor = b.prioridad === 'A' ? 'background:var(--rojo)' : b.prioridad === 'B' ? 'background:var(--naranja)' : 'background:var(--verde)';
+
+  if (modo === 'intervencion') {
+    document.getElementById('main-content').innerHTML = `
+      <div class="ficha-intervencion">
+        <div class="ficha-hero" style="position:relative">
+          ${b.img
+            ? `<img src="${b.img}" alt="${b.nombre}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+            : ''}
+          <div class="ficha-hero-placeholder" ${b.img ? 'style="display:none"' : ''}>🏛️</div>
+          <div class="ficha-hero-overlay">
+            <div class="ficha-nombre">${b.nombre}</div>
+            <div class="ficha-tipo">${b.tipo}</div>
+          </div>
+          <div class="upload-overlay">
+            <button class="btn-upload" onclick="subirFoto(${b.id})">📷 Cambiar foto</button>
+          </div>
+          <span class="ficha-badge-hero" style="${badgeColor};color:white;font-family:var(--font-display);font-size:12px;font-weight:700;padding:4px 12px;border-radius:4px;letter-spacing:.06em">PRIORIDAD ${b.prioridad}</span>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-num" style="color:${b.min !== '—' ? '#E74C3C' : 'rgba(255,255,255,.3)'}">${b.min !== '—' ? b.min + ' min' : '—'}</div>
+            <div class="stat-label">Tiempo llegada</div>
+            <div class="stat-sub">${b.km !== '—' ? b.km + ' km' : ''}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num" style="color:${b.hidrantes[0].ok ? '#27AE60' : 'rgba(255,255,255,.3)'}">
+              ${b.hidrantes[0].ok ? b.hidrantes.length : '?'}
+            </div>
+            <div class="stat-label">Hidrantes cercanos</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num" style="color:${b.bienes_muebles.length ? '#E67E22' : 'rgba(255,255,255,.3)'}">
+              ${b.bienes_muebles.length || '?'}
+            </div>
+            <div class="stat-label">Bienes a rescatar</div>
+          </div>
+        </div>
+
+        <div class="seccion">
+          <div class="seccion-titulo">Ruta desde el parque</div>
+          <div class="ruta-text">${b.ruta}</div>
+          ${b.nota_ops ? `<div class="alerta-ops">⚠️ ${b.nota_ops}</div>` : ''}
+          <div style="margin-top:8px;font-size:12px;color:var(--texto-muted)">
+            <strong>Acceso rodado:</strong> ${b.acceso}<br>
+            <strong>Entrada principal:</strong> ${b.entrada}
+          </div>
+        </div>
+
+        <div class="seccion">
+          <div class="seccion-titulo">Hidrantes cercanos</div>
+          ${b.hidrantes.map(h => `
+            <div class="hidrante-item">
+              <div class="hidrante-dot ${h.ok ? 'hidrante-ok' : 'hidrante-pending'}"></div>
+              <div>
+                <div style="font-size:13px;font-weight:500">${h.loc}</div>
+                ${h.nota ? `<div style="font-size:11px;color:var(--texto-muted)">${h.nota}</div>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="seccion">
+          <div class="seccion-titulo">Bienes a rescatar</div>
+          ${b.bienes_muebles.length
+            ? b.bienes_muebles.map((bm, i) => `
+              <div class="bien-item">
+                <div class="bien-num">${i + 1}</div>
+                <div>
+                  <div class="bien-nombre">${bm.nombre}</div>
+                  ${bm.siglo ? `<div class="bien-siglo">${bm.siglo}</div>` : ''}
+                </div>
+              </div>
+            `).join('')
+            : '<div style="font-size:12px;color:var(--texto-muted)">Pendiente de inventariar</div>'}
+        </div>
+
+        <div class="seccion">
+          <div class="seccion-titulo">Riesgos específicos</div>
+          <div>${b.riesgos.map(r => `<span class="riesgo-tag">${r}</span>`).join('')}</div>
+        </div>
+
+        <div class="seccion" style="border-bottom:none">
+          <div class="seccion-titulo">Documentación</div>
+          <div class="plan-row"><span class="plan-nombre">Plan de salvaguarda</span>${planEstado(b.plan_s)}</div>
+          <div class="plan-row"><span class="plan-nombre">Plan de emergencia</span>${planEstado(b.plan_e)}</div>
+          <div class="plan-row"><span class="plan-nombre">Planos del interior</span>${planEstado(b.planos)}</div>
+          <div style="margin-top:12px">
+            <button class="btn-accion" onclick="alert('Función disponible en versión completa')">📄 Ver planos del interior</button>
+            <button class="btn-accion" onclick="alert('Función disponible en versión completa')">📋 Ver plan de salvaguarda</button>
+            <button class="btn-accion primary" onclick="window.print()">🖨️ Imprimir ficha</button>
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    document.getElementById('main-content').innerHTML = `
+      <div style="padding:20px">
+        <div style="font-family:var(--font-display);font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">${b.nombre}</div>
+        <div style="font-size:13px;color:var(--texto-muted);margin-bottom:20px">${b.tipo}</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+          <div class="seccion" style="border-radius:8px">
+            <div class="seccion-titulo">Datos operativos</div>
+            <div class="plan-row"><span class="plan-nombre">Tiempo desde parque</span><strong>${b.min} min</strong></div>
+            <div class="plan-row"><span class="plan-nombre">Distancia</span><strong>${b.km} km</strong></div>
+            <div class="plan-row"><span class="plan-nombre">Prioridad</span><span class="badge-prioridad badge-${b.prioridad}">${b.prioridad}</span></div>
+          </div>
+          <div class="seccion" style="border-radius:8px">
+            <div class="seccion-titulo">Estado de documentación</div>
+            <div class="plan-row"><span class="plan-nombre">Plan salvaguarda</span>${planEstado(b.plan_s)}</div>
+            <div class="plan-row"><span class="plan-nombre">Plan emergencia</span>${planEstado(b.plan_e)}</div>
+            <div class="plan-row"><span class="plan-nombre">Planos interiores</span>${planEstado(b.planos)}</div>
+          </div>
+        </div>
+
+        <div class="seccion" style="border-radius:8px;margin-bottom:16px">
+          <div class="seccion-titulo">Acciones de planificación</div>
+          <button class="btn-accion" onclick="subirFoto(${b.id})">📷 Actualizar foto del edificio</button>
+          <button class="btn-accion" onclick="alert('Función disponible en versión completa')">📄 Subir plan de salvaguarda (PDF)</button>
+          <button class="btn-accion" onclick="alert('Función disponible en versión completa')">📋 Subir plan de emergencia (PDF)</button>
+          <button class="btn-accion" onclick="alert('Función disponible en versión completa')">🗺️ Subir planos del interior</button>
+          <button class="btn-accion" onclick="alert('Función disponible en versión completa')">📸 Gestionar galería de fotos</button>
+          <button class="btn-accion" onclick="alert('Función disponible en versión completa')">✏️ Editar ficha completa</button>
+          <button class="btn-accion primary" onclick="window.print()">🖨️ Exportar ficha a PDF</button>
+        </div>
+
+        <div class="seccion" style="border-radius:8px">
+          <div class="seccion-titulo">Contacto responsable</div>
+          <div style="font-size:13px;color:${b.contacto.includes('pendiente') ? 'var(--naranja)' : 'var(--verde)'}">${b.contacto}</div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function subirFoto(id) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const b = bienes.find(x => x.id === id);
+      b.img = ev.target.result;
+      renderSidebar();
+      mostrarFicha(id);
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+renderSidebar();
+</script>
+</body>
+</html>
 

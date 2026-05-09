@@ -967,10 +967,8 @@ function miPosicion(){
       marcadorPosicion.bindPopup(`<b>📍 Tu posición</b><br>Precisión: ±${Math.round(accuracy)} m`).openPopup();
       // Círculo de precisión
       circuloPosicion = L.circle([lat,lon],{radius:accuracy,color:'#1A73E8',fillColor:'#1A73E8',fillOpacity:0.1,weight:1}).addTo(mapa);
-      // Solo mueve si la posición no está ya visible en pantalla
-      if(!mapa.getBounds().contains([lat,lon])){
-        mapa.flyTo([lat,lon], 16, {animate:true, duration:1.2});
-      }
+      // Siempre vuela a la posición con zoom 17
+      mapa.flyTo([lat,lon], 17, {animate:true, duration:1.2});
       if(btn){btn.textContent='📍 Mi posición';btn.disabled=false;}
       if(btnM){btnM.textContent='📍 Mi posición';btnM.disabled=false;}
       mostrarToast(`📍 Posición encontrada (±${Math.round(accuracy)} m)`);

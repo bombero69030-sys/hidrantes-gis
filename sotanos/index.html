@@ -313,9 +313,10 @@ header{
   <div class="login-box">
     <button class="login-cerrar" onclick="cerrarLogin()">×</button>
     <div class="login-titulo">🔐 Acceso Equipo</div>
-    <div class="login-desc">Introduce tu email de bombero. Recibirás un enlace de acceso directo sin contraseña.</div>
+    <div class="login-desc">Introduce tu email y contraseña de administrador.</div>
     <input class="login-input" type="email" id="login-email" placeholder="tu@email.com">
-    <button class="login-btn" id="login-btn" onclick="enviarMagicLink()">Enviar enlace de acceso</button>
+  <input class="login-input" type="password" id="login-password" placeholder="Contraseña">
+    <button class="login-btn" id="login-btn" onclick="enviarMagicLink()">Acceder</button>
     <div class="login-msg" id="login-msg"></div>
   </div>
 </div>
@@ -652,44 +653,42 @@ function copiarCoords(id){
 // ============================================
 async function enviarMagicLink(){
   const email = document.getElementById('login-email').value.trim();
-  if(!email){ document.getElementById('login-msg').textContent='Introduce un email válido'; return; }
+  const password = document.getElementById('login-password').value;
+  if(!email||!password){ document.getElementById('login-msg').textContent='Rellena email y contraseña'; return; }
   const btn = document.getElementById('login-btn');
-  btn.disabled=true; btn.textContent='Enviando...';
+  btn.disabled=true; btn.textContent='Accediendo...';
   try {
-    const r = await fetch(`${SB_URL}/auth/v1/otp`,{
+    const r = await fetch(`${SB_URL}/auth/v1/token?grant_type=password`,{
       method:'POST',
       headers:{'Content-Type':'application/json','apikey':SB_KEY},
-      body:JSON.stringify({email,create_user:false})
+      body:JSON.stringify({email,password})
     });
-    if(r.ok){
-      document.getElementById('login-msg').style.color='#58D68D';
-      document.getElementById('login-msg').textContent='✓ Enlace enviado — revisa tu email';
+    const data = await r.json();
+    if(r.ok && data.access_token){
+      TOKEN = data.access_token;
+      USUARIO = email;
+      sessionStorage.setItem('sb_token',TOKEN);
+      sessionStorage.setItem('sb_user',USUARIO);
+      mostrarUsuario();
+      cerrarLogin();
     } else {
       document.getElementById('login-msg').style.color='#EC7063';
-      document.getElementById('login-msg').textContent='Error: email no autorizado';
+      document.getElementById('login-msg').textContent='Email o contraseña incorrectos';
     }
   } catch(e){
     document.getElementById('login-msg').textContent='Error de conexión';
   }
-  btn.disabled=false; btn.textContent='Enviar enlace de acceso';
+  btn.disabled=false; btn.textContent='Acceder';
 }
 
 // Detectar token en URL (redirect de magic link)
-async function detectarSesion(){
-  const hash = window.location.hash;
-  const params = new URLSearchParams(hash.replace('#',''));
-  const access_token = params.get('access_token');
-  if(access_token){
-    TOKEN = access_token;
-    try {
-      const r = await fetch(`${SB_URL}/auth/v1/user`,{
-        headers:{'apikey':SB_KEY,'Authorization':'Bearer '+TOKEN}
-      });
-      const user = await r.json();
-      USUARIO = user.email;
-      mostrarUsuario();
-      window.history.replaceState(null,'',window.location.pathname);
-    } catch(e){}
+function detectarSesion(){
+  const token = sessionStorage.getItem('sb_token');
+  const user = sessionStorage.getItem('sb_user');
+  if(token && user){
+    TOKEN = token;
+    USUARIO = user;
+    mostrarUsuario();
   }
 }
 

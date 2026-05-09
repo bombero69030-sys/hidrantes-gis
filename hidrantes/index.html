@@ -1,1 +1,1030 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HidrantesGIS — Consorcio Bomberos Sevilla</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --rojo:#C0392B;--rojo-oscuro:#922B21;--rojo-claro:#FADBD8;
+    --azul:#1A5276;--azul-claro:#D6EAF8;
+    --verde:#1E8449;--verde-claro:#D5F5E3;
+    --naranja:#E67E22;--naranja-claro:#FDEBD0;
+    --amarillo:#B7950B;--amarillo-claro:#FEF9E7;
+    --gris:#2C3E50;--gris-medio:#5D6D7E;--gris-claro:#ECF0F1;
+    --fondo:#F4F6F7;--blanco:#FFFFFF;
+    --sombra:0 2px 12px rgba(0,0,0,0.12);
+    --radio:6px;
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--gris);min-height:100vh;display:flex;flex-direction:column}
 
+  header{background:var(--rojo-oscuro);color:white;display:flex;align-items:center;gap:16px;padding:0 20px;height:56px;box-shadow:0 2px 8px rgba(0,0,0,0.3);z-index:1000;position:relative;flex-shrink:0}
+  header .logo{font-family:'Space Mono',monospace;font-weight:700;font-size:18px;letter-spacing:-0.5px}
+  header .logo span{color:#F1948A}
+  header .subtitle{font-size:12px;color:#F1948A;font-weight:300;letter-spacing:0.5px}
+  header .header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .btn-header{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:var(--radio);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s}
+  .btn-header:hover{background:rgba(255,255,255,0.25)}
+  .btn-header.primario{background:white;color:var(--rojo-oscuro);font-weight:600}
+  .btn-header.primario:hover{background:#FDFEFE}
+  #indicador-sync{font-size:12px;padding:4px 10px;border-radius:20px;font-weight:500}
+  .sync-ok{background:rgba(39,174,96,0.3);color:#A9DFBF}
+  .sync-err{background:rgba(231,76,60,0.3);color:#F1948A}
+  .sync-cargando{background:rgba(255,255,255,0.15);color:white}
+
+  .app-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 56px)}
+  .sidebar-tabs{display:flex;border-bottom:2px solid var(--gris-claro)}
+  .tab{flex:1;padding:11px 4px;text-align:center;font-size:12px;font-weight:500;cursor:pointer;color:var(--gris-medio);transition:all 0.2s;border-bottom:2px solid transparent;margin-bottom:-2px}
+  .tab.activo{color:var(--rojo-oscuro);border-bottom-color:var(--rojo-oscuro)}
+  .tab:hover{background:var(--gris-claro)}
+  .tab-contenido{display:none;flex:1;overflow-y:auto;padding:14px}
+  .tab-contenido.activo{display:flex;flex-direction:column;gap:10px}
+
+  .seccion-titulo{font-size:11px;font-weight:600;letter-spacing:1px;color:var(--gris-medio);text-transform:uppercase;margin-bottom:2px}
+  .filtro-chip{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--radio);border:1px solid #dde;cursor:pointer;font-size:13px;transition:all 0.2s}
+  .filtro-chip:hover{border-color:var(--rojo);background:var(--rojo-claro)}
+  .filtro-chip.activo{background:var(--rojo-claro);border-color:var(--rojo)}
+  .filtro-chip input[type=checkbox]{accent-color:var(--rojo);width:14px;height:14px}
+  .punto{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+  .punto.operativo{background:#27AE60}
+  .punto.revision{background:#E67E22}
+  .punto.inoperativo{background:#E74C3C}
+  .punto.desconocido{background:#95A5A6}
+
+  select,input[type=text],input[type=number],textarea{
+    width:100%;padding:7px 10px;border:1px solid #dde;border-radius:var(--radio);
+    font-family:'DM Sans',sans-serif;font-size:13px;color:var(--gris);background:white;transition:border 0.2s;
+  }
+  select:focus,input:focus,textarea:focus{outline:none;border-color:var(--rojo)}
+  textarea{resize:vertical;min-height:60px}
+  label{font-size:13px;font-weight:500;color:var(--gris);margin-bottom:2px;display:block}
+  .campo{display:flex;flex-direction:column;gap:3px}
+  .campo-fila{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .btn{padding:9px 18px;border-radius:var(--radio);font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s;width:100%}
+  .btn-primario{background:var(--rojo-oscuro);color:white}
+  .btn-primario:hover{background:var(--rojo)}
+  .btn-primario:disabled{background:#aaa;cursor:not-allowed}
+  .btn-secundario{background:var(--gris-claro);color:var(--gris)}
+  .btn-secundario:hover{background:#D5D8DC}
+  .divider{border:none;border-top:1px solid var(--gris-claro);margin:2px 0}
+  .badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600}
+  .badge-verde{background:var(--verde-claro);color:var(--verde)}
+  .badge-rojo{background:var(--rojo-claro);color:var(--rojo-oscuro)}
+  .badge-naranja{background:var(--naranja-claro);color:var(--naranja)}
+  .badge-gris{background:var(--gris-claro);color:var(--gris-medio)}
+  .badge-azul{background:var(--azul-claro);color:var(--azul)}
+
+  #busqueda-input{padding:7px 10px 7px 30px;background:var(--fondo) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%235D6D7E' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") 9px center no-repeat;border:1px solid #dde;border-radius:var(--radio);font-family:'DM Sans',sans-serif;font-size:13px;width:100%}
+
+  .hidrante-item{padding:9px 11px;border:1px solid #dde;border-radius:var(--radio);cursor:pointer;transition:all 0.2s;display:flex;align-items:flex-start;gap:9px}
+  .hidrante-item:hover{border-color:var(--rojo);background:var(--rojo-claro)}
+  .hidrante-item.seleccionado{border-color:var(--rojo);background:var(--rojo-claro)}
+  .hi-icono{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:1px}
+  .hi-info{flex:1;min-width:0}
+  .hi-nombre{font-weight:600;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hi-dir{font-size:11px;color:var(--gris-medio);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hi-badges{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
+  .paginacion{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--gris-medio)}
+  .paginacion button{background:var(--gris-claro);border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:12px}
+  .paginacion button:hover{background:#D5D8DC}
+  .paginacion button:disabled{opacity:0.4;cursor:not-allowed}
+
+  #mapa{width:100%;height:100%;min-height:400px;z-index:1}
+  .mapa-wrapper{position:relative;flex:1;display:flex;flex-direction:column}
+
+  #panel-detalle{position:absolute;top:16px;right:16px;width:310px;background:white;border-radius:10px;box-shadow:var(--sombra);z-index:900;display:none;max-height:calc(100vh - 120px);overflow-y:auto}
+  .pd-header{background:var(--rojo-oscuro);color:white;padding:13px 15px;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:space-between}
+  .pd-titulo{font-weight:600;font-size:14px}
+  .pd-cerrar{background:none;border:none;color:white;font-size:20px;cursor:pointer;line-height:1}
+  .pd-body{padding:13px 15px;display:flex;flex-direction:column;gap:8px}
+  .pd-campo{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid var(--gris-claro);gap:8px}
+  .pd-campo:last-child{border-bottom:none}
+  .pd-clave{font-size:11px;color:var(--gris-medio);font-weight:500;flex-shrink:0}
+  .pd-valor{font-size:12px;font-weight:500;text-align:right;word-break:break-word}
+  .pd-acciones{display:flex;gap:6px;margin-top:4px}
+  .pd-acciones button{flex:1;padding:7px;border-radius:var(--radio);border:none;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+  .pd-btn-editar{background:var(--azul-claro);color:var(--azul)}
+  .pd-btn-editar:hover{background:#AED6F1}
+  .pd-btn-borrar{background:var(--rojo-claro);color:var(--rojo-oscuro)}
+  .pd-btn-borrar:hover{background:#F1948A}
+  .pd-btn-nav{background:var(--verde-claro);color:var(--verde)}
+  .pd-btn-nav:hover{background:#A9DFBF}
+
+  #barra-estado{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);background:white;border-radius:30px;padding:7px 18px;box-shadow:var(--sombra);z-index:900;display:flex;gap:14px;align-items:center;font-size:12px;white-space:nowrap}
+  .be-item{display:flex;align-items:center;gap:5px}
+  .be-num{font-weight:700;font-size:14px;font-family:'Space Mono',monospace}
+
+  #toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--gris);color:white;padding:9px 18px;border-radius:30px;font-size:13px;z-index:9999;display:none;box-shadow:var(--sombra)}
+
+  #aviso-añadir{position:absolute;top:16px;left:50%;transform:translateX(-50%);background:var(--rojo-oscuro);color:white;padding:10px 20px;border-radius:30px;font-size:13px;z-index:900;display:none;box-shadow:var(--sombra);cursor:pointer;white-space:nowrap}
+
+  .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .stat-card{background:var(--fondo);border-radius:var(--radio);padding:11px;text-align:center}
+  .stat-num{font-size:22px;font-weight:700;font-family:'Space Mono',monospace}
+  .stat-label{font-size:11px;color:var(--gris-medio);margin-top:2px}
+  .stat-operativo .stat-num{color:var(--verde)}
+  .stat-revision .stat-num{color:var(--naranja)}
+  .stat-inoperativo .stat-num{color:var(--rojo)}
+  .stat-total .stat-num{color:var(--azul)}
+  .barra-tipo-fila{display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:5px}
+  .barra-tipo-label{width:100px;color:var(--gris-medio);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .barra-tipo-barra{flex:1;height:7px;border-radius:4px;background:var(--gris-claro);overflow:hidden}
+  .barra-tipo-fill{height:100%;border-radius:4px;transition:width 0.5s}
+  .barra-tipo-num{width:28px;text-align:right;font-weight:600;font-size:11px}
+
+  .info-modo{background:var(--azul-claro);border:1px solid #AED6F1;border-radius:var(--radio);padding:9px 11px;font-size:12px;color:var(--azul);line-height:1.5}
+  .coords-display{background:var(--fondo);border:1px solid #dde;border-radius:var(--radio);padding:7px 10px;font-family:'Space Mono',monospace;font-size:11px;color:var(--gris-medio)}
+
+  .marcador-hidrante{width:28px;height:28px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer;transition:transform 0.2s}
+  .marcador-hidrante:hover,.marcador-hidrante.hover{transform:scale(1.2)}
+  .m-operativo{background:#27AE60}
+  .m-revision{background:#E67E22}
+  .m-inoperativo{background:#E74C3C}
+  .m-desconocido{background:#95A5A6}
+  .m-seleccionado{transform:scale(1.35)!important;border-color:var(--rojo-oscuro)!important;z-index:999}
+
+  .chip-tipo{padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:0.3px;color:white}
+  .ct-soterra{background:#16A085}.ct-boca{background:#2980B9}.ct-columna{background:#8E44AD}
+  .ct-deposito{background:#C0392B}.ct-toma_aspiration{background:#E67E22}.ct-otro{background:#7F8C8D}
+
+  .cargando-overlay{position:absolute;inset:0;background:rgba(255,255,255,0.8);display:flex;align-items:center;justify-content:center;z-index:800;flex-direction:column;gap:12px;font-size:14px;color:var(--gris)}
+  .spinner{width:36px;height:36px;border:3px solid var(--gris-claro);border-top-color:var(--rojo-oscuro);border-radius:50%;animation:spin 0.8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(231,76,60,0.6)}70%{box-shadow:0 0 0 12px rgba(231,76,60,0)}100%{box-shadow:0 0 0 0 rgba(231,76,60,0)}}
+
+
+  .chip-osm{background:#7EBC6F;color:white;font-size:9px;padding:1px 4px;border-radius:2px;font-weight:700}
+
+  @media(max-width:600px){
+    .sidebar{width:100%;height:220px;border-right:none;border-bottom:1px solid #dde}
+    .app-body{flex-direction:column}
+    #panel-detalle{width:calc(100% - 32px);right:16px}
+    .header-right .btn-header:not(.primario){display:none}
+  }
+
+  .sidebar{width:340px;background:var(--blanco);border-right:1px solid #dde;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width 0.3s ease}
+  .sidebar.contraido{width:0;border-right:none}
+
+  #btn-toggle-sidebar{
+    position:absolute;
+    top:50%;
+    left:0;
+    transform:translateY(-50%);
+    z-index:1000;
+    background:var(--rojo-oscuro);
+    color:white;
+    border:none;
+    border-radius:0 8px 8px 0;
+    width:22px;
+    height:64px;
+    cursor:pointer;
+    font-size:13px;
+    box-shadow:3px 0 8px rgba(0,0,0,0.25);
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:background 0.2s, width 0.2s;
+    writing-mode:horizontal-tb;
+  }
+  #btn-toggle-sidebar:hover{background:var(--rojo);width:26px}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">🔴 Hidrantes<span>GIS</span></div>
+    <div class="subtitle">Consorcio Bomberos · Provincia de Sevilla</div>
+  </div>
+  <div class="header-right">
+    <span id="indicador-sync" class="sync-cargando">⟳ Conectando...</span>
+    <button class="btn-header" id="btn-geopos" onclick="miPosicion()" title="Ver mi posición">📍 Mi posición</button>
+    <button class="btn-header" id="btn-cercano" onclick="hidranteCercano()" title="Hidrante más cercano">🚒 Más cercano</button>
+    <button class="btn-header" onclick="exportarCSV()">⬇ CSV</button>
+    <button class="btn-header" onclick="exportarGeoJSON()">⬇ GeoJSON</button>
+    <button class="btn-header primario" id="btn-modo-añadir" onclick="activarModoAñadir()">+ Nuevo</button>
+  </div>
+</header>
+
+<div class="app-body">
+  <div class="sidebar">
+    <div class="sidebar-tabs">
+      <div class="tab activo" onclick="cambiarTab('lista',this)">📋 Lista</div>
+      <div class="tab" onclick="cambiarTab('filtros',this)">🔍 Filtros</div>
+      <div class="tab" onclick="cambiarTab('form',this)">➕ Añadir</div>
+      <div class="tab" onclick="cambiarTab('stats',this)">📊 Stats</div>
+    </div>
+
+    <!-- LISTA -->
+    <div id="tab-lista" class="tab-contenido activo">
+      <input type="text" id="busqueda-input" placeholder="Buscar dirección, ref, municipio..." oninput="filtrarLista()">
+      <div id="lista-hidrantes"></div>
+      <div class="paginacion" id="paginacion" style="display:none">
+        <button onclick="cambiarPagina(-1)" id="btn-prev">← Ant</button>
+        <span id="info-pagina"></span>
+        <button onclick="cambiarPagina(1)" id="btn-next">Sig →</button>
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div id="tab-filtros" class="tab-contenido">
+      <p class="seccion-titulo">Estado</p>
+      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('estado','operativo',this)"><span class="punto operativo"></span> Operativo</label>
+      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('estado','revision',this)"><span class="punto revision"></span> En revisión</label>
+      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('estado','inoperativo',this)"><span class="punto inoperativo"></span> Inoperativo</label>
+      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('estado','desconocido',this)"><span class="punto desconocido"></span> Desconocido</label>
+      <hr class="divider">
+      <p class="seccion-titulo">Tipo</p>
+      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('tipo','soterra',this)">🟢 Subterráneo</label>
+      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('tipo','boca',this)">🔴 Boca incendio</label>
+      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('tipo','columna',this)">🟣 Columna seca</label>
+      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('tipo','deposito',this)">🟤 Depósito</label>
+      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('tipo','toma_aspiration',this)">🟠 Toma aspiración</label>
+      <hr class="divider">
+      <p class="seccion-titulo">Municipio</p>
+      <select id="filtro-municipio" onchange="aplicarFiltros()">
+        <option value="">Todos los municipios</option>
+      </select>
+      <hr class="divider">
+      <button class="btn btn-secundario" onclick="resetFiltros()">Limpiar filtros</button>
+    </div>
+
+    <!-- FORMULARIO -->
+    <div id="tab-form" class="tab-contenido">
+      <div class="info-modo">📍 Pulsa <strong>"+ Nuevo"</strong> en la barra superior y haz clic en el mapa para ubicar el hidrante exactamente.</div>
+      <div class="campo">
+        <label>Coordenadas</label>
+        <div class="coords-display" id="coords-display">Sin seleccionar</div>
+      </div>
+      <div class="campo-fila">
+        <div class="campo">
+          <label>Tipo *</label>
+          <select id="f-tipo">
+            <option value="soterra">Subterráneo</option>
+            <option value="boca">Boca incendio</option>
+            <option value="columna">Columna seca</option>
+            <option value="deposito">Depósito</option>
+            <option value="toma_aspiration">Toma aspiración</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label>Estado *</label>
+          <select id="f-estado">
+            <option value="operativo">Operativo</option>
+            <option value="desconocido">Desconocido</option>
+            <option value="revision">En revisión</option>
+            <option value="inoperativo">Inoperativo</option>
+          </select>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Dirección / Referencia *</label>
+        <input type="text" id="f-direccion" placeholder="C/ Cervantes nº 12, junto a...">
+      </div>
+      <div class="campo">
+        <label>Municipio *</label>
+        <input type="text" id="f-municipio" placeholder="Los Palacios y Villafranca">
+      </div>
+      <div class="campo-fila">
+        <div class="campo">
+          <label>Diámetro (mm)</label>
+          <input type="number" id="f-diametro" placeholder="100">
+        </div>
+        <div class="campo">
+          <label>Presión (bar)</label>
+          <input type="number" id="f-presion" step="0.1" placeholder="3.5">
+        </div>
+      </div>
+      <div class="campo-fila">
+        <div class="campo">
+          <label>Caudal (l/min)</label>
+          <input type="number" id="f-caudal" placeholder="500">
+        </div>
+        <div class="campo">
+          <label>Última revisión</label>
+          <input type="text" id="f-revision" placeholder="AAAA-MM-DD">
+        </div>
+      </div>
+      <div class="campo">
+        <label>Ref. interna</label>
+        <input type="text" id="f-ref" placeholder="HID-00001">
+      </div>
+      <div class="campo">
+        <label>Observaciones</label>
+        <textarea id="f-obs" placeholder="Acceso difícil, tapa oxidada..."></textarea>
+      </div>
+      <button class="btn btn-primario" id="btn-guardar" onclick="guardarHidrante()">💾 Guardar en Supabase</button>
+      <button class="btn btn-secundario" onclick="cancelarFormulario()">Cancelar</button>
+    </div>
+
+    <!-- STATS -->
+    <div id="tab-stats" class="tab-contenido">
+      <p class="seccion-titulo">Resumen general</p>
+      <div class="stats-grid">
+        <div class="stat-card stat-total"><div class="stat-num" id="s-total">—</div><div class="stat-label">Total</div></div>
+        <div class="stat-card stat-operativo"><div class="stat-num" id="s-oper">—</div><div class="stat-label">Operativos</div></div>
+        <div class="stat-card stat-revision"><div class="stat-num" id="s-rev">—</div><div class="stat-label">Revisión</div></div>
+        <div class="stat-card stat-inoperativo"><div class="stat-num" id="s-inop">—</div><div class="stat-label">Inoperativos</div></div>
+      </div>
+      <hr class="divider">
+      <p class="seccion-titulo">Por tipo</p>
+      <div id="stats-tipo"></div>
+      <hr class="divider">
+      <p class="seccion-titulo">Por municipio</p>
+      <div id="stats-municipio"></div>
+      <hr class="divider">
+      <button class="btn btn-secundario" onclick="cargarDatos()">🔄 Recargar datos</button>
+    </div>
+  </div>
+
+  <!-- MAPA -->
+  <div class="mapa-wrapper">
+    <button id="btn-toggle-sidebar" onclick="toggleSidebar()" title="Contraer/Expandir panel">◀</button>
+    <div id="mapa"></div>
+
+    <div class="cargando-overlay" id="overlay-carga">
+      <div class="spinner"></div>
+      <span>Cargando hidrantes desde Supabase...</span>
+    </div>
+
+    <div id="panel-detalle">
+      <div class="pd-header">
+        <span class="pd-titulo" id="pd-titulo">Hidrante</span>
+        <button class="pd-cerrar" onclick="cerrarDetalle()">×</button>
+      </div>
+      <div class="pd-body" id="pd-body"></div>
+    </div>
+
+    <div id="barra-estado">
+      <div class="be-item"><span class="be-num" id="be-total" style="color:var(--azul)">—</span><span>total</span></div>
+      <span style="color:#ccc">|</span>
+      <div class="be-item"><span class="be-num" style="color:var(--verde)" id="be-oper">—</span><span>oper.</span></div>
+      <span style="color:#ccc">|</span>
+      <div class="be-item"><span class="be-num" style="color:var(--naranja)" id="be-rev">—</span><span>rev.</span></div>
+      <span style="color:#ccc">|</span>
+      <div class="be-item"><span class="be-num" style="color:var(--rojo)" id="be-inop">—</span><span>inop.</span></div>
+    </div>
+
+    <div id="aviso-añadir" onclick="cancelarModoAñadir()">
+      📍 Haz clic en el mapa para ubicar el hidrante — Pulsa aquí para cancelar
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ============================================
+// CONFIGURACIÓN SUPABASE
+// ============================================
+const SB_URL = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
+const HEADERS = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+
+async function sbGet(params=''){
+  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?${params}&order=created_at.desc`,{headers:HEADERS});
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function sbPost(body){
+  const r = await fetch(`${SB_URL}/rest/v1/hidrantes`,{method:'POST',headers:{...HEADERS,'Prefer':'return=representation'},body:JSON.stringify(body)});
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function sbPatch(id,body){
+  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?id=eq.${id}`,{method:'PATCH',headers:{...HEADERS,'Prefer':'return=minimal'},body:JSON.stringify(body)});
+  if(!r.ok) throw new Error(await r.text());
+}
+async function sbDelete(id){
+  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?id=eq.${id}`,{method:'DELETE',headers:HEADERS});
+  if(!r.ok) throw new Error(await r.text());
+}
+async function sbCount(){
+  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?select=id`,{headers:{...HEADERS,'Prefer':'count=exact','Range':'0-0'}});
+  return parseInt(r.headers.get('Content-Range')?.split('/')[1]||'0');
+}
+
+// ============================================
+// ESTADO
+// ============================================
+let todosHidrantes = [];
+let hidrantesFiltrados = [];
+let marcadores = {};
+let modoAñadir = false;
+let editandoId = null;
+let seleccionadoId = null;
+let pagina = 0;
+const POR_PAGINA = 30;
+
+let filtros = {
+  estado: new Set(['operativo','revision','inoperativo','desconocido']),
+  tipo: new Set(['soterra','boca','columna','deposito','toma_aspiration','otro']),
+  municipio: '',
+  busqueda: ''
+};
+
+// ============================================
+// MAPA
+// ============================================
+const mapa = L.map('mapa').setView([37.158,-5.925],13);
+const capaOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'});
+const capaSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Esri'});
+const capaCarto = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19});
+capaOSM.addTo(mapa);
+L.control.layers({'Callejero':capaOSM,'Satélite':capaSat,'Claro':capaCarto}).addTo(mapa);
+
+mapa.on('click',function(e){
+  if(!modoAñadir) return;
+  const {lat,lng} = e.latlng;
+  document.getElementById('coords-display').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+  document.getElementById('coords-display').dataset.lat = lat;
+  document.getElementById('coords-display').dataset.lon = lng;
+  if(window._marcadorTemp) mapa.removeLayer(window._marcadorTemp);
+  window._marcadorTemp = L.marker([lat,lng]).addTo(mapa);
+  cancelarModoAñadir();
+  cambiarTab('form',document.querySelectorAll('.tab')[2]);
+  mostrarToast('📍 Ubicación seleccionada. Completa el formulario.');
+});
+
+function crearIcono(h){
+  const cls = {operativo:'m-operativo',revision:'m-revision',inoperativo:'m-inoperativo',desconocido:'m-desconocido'}[h.estado]||'m-desconocido';
+  const emoji = emojiTipo(h.tipo);
+  return L.divIcon({
+    html:`<div class="marcador-hidrante ${cls}" title="${h.ref||h.osm_id||''}">${emoji}</div>`,
+    iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-14],className:''
+  });
+}
+
+function renderizarMapa(){
+  Object.values(marcadores).forEach(m=>mapa.removeLayer(m));
+  marcadores = {};
+  hidrantesFiltrados.forEach(h=>{
+    const m = L.marker([h.lat,h.lon],{icon:crearIcono(h)}).addTo(mapa);
+    m.on('click',()=>mostrarDetalle(h.id));
+    marcadores[h.id]=m;
+  });
+  actualizarBarraEstado();
+}
+
+// ============================================
+// CARGA DATOS
+// ============================================
+async function cargarDatos(){
+  document.getElementById('overlay-carga').style.display='flex';
+  setSyncStatus('cargando','⟳ Cargando...');
+  try {
+    // Carga con límite alto (Supabase devuelve 1000 por defecto)
+    todosHidrantes = await sbGet('select=*&limit=2000');
+    setSyncStatus('ok',`✓ ${todosHidrantes.length} hidrantes`);
+    aplicarFiltros();
+    actualizarSelectMunicipios();
+    renderizarStats();
+    mostrarToast(`✅ ${todosHidrantes.length} hidrantes cargados`);
+  } catch(e){
+    setSyncStatus('err','⚠ Sin conexión');
+    mostrarToast('❌ Error al conectar con Supabase: '+e.message,4000);
+  }
+  document.getElementById('overlay-carga').style.display='none';
+}
+
+function setSyncStatus(tipo,texto){
+  const el = document.getElementById('indicador-sync');
+  el.textContent=texto;
+  el.className='';
+  el.classList.add({ok:'sync-ok',err:'sync-err',cargando:'sync-cargando'}[tipo]||'sync-cargando');
+}
+
+// ============================================
+// FILTROS
+// ============================================
+function esVisible(h){
+  if(!filtros.estado.has(h.estado||'desconocido')) return false;
+  if(!filtros.tipo.has(h.tipo||'otro')) return false;
+  if(filtros.municipio && (h.municipio||'')!==filtros.municipio) return false;
+  if(filtros.busqueda){
+    const q=filtros.busqueda.toLowerCase();
+    if(![(h.direccion||''),(h.ref||''),(h.municipio||''),(h.osm_id||''),(h.obs||'')].some(s=>s.toLowerCase().includes(q))) return false;
+  }
+  return true;
+}
+
+function aplicarFiltros(){
+  filtros.municipio = document.getElementById('filtro-municipio').value;
+  hidrantesFiltrados = todosHidrantes.filter(h=>esVisible(h));
+  pagina=0;
+  renderizarMapa();
+  renderizarLista();
+}
+
+function toggleFiltro(tipo,valor,cb){
+  const label=cb.closest('.filtro-chip');
+  if(cb.checked){filtros[tipo].add(valor);label.classList.add('activo');}
+  else{filtros[tipo].delete(valor);label.classList.remove('activo');}
+  aplicarFiltros();
+}
+
+function resetFiltros(){
+  filtros.estado=new Set(['operativo','revision','inoperativo','desconocido']);
+  filtros.tipo=new Set(['soterra','boca','columna','deposito','toma_aspiration','otro']);
+  filtros.municipio='';filtros.busqueda='';
+  document.getElementById('filtro-municipio').value='';
+  document.getElementById('busqueda-input').value='';
+  document.querySelectorAll('.filtro-chip input').forEach(cb=>{cb.checked=true;cb.closest('.filtro-chip').classList.add('activo');});
+  aplicarFiltros();
+}
+
+function filtrarLista(){
+  filtros.busqueda=document.getElementById('busqueda-input').value;
+  hidrantesFiltrados=todosHidrantes.filter(h=>esVisible(h));
+  pagina=0;
+  renderizarMapa();
+  renderizarLista();
+}
+
+function actualizarSelectMunicipios(){
+  const munis=[...new Set(todosHidrantes.map(h=>h.municipio).filter(Boolean))].sort();
+  const sel=document.getElementById('filtro-municipio');
+  sel.innerHTML='<option value="">Todos los municipios</option>';
+  munis.forEach(m=>sel.innerHTML+=`<option value="${m}">${m}</option>`);
+}
+
+// ============================================
+// LISTA CON PAGINACIÓN
+// ============================================
+function renderizarLista(){
+  const lista=document.getElementById('lista-hidrantes');
+  if(hidrantesFiltrados.length===0){
+    lista.innerHTML='<p style="text-align:center;color:var(--gris-medio);font-size:13px;padding:16px">Sin resultados</p>';
+    document.getElementById('paginacion').style.display='none';
+    return;
+  }
+  const inicio=pagina*POR_PAGINA;
+  const pagina_actual=hidrantesFiltrados.slice(inicio,inicio+POR_PAGINA);
+  const totalPags=Math.ceil(hidrantesFiltrados.length/POR_PAGINA);
+
+  lista.innerHTML=pagina_actual.map(h=>`
+    <div class="hidrante-item${seleccionadoId===h.id?' seleccionado':''}" onclick="mostrarDetalle('${h.id}')">
+      <div class="hi-icono" style="background:${colorEstado(h.estado)}20;color:${colorEstado(h.estado)}">${emojiTipo(h.tipo)}</div>
+      <div class="hi-info">
+        <div class="hi-nombre">${h.ref||h.osm_id?.replace('node/','#')||h.id.slice(0,8)} ${h.osm_id?'<span class="chip-osm">OSM</span>':''}</div>
+        <div class="hi-dir">${h.direccion||h.municipio||'Sin referencia'}</div>
+        <div class="hi-badges">
+          <span class="badge ${badgeEstado(h.estado)}">${etqEstado(h.estado)}</span>
+          <span class="chip-tipo ct-${h.tipo||'otro'}">${etqTipo(h.tipo)}</span>
+          ${h.diametro?`<span class="badge badge-azul">∅${h.diametro}</span>`:''}
+          ${h.presion!=null?`<span class="badge badge-gris">${h.presion}bar</span>`:''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const pag=document.getElementById('paginacion');
+  if(totalPags>1){
+    pag.style.display='flex';
+    document.getElementById('info-pagina').textContent=`${pagina+1}/${totalPags} (${hidrantesFiltrados.length})`;
+    document.getElementById('btn-prev').disabled=pagina===0;
+    document.getElementById('btn-next').disabled=pagina>=totalPags-1;
+  } else {
+    pag.style.display='none';
+  }
+}
+
+function cambiarPagina(dir){
+  pagina+=dir;
+  renderizarLista();
+  document.getElementById('tab-lista').scrollTop=0;
+}
+
+// ============================================
+// DETALLE
+// ============================================
+function mostrarDetalle(id){
+  const h=todosHidrantes.find(x=>x.id===id);
+  if(!h) return;
+  seleccionadoId=id;
+  document.getElementById('pd-titulo').textContent=`${emojiTipo(h.tipo)} ${h.ref||h.osm_id||'Hidrante'}`;
+  const campos=[
+    ['Estado',`<span class="badge ${badgeEstado(h.estado)}">${etqEstado(h.estado)}</span>`],
+    ['Tipo',etqTipo(h.tipo)],
+    ['Municipio',h.municipio||'—'],
+    ['Dirección',h.direccion||'—'],
+    ['Diámetro',h.diametro?h.diametro+' mm':'—'],
+    ['Presión',h.presion!=null?h.presion+' bar':'—'],
+    ['Caudal',h.caudal?h.caudal+' l/min':'—'],
+    ['Operador',h.operador||'—'],
+    ['Última revisión',h.ultima_revision||'—'],
+    ['Ref. interna',h.ref||'—'],
+    ['ID OSM',h.osm_id||'—'],
+    ['Coordenadas',`${h.lat.toFixed(5)}, ${h.lon.toFixed(5)}`],
+    ['Observaciones',h.obs||'—'],
+  ];
+  document.getElementById('pd-body').innerHTML=`
+    ${campos.map(([k,v])=>`<div class="pd-campo"><span class="pd-clave">${k}</span><span class="pd-valor">${v}</span></div>`).join('')}
+    <div class="pd-acciones">
+      <button class="pd-btn-editar" onclick="editarHidrante('${h.id}')">✏️ Editar</button>
+      <button class="pd-btn-nav" onclick="verEnOSM('${h.id}')">🗺 OSM</button>
+      <button class="pd-btn-borrar" onclick="borrarHidrante('${h.id}')">🗑</button>
+    </div>
+  `;
+  document.getElementById('panel-detalle').style.display='block';
+  // Solo mueve si el hidrante no está visible en el área actual
+  if(!mapa.getBounds().contains([h.lat,h.lon])){
+    mapa.flyTo([h.lat,h.lon], Math.max(mapa.getZoom(),16), {animate:true, duration:0.8});
+  }
+  Object.entries(marcadores).forEach(([mid,m])=>{
+    m.getElement()?.querySelector('.marcador-hidrante')?.classList.toggle('m-seleccionado',mid===id);
+  });
+  renderizarLista();
+}
+
+function cerrarDetalle(){
+  document.getElementById('panel-detalle').style.display='none';
+  seleccionadoId=null;
+  Object.values(marcadores).forEach(m=>m.getElement()?.querySelector('.marcador-hidrante')?.classList.remove('m-seleccionado'));
+  renderizarLista();
+}
+
+async function borrarHidrante(id){
+  if(!confirm('¿Eliminar este hidrante de Supabase? No se puede deshacer.')) return;
+  try{
+    await sbDelete(id);
+    todosHidrantes=todosHidrantes.filter(h=>h.id!==id);
+    cerrarDetalle();
+    aplicarFiltros();
+    renderizarStats();
+    mostrarToast('🗑 Hidrante eliminado');
+  }catch(e){ mostrarToast('❌ Error al borrar: '+e.message,3000); }
+}
+
+function verEnOSM(id){
+  const h=todosHidrantes.find(x=>x.id===id);
+  if(!h) return;
+  window.open(`https://www.openstreetmap.org/?mlat=${h.lat}&mlon=${h.lon}&zoom=18`,'_blank');
+}
+
+function editarHidrante(id){
+  const h=todosHidrantes.find(x=>x.id===id);
+  if(!h) return;
+  editandoId=id;
+  document.getElementById('coords-display').textContent=`${h.lat.toFixed(6)}, ${h.lon.toFixed(6)}`;
+  document.getElementById('coords-display').dataset.lat=h.lat;
+  document.getElementById('coords-display').dataset.lon=h.lon;
+  document.getElementById('f-tipo').value=h.tipo||'soterra';
+  document.getElementById('f-estado').value=h.estado||'desconocido';
+  document.getElementById('f-direccion').value=h.direccion||'';
+  document.getElementById('f-municipio').value=h.municipio||'';
+  document.getElementById('f-diametro').value=h.diametro||'';
+  document.getElementById('f-presion').value=h.presion!=null?h.presion:'';
+  document.getElementById('f-caudal').value=h.caudal||'';
+  document.getElementById('f-ref').value=h.ref||'';
+  document.getElementById('f-revision').value=h.ultima_revision||'';
+  document.getElementById('f-obs').value=h.obs||'';
+  document.getElementById('btn-guardar').textContent='💾 Guardar cambios';
+  cambiarTab('form',document.querySelectorAll('.tab')[2]);
+  cerrarDetalle();
+}
+
+// ============================================
+// FORMULARIO / GUARDADO
+// ============================================
+function activarModoAñadir(){
+  modoAñadir=true;
+  document.getElementById('aviso-añadir').style.display='block';
+  document.getElementById('btn-modo-añadir').style.background='#E67E22';
+  mostrarToast('Haz clic en el mapa para ubicar el hidrante');
+}
+
+function cancelarModoAñadir(){
+  modoAñadir=false;
+  document.getElementById('aviso-añadir').style.display='none';
+  document.getElementById('btn-modo-añadir').style.background='';
+}
+
+async function guardarHidrante(){
+  const lat=parseFloat(document.getElementById('coords-display').dataset.lat);
+  const lon=parseFloat(document.getElementById('coords-display').dataset.lon);
+  if(!lat||!lon){mostrarToast('⚠️ Selecciona una ubicación en el mapa');return;}
+  const dir=document.getElementById('f-direccion').value.trim();
+  if(!dir){mostrarToast('⚠️ La dirección es obligatoria');return;}
+
+  const datos={
+    lat,lon,
+    tipo:document.getElementById('f-tipo').value,
+    estado:document.getElementById('f-estado').value,
+    direccion:dir,
+    municipio:document.getElementById('f-municipio').value.trim()||null,
+    diametro:parseInt(document.getElementById('f-diametro').value)||null,
+    presion:parseFloat(document.getElementById('f-presion').value)||null,
+    caudal:parseInt(document.getElementById('f-caudal').value)||null,
+    ref:document.getElementById('f-ref').value.trim()||null,
+    ultima_revision:document.getElementById('f-revision').value.trim()||null,
+    obs:document.getElementById('f-obs').value.trim()||null,
+    updated_at:new Date().toISOString()
+  };
+
+  const btn=document.getElementById('btn-guardar');
+  btn.disabled=true; btn.textContent='Guardando...';
+
+  try{
+    if(editandoId){
+      await sbPatch(editandoId,datos);
+      const idx=todosHidrantes.findIndex(h=>h.id===editandoId);
+      todosHidrantes[idx]={...todosHidrantes[idx],...datos};
+      editandoId=null;
+      mostrarToast('✅ Hidrante actualizado en Supabase');
+    } else {
+      const [nuevo]=await sbPost(datos);
+      todosHidrantes.unshift(nuevo);
+      mostrarToast('✅ Hidrante añadido a Supabase');
+    }
+    limpiarFormulario();
+    if(window._marcadorTemp){mapa.removeLayer(window._marcadorTemp);window._marcadorTemp=null;}
+    aplicarFiltros();
+    actualizarSelectMunicipios();
+    renderizarStats();
+    cambiarTab('lista',document.querySelectorAll('.tab')[0]);
+  }catch(e){
+    mostrarToast('❌ Error al guardar: '+e.message,4000);
+  }
+  btn.disabled=false; btn.textContent=editandoId?'💾 Guardar cambios':'💾 Guardar en Supabase';
+}
+
+function cancelarFormulario(){
+  editandoId=null;
+  limpiarFormulario();
+  if(window._marcadorTemp){mapa.removeLayer(window._marcadorTemp);window._marcadorTemp=null;}
+  cancelarModoAñadir();
+}
+
+function limpiarFormulario(){
+  ['f-tipo','f-estado','f-direccion','f-municipio','f-diametro','f-presion','f-caudal','f-ref','f-revision','f-obs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('coords-display').textContent='Sin seleccionar';
+  delete document.getElementById('coords-display').dataset.lat;
+  delete document.getElementById('coords-display').dataset.lon;
+  document.getElementById('btn-guardar').textContent='💾 Guardar en Supabase';
+}
+
+// ============================================
+// ESTADÍSTICAS
+// ============================================
+function renderizarStats(){
+  const h=todosHidrantes;
+  document.getElementById('s-total').textContent=h.length;
+  document.getElementById('s-oper').textContent=h.filter(x=>x.estado==='operativo').length;
+  document.getElementById('s-rev').textContent=h.filter(x=>x.estado==='revision').length;
+  document.getElementById('s-inop').textContent=h.filter(x=>x.estado==='inoperativo').length;
+
+  const tipos={soterra:'Subterráneo',boca:'Boca incendio',columna:'Columna seca',deposito:'Depósito',toma_aspiration:'Toma aspiración'};
+  const colT={soterra:'#16A085',boca:'#2980B9',columna:'#8E44AD',deposito:'#C0392B',toma_aspiration:'#E67E22'};
+  document.getElementById('stats-tipo').innerHTML=Object.entries(tipos).map(([k,v])=>{
+    const n=h.filter(x=>(x.tipo||'otro')===k).length;
+    const pct=h.length?Math.round(n/h.length*100):0;
+    return `<div class="barra-tipo-fila"><span class="barra-tipo-label">${v}</span><div class="barra-tipo-barra"><div class="barra-tipo-fill" style="width:${pct}%;background:${colT[k]}"></div></div><span class="barra-tipo-num">${n}</span></div>`;
+  }).join('');
+
+  const munis={};
+  h.forEach(x=>{if(x.municipio)munis[x.municipio]=(munis[x.municipio]||0)+1;});
+  const maxM=Math.max(...Object.values(munis),1);
+  document.getElementById('stats-municipio').innerHTML=Object.entries(munis).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([m,n])=>`
+    <div class="barra-tipo-fila">
+      <span class="barra-tipo-label" title="${m}">${m.length>14?m.substring(0,13)+'…':m}</span>
+      <div class="barra-tipo-barra"><div class="barra-tipo-fill" style="width:${Math.round(n/maxM*100)}%;background:var(--azul)"></div></div>
+      <span class="barra-tipo-num">${n}</span>
+    </div>`).join('')||'<p style="font-size:12px;color:var(--gris-medio)">Sin datos de municipio</p>';
+}
+
+// ============================================
+// EXPORTACIÓN
+// ============================================
+function exportarCSV(){
+  const cols=['id','osm_id','ref','tipo','estado','direccion','municipio','lat','lon','diametro','presion','caudal','operador','ultima_revision','obs'];
+  const csv=[cols.join(';'),...todosHidrantes.map(h=>cols.map(c=>JSON.stringify(h[c]??'')).join(';'))].join('\n');
+  descargar('hidrantes_gis.csv','text/csv',csv);
+  mostrarToast('⬇ CSV exportado ('+todosHidrantes.length+' registros)');
+}
+
+function exportarGeoJSON(){
+  const geo={type:'FeatureCollection',features:todosHidrantes.map(h=>({
+    type:'Feature',
+    geometry:{type:'Point',coordinates:[h.lon,h.lat]},
+    properties:{id:h.id,osm_id:h.osm_id,ref:h.ref,tipo:h.tipo,estado:h.estado,direccion:h.direccion,municipio:h.municipio,diametro:h.diametro,presion:h.presion,caudal:h.caudal,operador:h.operador,ultima_revision:h.ultima_revision,obs:h.obs}
+  }))};
+  descargar('hidrantes_gis.geojson','application/json',JSON.stringify(geo,null,2));
+  mostrarToast('⬇ GeoJSON exportado');
+}
+
+function descargar(nombre,tipo,contenido){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([contenido],{type:tipo}));
+  a.download=nombre; a.click();
+}
+
+// ============================================
+// UTILS
+// ============================================
+function actualizarBarraEstado(){
+  const h=hidrantesFiltrados;
+  document.getElementById('be-total').textContent=h.length;
+  document.getElementById('be-oper').textContent=h.filter(x=>x.estado==='operativo').length;
+  document.getElementById('be-rev').textContent=h.filter(x=>x.estado==='revision').length;
+  document.getElementById('be-inop').textContent=h.filter(x=>x.estado==='inoperativo').length;
+}
+
+function cambiarTab(nombre,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('activo'));
+  document.querySelectorAll('.tab-contenido').forEach(t=>t.classList.remove('activo'));
+  if(el) el.classList.add('activo');
+  const c=document.getElementById('tab-'+nombre);
+  if(c) c.classList.add('activo');
+  if(nombre==='stats') renderizarStats();
+}
+
+function mostrarToast(msg,dur=2500){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.display='block';
+  clearTimeout(window._toastT);
+  window._toastT=setTimeout(()=>t.style.display='none',dur);
+}
+
+function colorEstado(e){return{operativo:'#27AE60',revision:'#E67E22',inoperativo:'#E74C3C',desconocido:'#95A5A6'}[e]||'#95A5A6';}
+function badgeEstado(e){return{operativo:'badge-verde',revision:'badge-naranja',inoperativo:'badge-rojo',desconocido:'badge-gris'}[e]||'badge-gris';}
+function etqEstado(e){return{operativo:'Operativo',revision:'Revisión',inoperativo:'Inoperativo',desconocido:'Desconocido'}[e]||e;}
+function etqTipo(t){return{soterra:'Subterráneo',boca:'Boca incendio',columna:'Columna seca',deposito:'Depósito',toma_aspiration:'Toma aspiración',otro:'Otro'}[t]||t;}
+function emojiTipo(t){return{soterra:'🟢',boca:'🔴',columna:'🟣',deposito:'🟤',toma_aspiration:'🟠',otro:'⚪'}[t]||'🔴';}
+
+
+// ============================================
+// GEOLOCALIZACIÓN
+// ============================================
+let marcadorPosicion = null;
+let circuloPosicion = null;
+let marcadorCercano = null;
+
+function miPosicion(){
+  if(!navigator.geolocation){
+    mostrarToast('❌ Tu navegador no soporta geolocalización');
+    return;
+  }
+  const btn = document.getElementById('btn-geopos');
+  btn.textContent = '⟳ Localizando...';
+  btn.disabled = true;
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const {latitude: lat, longitude: lon, accuracy} = pos.coords;
+      // Eliminar marcador anterior
+      if(marcadorPosicion) mapa.removeLayer(marcadorPosicion);
+      if(circuloPosicion) mapa.removeLayer(circuloPosicion);
+      // Icono de posición
+      const iconoPosicion = L.divIcon({
+        html: `<div style="width:20px;height:20px;border-radius:50%;background:#1A73E8;border:3px solid white;box-shadow:0 0 0 3px rgba(26,115,232,0.3)"></div>`,
+        iconSize:[20,20], iconAnchor:[10,10], className:''
+      });
+      marcadorPosicion = L.marker([lat,lon],{icon:iconoPosicion,zIndexOffset:1000}).addTo(mapa);
+      marcadorPosicion.bindPopup(`<b>📍 Tu posición</b><br>Precisión: ±${Math.round(accuracy)} m`).openPopup();
+      // Círculo de precisión
+      circuloPosicion = L.circle([lat,lon],{radius:accuracy,color:'#1A73E8',fillColor:'#1A73E8',fillOpacity:0.1,weight:1}).addTo(mapa);
+      // Solo mueve si la posición no está ya visible en pantalla
+      if(!mapa.getBounds().contains([lat,lon])){
+        mapa.flyTo([lat,lon], 16, {animate:true, duration:1.2});
+      }
+      btn.textContent = '📍 Mi posición';
+      btn.disabled = false;
+      mostrarToast(`📍 Posición encontrada (±${Math.round(accuracy)} m)`);
+    },
+    err => {
+      btn.textContent = '📍 Mi posición';
+      btn.disabled = false;
+      const msgs = {1:'Permiso denegado — activa la ubicación en el navegador', 2:'No se pudo obtener la posición', 3:'Tiempo de espera agotado'};
+      mostrarToast('❌ ' + (msgs[err.code]||'Error de geolocalización'), 4000);
+    },
+    {enableHighAccuracy: true, timeout: 10000, maximumAge: 0}
+  );
+}
+
+function hidranteCercano(){
+  if(!navigator.geolocation){
+    mostrarToast('❌ Tu navegador no soporta geolocalización');
+    return;
+  }
+  if(todosHidrantes.length === 0){
+    mostrarToast('⚠️ No hay hidrantes cargados');
+    return;
+  }
+  const btn = document.getElementById('btn-cercano');
+  btn.textContent = '⟳ Buscando...';
+  btn.disabled = true;
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const {latitude: lat, longitude: lon, accuracy} = pos.coords;
+
+      // Actualizar marcador de posición
+      if(marcadorPosicion) mapa.removeLayer(marcadorPosicion);
+      if(circuloPosicion) mapa.removeLayer(circuloPosicion);
+      const iconoPosicion = L.divIcon({
+        html:`<div style="width:20px;height:20px;border-radius:50%;background:#1A73E8;border:3px solid white;box-shadow:0 0 0 3px rgba(26,115,232,0.3)"></div>`,
+        iconSize:[20,20],iconAnchor:[10,10],className:''
+      });
+      marcadorPosicion = L.marker([lat,lon],{icon:iconoPosicion,zIndexOffset:1000}).addTo(mapa);
+      circuloPosicion = L.circle([lat,lon],{radius:accuracy,color:'#1A73E8',fillColor:'#1A73E8',fillOpacity:0.1,weight:1}).addTo(mapa);
+
+      // Calcular distancias usando fórmula de Haversine
+      let cercano = null;
+      let minDist = Infinity;
+      todosHidrantes.forEach(h => {
+        const d = haversine(lat, lon, h.lat, h.lon);
+        if(d < minDist){ minDist = d; cercano = h; }
+      });
+
+      if(!cercano){ mostrarToast('No se encontró ningún hidrante'); return; }
+
+      // Eliminar marcador cercano anterior
+      if(marcadorCercano) mapa.removeLayer(marcadorCercano);
+
+      // Marcador especial para el más cercano
+      const iconoCercano = L.divIcon({
+        html:`<div style="width:38px;height:38px;border-radius:50%;background:#E74C3C;border:4px solid white;box-shadow:0 0 0 4px #E74C3C,0 4px 12px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:16px;animation:pulse 1s infinite">🚒</div>`,
+        iconSize:[38,38],iconAnchor:[19,19],className:''
+      });
+      marcadorCercano = L.marker([cercano.lat,cercano.lon],{icon:iconoCercano,zIndexOffset:2000}).addTo(mapa);
+
+      const distStr = minDist < 1000 ? `${Math.round(minDist)} m` : `${(minDist/1000).toFixed(2)} km`;
+
+      // Línea entre posición e hidrante
+      const linea = L.polyline([[lat,lon],[cercano.lat,cercano.lon]],{
+        color:'#E74C3C', weight:2, dashArray:'6,6', opacity:0.8
+      }).addTo(mapa);
+      setTimeout(()=>mapa.removeLayer(linea), 8000);
+
+      marcadorCercano.bindPopup(`
+        <div style="font-family:sans-serif;min-width:180px">
+          <b style="color:#922B21">🚒 Hidrante más cercano</b><br>
+          <hr style="margin:6px 0;border-color:#eee">
+          <b>📏 Distancia:</b> <span style="color:#E74C3C;font-size:15px;font-weight:700">${distStr}</span><br>
+          <b>Ref:</b> ${cercano.ref||cercano.osm_id||'—'}<br>
+          <b>Tipo:</b> ${etqTipo(cercano.tipo)}<br>
+          <b>Estado:</b> ${etqEstado(cercano.estado)}<br>
+          ${cercano.direccion?`<b>Dirección:</b> ${cercano.direccion}<br>`:''}
+          ${cercano.diametro?`<b>Diámetro:</b> ${cercano.diametro} mm<br>`:''}
+          ${cercano.presion!=null?`<b>Presión:</b> ${cercano.presion} bar<br>`:''}
+        </div>
+      `).openPopup();
+
+      // Ajustar vista para ver ambos puntos
+      const bounds = L.latLngBounds([[lat,lon],[cercano.lat,cercano.lon]]);
+      mapa.flyToBounds(bounds, {padding:[80,80], animate:true, duration:1.2});
+
+      btn.textContent = '🚒 Más cercano';
+      btn.disabled = false;
+      mostrarToast(`🚒 Hidrante más cercano a ${distStr}`, 4000);
+
+      // Mostrar detalle en sidebar
+      mostrarDetalle(cercano.id);
+    },
+    err => {
+      btn.textContent = '🚒 Más cercano';
+      btn.disabled = false;
+      const msgs = {1:'Permiso denegado — activa la ubicación', 2:'No se pudo obtener posición', 3:'Tiempo agotado'};
+      mostrarToast('❌ ' + (msgs[err.code]||'Error GPS'), 4000);
+    },
+    {enableHighAccuracy: true, timeout: 10000, maximumAge: 0}
+  );
+}
+
+// Fórmula Haversine — distancia en metros entre dos coordenadas
+function haversine(lat1, lon1, lat2, lon2){
+  const R = 6371000;
+  const dLat = (lat2-lat1) * Math.PI/180;
+  const dLon = (lon2-lon1) * Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+
+// ============================================
+// TOGGLE SIDEBAR
+// ============================================
+function toggleSidebar(){
+  const sidebar = document.querySelector('.sidebar');
+  const btn = document.getElementById('btn-toggle-sidebar');
+  const contraido = sidebar.classList.toggle('contraido');
+  btn.textContent = contraido ? '▶' : '◀';
+  btn.title = contraido ? 'Expandir panel' : 'Contraer panel';
+  setTimeout(() => mapa.invalidateSize(), 320);
+}
+
+// ============================================
+// ARRANQUE
+// ============================================
+cargarDatos();
+window.addEventListener('load',()=>setTimeout(()=>mapa.invalidateSize(),400));
+window.addEventListener('resize',()=>mapa.invalidateSize());
+</script>
+</body>
+</html>

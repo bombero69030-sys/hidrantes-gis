@@ -280,6 +280,8 @@ footer{
   </div>
   <div class="header-right">
     <span class="badge-parque">T5 · Los Palacios</span>
+    <span id="portal-usuario" style="display:none;font-size:11px;color:#58D68D;background:rgba(30,132,73,0.15);border:1px solid rgba(30,132,73,0.3);padding:4px 10px;border-radius:20px"></span>
+    <button id="portal-btn-login" onclick="abrirLoginPortal()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">🔐 Acceso</button>
     <div class="hora" id="hora">--:--</div>
   </div>
 </header>
@@ -371,5 +373,70 @@ async function cargarContadores(){
 }
 cargarContadores();
 </script>
+
+<!-- MODAL LOGIN PORTAL -->
+<div id="portal-modal-login" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="background:#161A1F;border:1px solid #353C47;border-radius:12px;padding:28px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.6)">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;letter-spacing:.04em;margin-bottom:6px">🔐 Acceso Admin</div>
+    <div style="font-size:13px;color:#8892A0;margin-bottom:20px;line-height:1.4">Introduce tu email. Recibirás un enlace de acceso directo.</div>
+    <input id="portal-email" type="email" placeholder="tu@email.com" style="width:100%;background:#1E232B;border:1px solid #353C47;border-radius:6px;color:#F0F2F5;padding:10px 12px;font-size:14px;margin-bottom:12px;font-family:inherit">
+    <button onclick="enviarLoginPortal()" style="width:100%;background:#C0392B;border:none;color:white;padding:11px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.05em;cursor:pointer">Enviar enlace</button>
+    <div id="portal-login-msg" style="font-size:12px;color:#8892A0;text-align:center;margin-top:10px;min-height:18px"></div>
+    <button onclick="document.getElementById('portal-modal-login').style.display='none'" style="position:absolute;top:12px;right:16px;background:none;border:none;color:#8892A0;font-size:22px;cursor:pointer">×</button>
+  </div>
+</div>
+
+<script>
+const SB_URL_P = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
+const SB_KEY_P = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
+
+function abrirLoginPortal(){
+  const modal = document.getElementById('portal-modal-login');
+  modal.style.display='flex';
+}
+
+async function enviarLoginPortal(){
+  const email = document.getElementById('portal-email').value.trim();
+  if(!email) return;
+  const msg = document.getElementById('portal-login-msg');
+  msg.textContent = 'Enviando...';
+  try {
+    const r = await fetch(`${SB_URL_P}/auth/v1/otp`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SB_KEY_P},
+      body:JSON.stringify({email, create_user:false})
+    });
+    if(r.ok){
+      msg.style.color='#58D68D';
+      msg.textContent='✓ Enlace enviado — revisa tu email';
+    } else {
+      msg.style.color='#EC7063';
+      msg.textContent='Email no autorizado';
+    }
+  } catch(e){ msg.textContent='Error de conexión'; }
+}
+
+// Detectar sesión activa desde URL
+(async function detectarSesionPortal(){
+  const hash = window.location.hash;
+  const params = new URLSearchParams(hash.replace('#',''));
+  const token = params.get('access_token');
+  if(token){
+    try {
+      const r = await fetch(`${SB_URL_P}/auth/v1/user`,{
+        headers:{'apikey':SB_KEY_P,'Authorization':'Bearer '+token}
+      });
+      const user = await r.json();
+      if(user.email){
+        document.getElementById('portal-usuario').textContent='● '+user.email;
+        document.getElementById('portal-usuario').style.display='inline-block';
+        document.getElementById('portal-btn-login').style.display='none';
+        window.history.replaceState(null,'',window.location.pathname);
+      }
+    } catch(e){}
+  }
+})();
+</script>
+
 </body>
 </html>

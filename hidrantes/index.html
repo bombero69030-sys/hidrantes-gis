@@ -160,11 +160,16 @@
 
   .chip-osm{background:#7EBC6F;color:white;font-size:9px;padding:1px 4px;border-radius:2px;font-weight:700}
 
-  @media(max-width:600px){
-    .sidebar{width:100%;height:220px;border-right:none;border-bottom:1px solid #dde}
+  @media(max-width:700px){
+    .sidebar{width:100%;height:210px;border-right:none;border-bottom:1px solid #dde;flex-shrink:0}
     .app-body{flex-direction:column}
-    #panel-detalle{width:calc(100% - 32px);right:16px}
-    .header-right .btn-header:not(.primario){display:none}
+    #panel-detalle{width:calc(100% - 24px);right:12px;top:8px}
+    /* Ocultar botones geo del header en móvil */
+    #btn-geopos, #btn-cercano{display:none!important}
+    /* Mostrar botones geo flotantes en móvil */
+    #geo-buttons{display:flex!important}
+    #barra-estado{bottom:10px;font-size:11px;padding:6px 14px;gap:10px}
+    .be-num{font-size:12px}
   }
 
   .sidebar{width:340px;background:var(--blanco);border-right:1px solid #dde;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width 0.3s ease}
@@ -193,6 +198,13 @@
     writing-mode:horizontal-tb;
   }
   #btn-toggle-sidebar:hover{background:var(--rojo);width:26px}
+
+  /* BOTONES GEO FLOTANTES — solo móvil */
+  #geo-buttons{position:absolute;bottom:80px;right:12px;display:none;flex-direction:column;gap:8px;z-index:900}
+  .btn-geo{background:white;border:none;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:var(--sombra);display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all 0.2s;color:var(--gris)}
+  .btn-geo:hover{background:var(--gris-claro);transform:translateX(-2px)}
+  .btn-geo:disabled{background:#eee;cursor:not-allowed;color:#aaa}
+
 </style>
 </head>
 <body>
@@ -204,9 +216,9 @@
   </div>
   <div class="header-right">
     <a href="../index.html" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:6px;font-size:13px;text-decoration:none;font-family:inherit">← Portal</a>
-    <span id="indicador-sync" class="sync-cargando">⟳ Conectando...</span>
     <button class="btn-header" id="btn-geopos" onclick="miPosicion()" title="Ver mi posición">📍 Mi posición</button>
     <button class="btn-header" id="btn-cercano" onclick="hidranteCercano()" title="Hidrante más cercano">🚒 Más cercano</button>
+    <span id="indicador-sync" class="sync-cargando">⟳ Conectando...</span>
     <button class="btn-header" onclick="exportarCSV()">⬇ CSV</button>
     <button class="btn-header" onclick="exportarGeoJSON()">⬇ GeoJSON</button>
     <span id="h-usuario-badge" style="display:none;font-size:11px;color:#A9DFBF;background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.3);padding:4px 10px;border-radius:20px"></span>
@@ -362,6 +374,11 @@
         <button class="pd-cerrar" onclick="cerrarDetalle()">×</button>
       </div>
       <div class="pd-body" id="pd-body"></div>
+    </div>
+
+    <div id="geo-buttons">
+      <button class="btn-geo" id="btn-geopos-m" onclick="miPosicion()" title="Ver mi posición">📍 Mi posición</button>
+      <button class="btn-geo" id="btn-cercano-m" onclick="hidranteCercano()" title="Hidrante más cercano">🚒 Más cercano</button>
     </div>
 
     <div id="barra-estado">
@@ -932,8 +949,9 @@ function miPosicion(){
     return;
   }
   const btn = document.getElementById('btn-geopos');
-  btn.textContent = '⟳ Localizando...';
-  btn.disabled = true;
+  const btnM = document.getElementById('btn-geopos-m');
+  if(btn){btn.textContent='⟳ Localizando...';btn.disabled=true;}
+  if(btnM){btnM.textContent='⟳ Localizando...';btnM.disabled=true;}
   navigator.geolocation.getCurrentPosition(
     pos => {
       const {latitude: lat, longitude: lon, accuracy} = pos.coords;
@@ -953,13 +971,13 @@ function miPosicion(){
       if(!mapa.getBounds().contains([lat,lon])){
         mapa.flyTo([lat,lon], 16, {animate:true, duration:1.2});
       }
-      btn.textContent = '📍 Mi posición';
-      btn.disabled = false;
+      if(btn){btn.textContent='📍 Mi posición';btn.disabled=false;}
+      if(btnM){btnM.textContent='📍 Mi posición';btnM.disabled=false;}
       mostrarToast(`📍 Posición encontrada (±${Math.round(accuracy)} m)`);
     },
     err => {
-      btn.textContent = '📍 Mi posición';
-      btn.disabled = false;
+      if(btn){btn.textContent='📍 Mi posición';btn.disabled=false;}
+      if(btnM){btnM.textContent='📍 Mi posición';btnM.disabled=false;}
       const msgs = {1:'Permiso denegado — activa la ubicación en el navegador', 2:'No se pudo obtener la posición', 3:'Tiempo de espera agotado'};
       mostrarToast('❌ ' + (msgs[err.code]||'Error de geolocalización'), 4000);
     },
@@ -1085,7 +1103,29 @@ function toggleSidebar(){
 detectarSesionHidrantes();
 cargarDatos();
 window.addEventListener('load',()=>setTimeout(()=>mapa.invalidateSize(),400));
-window.addEventListener('resize',()=>mapa.invalidateSize());
+window.addEventListener('resize',()=>{mapa.invalidateSize();ajustarMovil();});
+
+function ajustarMovil(){
+  const esMovil = window.innerWidth <= 700;
+  const btnGeoH = document.getElementById('btn-geopos');
+  const btnCerH = document.getElementById('btn-cercano');
+  const geoDiv = document.getElementById('geo-buttons');
+  const sidebar = document.querySelector('.sidebar');
+  if(esMovil){
+    if(btnGeoH) btnGeoH.style.display='none';
+    if(btnCerH) btnCerH.style.display='none';
+    if(geoDiv) geoDiv.style.display='flex';
+    // En móvil el sidebar nunca se contrae — siempre visible arriba
+    if(sidebar) sidebar.classList.remove('contraido');
+    document.getElementById('btn-toggle-sidebar').style.display='none';
+  } else {
+    if(btnGeoH) btnGeoH.style.display='';
+    if(btnCerH) btnCerH.style.display='';
+    if(geoDiv) geoDiv.style.display='none';
+    document.getElementById('btn-toggle-sidebar').style.display='flex';
+  }
+}
+ajustarMovil();
 </script>
 
 <!-- MODAL LOGIN HIDRANTES -->

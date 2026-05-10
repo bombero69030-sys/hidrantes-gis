@@ -2,1122 +2,788 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HidrantesGIS — Consorcio Bomberos Sevilla</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sótanos · Portal Bomberos Los Palacios</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --rojo:#C0392B;--rojo-oscuro:#922B21;--rojo-claro:#FADBD8;
-    --azul:#1A5276;--azul-claro:#D6EAF8;
-    --verde:#1E8449;--verde-claro:#D5F5E3;
-    --naranja:#E67E22;--naranja-claro:#FDEBD0;
-    --amarillo:#B7950B;--amarillo-claro:#FEF9E7;
-    --gris:#2C3E50;--gris-medio:#5D6D7E;--gris-claro:#ECF0F1;
-    --fondo:#F4F6F7;--blanco:#FFFFFF;
-    --sombra:0 2px 12px rgba(0,0,0,0.12);
-    --radio:6px;
-  }
-  body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--gris);min-height:100vh;display:flex;flex-direction:column}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --naranja:#E67E22;--naranja-dark:#A04000;--naranja-glow:rgba(230,126,34,0.3);
+  --rojo:#C0392B;--verde:#1E8449;--azul:#1A5276;
+  --gris-fondo:#0D0F12;--gris-panel:#161A1F;--gris-panel2:#1E232B;
+  --gris-borde:#2A2F38;--gris-borde2:#353C47;
+  --texto:#F0F2F5;--texto-muted:#8892A0;--texto-dim:#5A6475;
+  --font-display:'Barlow Condensed',sans-serif;--font-body:'Barlow',sans-serif;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font-body);background:var(--gris-fondo);color:var(--texto);display:flex;flex-direction:column}
 
-  header{background:var(--rojo-oscuro);color:white;display:flex;align-items:center;gap:16px;padding:0 20px;height:56px;box-shadow:0 2px 8px rgba(0,0,0,0.3);z-index:1000;position:relative;flex-shrink:0}
-  header .logo{font-family:'Space Mono',monospace;font-weight:700;font-size:18px;letter-spacing:-0.5px}
-  header .logo span{color:#F1948A}
-  header .subtitle{font-size:12px;color:#F1948A;font-weight:300;letter-spacing:0.5px}
-  header .header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
-  .btn-header{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:var(--radio);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s}
-  .btn-header:hover{background:rgba(255,255,255,0.25)}
-  .btn-header.primario{background:white;color:var(--rojo-oscuro);font-weight:600}
-  .btn-header.primario:hover{background:#FDFEFE}
-  #indicador-sync{font-size:12px;padding:4px 10px;border-radius:20px;font-weight:500}
-  .sync-ok{background:rgba(39,174,96,0.3);color:#A9DFBF}
-  .sync-err{background:rgba(231,76,60,0.3);color:#F1948A}
-  .sync-cargando{background:rgba(255,255,255,0.15);color:white}
+header{background:rgba(13,15,18,0.95);border-bottom:1px solid var(--gris-borde);padding:0 20px;height:54px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:100}
+.btn-back{background:rgba(255,255,255,0.06);border:1px solid var(--gris-borde);color:var(--texto-muted);padding:6px 12px;border-radius:6px;font-family:var(--font-display);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;letter-spacing:.04em}
+.btn-back:hover{background:rgba(255,255,255,0.1);color:var(--texto)}
+.header-titulo{font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.header-titulo span{color:var(--naranja)}
+.header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.usuario-badge{font-size:11px;color:#A9DFBF;background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.3);padding:4px 10px;border-radius:20px;display:none}
+.btn-login-h{background:rgba(230,126,34,0.15);border:1px solid rgba(230,126,34,0.3);color:var(--naranja);padding:6px 14px;border-radius:6px;font-family:var(--font-display);font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all 0.2s}
+.btn-login-h:hover{background:rgba(230,126,34,0.25)}
+.btn-nuevo-h{background:var(--naranja);border:none;color:white;padding:6px 14px;border-radius:6px;font-family:var(--font-display);font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.04em;display:none;transition:all 0.2s}
+.btn-nuevo-h:hover{background:#D35400}
 
-  .app-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 56px)}
-  .sidebar-tabs{display:flex;border-bottom:2px solid var(--gris-claro)}
-  .tab{flex:1;padding:11px 4px;text-align:center;font-size:12px;font-weight:500;cursor:pointer;color:var(--gris-medio);transition:all 0.2s;border-bottom:2px solid transparent;margin-bottom:-2px}
-  .tab.activo{color:var(--rojo-oscuro);border-bottom-color:var(--rojo-oscuro)}
-  .tab:hover{background:var(--gris-claro)}
-  .tab-contenido{display:none;flex:1;overflow-y:auto;padding:14px}
-  .tab-contenido.activo{display:flex;flex-direction:column;gap:10px}
+.app-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 54px)}
 
-  .seccion-titulo{font-size:11px;font-weight:600;letter-spacing:1px;color:var(--gris-medio);text-transform:uppercase;margin-bottom:2px}
-  .filtro-chip{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--radio);border:1px solid #dde;cursor:pointer;font-size:13px;transition:all 0.2s}
-  .filtro-chip:hover{border-color:var(--rojo);background:var(--rojo-claro)}
-  .filtro-chip.activo{background:var(--rojo-claro);border-color:var(--rojo)}
-  .filtro-chip input[type=checkbox]{accent-color:var(--rojo);width:14px;height:14px}
-  .punto{width:11px;height:11px;border-radius:50%;flex-shrink:0}
-  .punto.operativo{background:#27AE60}
-  .punto.revision{background:#E67E22}
-  .punto.inoperativo{background:#E74C3C}
-  .punto.desconocido{background:#95A5A6}
+.sidebar{width:320px;background:var(--gris-panel);border-right:1px solid var(--gris-borde);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width 0.3s}
+.sidebar.oculto{width:0;border:none}
+.sidebar-search{padding:12px;border-bottom:1px solid var(--gris-borde)}
+.sidebar-search input{width:100%;background:var(--gris-panel2);border:1px solid var(--gris-borde2);border-radius:6px;color:var(--texto);padding:8px 10px 8px 30px;font-family:var(--font-body);font-size:13px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%238892A0' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:9px center}
+.sidebar-search input:focus{outline:none;border-color:var(--naranja)}
+.sidebar-search input::placeholder{color:var(--texto-dim)}
+.lista-sotanos{flex:1;overflow-y:auto;padding:8px}
+.lista-sotanos::-webkit-scrollbar{width:4px}
+.lista-sotanos::-webkit-scrollbar-thumb{background:var(--gris-borde2);border-radius:2px}
 
-  select,input[type=text],input[type=number],textarea{
-    width:100%;padding:7px 10px;border:1px solid #dde;border-radius:var(--radio);
-    font-family:'DM Sans',sans-serif;font-size:13px;color:var(--gris);background:white;transition:border 0.2s;
-  }
-  select:focus,input:focus,textarea:focus{outline:none;border-color:var(--rojo)}
-  textarea{resize:vertical;min-height:60px}
-  label{font-size:13px;font-weight:500;color:var(--gris);margin-bottom:2px;display:block}
-  .campo{display:flex;flex-direction:column;gap:3px}
-  .campo-fila{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .btn{padding:9px 18px;border-radius:var(--radio);font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s;width:100%}
-  .btn-primario{background:var(--rojo-oscuro);color:white}
-  .btn-primario:hover{background:var(--rojo)}
-  .btn-primario:disabled{background:#aaa;cursor:not-allowed}
-  .btn-secundario{background:var(--gris-claro);color:var(--gris)}
-  .btn-secundario:hover{background:#D5D8DC}
-  .divider{border:none;border-top:1px solid var(--gris-claro);margin:2px 0}
-  .badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600}
-  .badge-verde{background:var(--verde-claro);color:var(--verde)}
-  .badge-rojo{background:var(--rojo-claro);color:var(--rojo-oscuro)}
-  .badge-naranja{background:var(--naranja-claro);color:var(--naranja)}
-  .badge-gris{background:var(--gris-claro);color:var(--gris-medio)}
-  .badge-azul{background:var(--azul-claro);color:var(--azul)}
+.sotano-card{padding:12px 14px;border-radius:8px;border:1px solid var(--gris-borde);margin-bottom:6px;cursor:pointer;transition:all 0.2s;background:var(--gris-panel2)}
+.sotano-card:hover{border-color:var(--naranja);background:rgba(230,126,34,0.05)}
+.sotano-card.activo{border-color:var(--naranja);background:rgba(230,126,34,0.08)}
+.sc-dir{font-weight:600;font-size:13px;color:var(--texto);margin-bottom:4px}
+.sc-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:4px}
+.sc-chip{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.chip-ok{background:rgba(30,132,73,0.2);color:#58D68D}
+.chip-warn{background:rgba(230,126,34,0.2);color:#F0A500}
+.chip-alert{background:rgba(192,57,43,0.2);color:#EC7063}
+.chip-gris{background:rgba(255,255,255,0.06);color:var(--texto-muted)}
+.sc-fecha{font-size:11px;color:var(--texto-dim)}
 
-  #busqueda-input{padding:7px 10px 7px 30px;background:var(--fondo) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%235D6D7E' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") 9px center no-repeat;border:1px solid #dde;border-radius:var(--radio);font-family:'DM Sans',sans-serif;font-size:13px;width:100%}
+.mapa-wrapper{position:relative;flex:1;display:flex;flex-direction:column}
+#mapa{width:100%;flex:1;z-index:1}
 
-  .hidrante-item{padding:9px 11px;border:1px solid #dde;border-radius:var(--radio);cursor:pointer;transition:all 0.2s;display:flex;align-items:flex-start;gap:9px}
-  .hidrante-item:hover{border-color:var(--rojo);background:var(--rojo-claro)}
-  .hidrante-item.seleccionado{border-color:var(--rojo);background:var(--rojo-claro)}
-  .hi-icono{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:1px}
-  .hi-info{flex:1;min-width:0}
-  .hi-nombre{font-weight:600;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .hi-dir{font-size:11px;color:var(--gris-medio);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .hi-badges{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
-  .paginacion{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--gris-medio)}
-  .paginacion button{background:var(--gris-claro);border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:12px}
-  .paginacion button:hover{background:#D5D8DC}
-  .paginacion button:disabled{opacity:0.4;cursor:not-allowed}
+#btn-toggle{position:absolute;top:50%;left:0;transform:translateY(-50%);z-index:950;background:var(--naranja);border:none;border-radius:0 8px 8px 0;width:20px;height:56px;cursor:pointer;color:white;font-size:12px;box-shadow:3px 0 8px rgba(0,0,0,0.3)}
 
-  #mapa{width:100%;height:100%;min-height:400px;z-index:1}
-  .mapa-wrapper{position:relative;flex:1;display:flex;flex-direction:column}
+/* PANEL DETALLE */
+#panel-detalle{position:absolute;top:12px;right:12px;width:340px;max-height:calc(100% - 24px);background:var(--gris-panel);border:1px solid var(--gris-borde2);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:900;display:none;flex-direction:column;overflow:hidden}
+.pd-header{background:var(--naranja-dark);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.pd-titulo{font-family:var(--font-display);font-size:15px;font-weight:700;color:white;letter-spacing:.03em}
+.pd-cerrar{background:none;border:none;color:rgba(255,255,255,0.7);font-size:22px;cursor:pointer;line-height:1}
+.pd-cerrar:hover{color:white}
+.pd-scroll{overflow-y:auto;flex:1}
+.pd-scroll::-webkit-scrollbar{width:4px}
+.pd-scroll::-webkit-scrollbar-thumb{background:var(--gris-borde2)}
 
-  #panel-detalle{position:absolute;top:16px;right:16px;width:310px;background:white;border-radius:10px;box-shadow:var(--sombra);z-index:900;display:none;max-height:calc(100vh - 120px);overflow-y:auto}
-  .pd-header{background:var(--rojo-oscuro);color:white;padding:13px 15px;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:space-between}
-  .pd-titulo{font-weight:600;font-size:14px}
-  .pd-cerrar{background:none;border:none;color:white;font-size:20px;cursor:pointer;line-height:1}
-  .pd-body{padding:13px 15px;display:flex;flex-direction:column;gap:8px}
-  .pd-campo{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid var(--gris-claro);gap:8px}
-  .pd-campo:last-child{border-bottom:none}
-  .pd-clave{font-size:11px;color:var(--gris-medio);font-weight:500;flex-shrink:0}
-  .pd-valor{font-size:12px;font-weight:500;text-align:right;word-break:break-word}
-  .pd-acciones{display:flex;gap:6px;margin-top:4px}
-  .pd-acciones button{flex:1;padding:7px;border-radius:var(--radio);border:none;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
-  .pd-btn-editar{background:var(--azul-claro);color:var(--azul)}
-  .pd-btn-editar:hover{background:#AED6F1}
-  .pd-btn-borrar{background:var(--rojo-claro);color:var(--rojo-oscuro)}
-  .pd-btn-borrar:hover{background:#F1948A}
-  .pd-btn-nav{background:var(--verde-claro);color:var(--verde)}
-  .pd-btn-nav:hover{background:#A9DFBF}
+/* GALERÍA EN PANEL */
+.galeria{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.galeria-foto{position:relative;aspect-ratio:4/3}
+.galeria-foto img{width:100%;height:100%;object-fit:cover;cursor:pointer;transition:opacity 0.2s}
+.galeria-foto img:hover{opacity:0.85}
+.galeria-foto .btn-del-foto{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);border:none;color:white;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:12px;align-items:center;justify-content:center;display:none}
+.galeria-foto:hover .btn-del-foto.admin{display:flex}
+.btn-add-foto{aspect-ratio:4/3;border:2px dashed var(--gris-borde2);background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--texto-dim);font-size:11px;gap:4px;transition:all 0.2s}
+.btn-add-foto:hover{border-color:var(--naranja);color:var(--naranja)}
+.sin-fotos{grid-column:span 2;padding:16px;text-align:center;color:var(--texto-dim);font-size:12px}
 
-  #barra-estado{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);background:white;border-radius:30px;padding:7px 18px;box-shadow:var(--sombra);z-index:900;display:flex;gap:14px;align-items:center;font-size:12px;white-space:nowrap}
-  .be-item{display:flex;align-items:center;gap:5px}
-  .be-num{font-weight:700;font-size:14px;font-family:'Space Mono',monospace}
+/* SECCIONES DETALLE */
+.pd-seccion{padding:12px 14px;border-bottom:1px solid var(--gris-borde)}
+.pd-seccion:last-child{border-bottom:none}
+.pd-sec-titulo{font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--naranja);margin-bottom:8px}
+.pd-fila{display:flex;justify-content:space-between;align-items:flex-start;padding:4px 0;gap:8px}
+.pd-clave{font-size:12px;color:var(--texto-muted);flex-shrink:0}
+.pd-valor{font-size:12px;color:var(--texto);font-weight:500;text-align:right;word-break:break-word}
+.acceso-item{background:var(--gris-panel2);border:1px solid var(--gris-borde);border-radius:6px;padding:7px 10px;margin-bottom:5px;font-size:12px;display:flex;align-items:center;gap:8px}
+.acceso-num{width:22px;height:22px;border-radius:50%;background:rgba(230,126,34,0.2);border:1px solid rgba(230,126,34,0.3);color:var(--naranja);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cond-fila{display:flex;align-items:center;justify-content:space-between;padding:5px 0}
+.cond-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.obs-box{margin-top:8px;background:rgba(192,57,43,0.1);border:1px solid rgba(192,57,43,0.3);border-radius:6px;padding:9px 10px;font-size:12px;color:var(--texto);line-height:1.4}
+.obs-box.normal{background:rgba(255,255,255,0.04);border-color:var(--gris-borde)}
 
-  #toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--gris);color:white;padding:9px 18px;border-radius:30px;font-size:13px;z-index:9999;display:none;box-shadow:var(--sombra)}
+/* DOCUMENTOS EN PANEL */
+.doc-item{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gris-borde);font-size:12px}
+.doc-item:last-child{border-bottom:none}
+.doc-nombre{color:var(--texto);flex:1}
+.doc-acciones-small{display:flex;gap:4px}
+.btn-doc-small{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;border:none;cursor:pointer}
+.btn-ver-s{background:rgba(26,82,118,0.3);color:#5DADE2}
+.btn-del-s{background:rgba(192,57,43,0.2);color:#EC7063}
+.btn-add-doc{width:100%;padding:8px;border:2px dashed var(--gris-borde2);border-radius:6px;background:none;color:var(--texto-dim);font-size:11px;cursor:pointer;margin-top:8px;transition:all 0.2s}
+.btn-add-doc:hover{border-color:var(--naranja);color:var(--naranja)}
 
-  #aviso-añadir{position:absolute;top:16px;left:50%;transform:translateX(-50%);background:var(--rojo-oscuro);color:white;padding:10px 20px;border-radius:30px;font-size:13px;z-index:900;display:none;box-shadow:var(--sombra);cursor:pointer;white-space:nowrap}
+/* ACCIONES PANEL */
+.pd-acciones{display:flex;gap:6px;padding:12px 14px}
+.pd-btn{flex:1;padding:8px;border-radius:6px;border:none;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font-display);letter-spacing:.04em;transition:all 0.2s}
+.pd-btn-osm{background:rgba(26,82,118,0.3);color:#5DADE2}
+.pd-btn-osm:hover{background:rgba(26,82,118,0.5)}
+.pd-btn-editar{background:rgba(230,126,34,0.2);color:var(--naranja);display:none}
+.pd-btn-editar:hover{background:rgba(230,126,34,0.35)}
+.pd-btn-borrar{background:rgba(192,57,43,0.2);color:#EC7063;display:none}
+.pd-btn-borrar:hover{background:rgba(192,57,43,0.35)}
 
-  .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .stat-card{background:var(--fondo);border-radius:var(--radio);padding:11px;text-align:center}
-  .stat-num{font-size:22px;font-weight:700;font-family:'Space Mono',monospace}
-  .stat-label{font-size:11px;color:var(--gris-medio);margin-top:2px}
-  .stat-operativo .stat-num{color:var(--verde)}
-  .stat-revision .stat-num{color:var(--naranja)}
-  .stat-inoperativo .stat-num{color:var(--rojo)}
-  .stat-total .stat-num{color:var(--azul)}
-  .barra-tipo-fila{display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:5px}
-  .barra-tipo-label{width:100px;color:var(--gris-medio);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .barra-tipo-barra{flex:1;height:7px;border-radius:4px;background:var(--gris-claro);overflow:hidden}
-  .barra-tipo-fill{height:100%;border-radius:4px;transition:width 0.5s}
-  .barra-tipo-num{width:28px;text-align:right;font-weight:600;font-size:11px}
+/* BARRA ESTADO */
+#barra-estado{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:var(--gris-panel);border:1px solid var(--gris-borde2);border-radius:30px;padding:7px 18px;box-shadow:0 4px 20px rgba(0,0,0,0.4);z-index:900;display:flex;gap:14px;align-items:center;font-size:12px;white-space:nowrap}
+.be-item{display:flex;align-items:center;gap:5px;color:var(--texto-muted)}
+.be-num{font-weight:700;font-size:14px;font-family:var(--font-display);color:var(--naranja)}
 
-  .info-modo{background:var(--azul-claro);border:1px solid #AED6F1;border-radius:var(--radio);padding:9px 11px;font-size:12px;color:var(--azul);line-height:1.5}
-  .coords-display{background:var(--fondo);border:1px solid #dde;border-radius:var(--radio);padding:7px 10px;font-family:'Space Mono',monospace;font-size:11px;color:var(--gris-medio)}
+/* MODAL LOGIN */
+#modal-login{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+#modal-login.visible{display:flex}
+.login-box{background:var(--gris-panel);border:1px solid var(--gris-borde2);border-radius:12px;padding:28px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative}
+.login-titulo{font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:.04em;margin-bottom:6px}
+.login-desc{font-size:13px;color:var(--texto-muted);margin-bottom:20px;line-height:1.4}
+.login-input{width:100%;background:var(--gris-panel2);border:1px solid var(--gris-borde2);border-radius:6px;color:var(--texto);padding:10px 12px;font-family:var(--font-body);font-size:14px;margin-bottom:10px}
+.login-input:focus{outline:none;border-color:var(--naranja)}
+.login-input::placeholder{color:var(--texto-dim)}
+.login-btn-modal{width:100%;background:var(--naranja);border:none;color:white;padding:11px;border-radius:6px;font-family:var(--font-display);font-size:15px;font-weight:700;letter-spacing:.05em;cursor:pointer}
+.login-btn-modal:hover{background:#D35400}
+.login-btn-modal:disabled{background:#555;cursor:not-allowed}
+.login-msg{font-size:12px;color:var(--texto-muted);text-align:center;margin-top:10px;min-height:18px}
+.login-cerrar{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--texto-muted);font-size:22px;cursor:pointer}
 
-  .marcador-hidrante{width:28px;height:28px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer;transition:transform 0.2s}
-  .marcador-hidrante:hover,.marcador-hidrante.hover{transform:scale(1.2)}
-  .m-operativo{background:#27AE60}
-  .m-revision{background:#E67E22}
-  .m-inoperativo{background:#E74C3C}
-  .m-desconocido{background:#95A5A6}
-  .m-seleccionado{transform:scale(1.35)!important;border-color:var(--rojo-oscuro)!important;z-index:999}
+/* MODAL FORMULARIO */
+#modal-form{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;display:none;align-items:flex-start;justify-content:center;backdrop-filter:blur(4px);overflow-y:auto;padding:20px}
+#modal-form.visible{display:flex}
+.form-box{background:var(--gris-panel);border:1px solid var(--gris-borde2);border-radius:12px;padding:24px;width:560px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative;margin:auto}
+.form-titulo{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:.04em;margin-bottom:16px;padding-right:30px}
+.form-cerrar{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--texto-muted);font-size:22px;cursor:pointer}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-campo{display:flex;flex-direction:column;gap:4px}
+.form-campo.full{grid-column:span 2}
+.form-label{font-size:11px;font-weight:600;color:var(--texto-muted);letter-spacing:.06em;text-transform:uppercase}
+.form-input{background:var(--gris-panel2);border:1px solid var(--gris-borde2);border-radius:6px;color:var(--texto);padding:8px 10px;font-family:var(--font-body);font-size:13px;width:100%}
+.form-input:focus{outline:none;border-color:var(--naranja)}
+.form-input::placeholder{color:var(--texto-dim)}
+.form-textarea{resize:vertical;min-height:65px}
+.form-select{background:var(--gris-panel2);border:1px solid var(--gris-borde2);border-radius:6px;color:var(--texto);padding:8px 10px;font-family:var(--font-body);font-size:13px;width:100%}
+.form-divider{grid-column:span 2;border:none;border-top:1px solid var(--gris-borde);margin:4px 0}
+.form-acciones{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.btn-guardar{background:var(--naranja);color:white;border:none;padding:10px 20px;border-radius:6px;font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:.04em;cursor:pointer}
+.btn-guardar:disabled{background:#555;cursor:not-allowed}
+.btn-cancelar{background:var(--gris-borde2);color:var(--texto-muted);border:none;padding:10px 20px;border-radius:6px;font-family:var(--font-display);font-size:14px;cursor:pointer}
 
-  .chip-tipo{padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:0.3px;color:white}
-  .ct-soterra{background:#16A085}.ct-boca{background:#2980B9}.ct-columna{background:#8E44AD}
-  .ct-deposito{background:#C0392B}.ct-toma_aspiration{background:#E67E22}.ct-otro{background:#7F8C8D}
+/* LIGHTBOX */
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:none;align-items:center;justify-content:center;cursor:zoom-out}
+#lightbox.visible{display:flex}
+#lightbox img{max-width:95vw;max-height:95vh;object-fit:contain;border-radius:4px}
 
-  .cargando-overlay{position:absolute;inset:0;background:rgba(255,255,255,0.8);display:flex;align-items:center;justify-content:center;z-index:800;flex-direction:column;gap:12px;font-size:14px;color:var(--gris)}
-  .spinner{width:36px;height:36px;border:3px solid var(--gris-claro);border-top-color:var(--rojo-oscuro);border-radius:50%;animation:spin 0.8s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--gris-panel);color:var(--texto);padding:9px 18px;border-radius:30px;font-size:13px;z-index:9999;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.4);border:1px solid var(--gris-borde2)}
 
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(231,76,60,0.6)}70%{box-shadow:0 0 0 12px rgba(231,76,60,0)}100%{box-shadow:0 0 0 0 rgba(231,76,60,0)}}
+.marcador-sotano{width:32px;height:32px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer;transition:transform 0.2s}
+.marcador-sotano:hover{transform:scale(1.2)}
+.marcador-sotano.activo{transform:scale(1.3);border-color:var(--naranja)}
+.m-normal{background:var(--naranja-dark)}
+.m-gas{background:#7B241C}
 
-
-  .chip-osm{background:#7EBC6F;color:white;font-size:9px;padding:1px 4px;border-radius:2px;font-weight:700}
-
-  @media(max-width:700px){
-    .sidebar{width:100%;height:210px;border-right:none;border-bottom:1px solid #dde;flex-shrink:0}
-    .app-body{flex-direction:column}
-    #panel-detalle{width:calc(100% - 24px);right:12px;top:8px}
-    /* Ocultar botones geo del header en móvil */
-    #btn-geopos, #btn-cercano{display:none!important}
-    /* Mostrar botones geo flotantes en móvil */
-    #geo-buttons{display:flex!important}
-    #barra-estado{bottom:10px;font-size:11px;padding:6px 14px;gap:10px}
-    .be-num{font-size:12px}
-  }
-
-  .sidebar{width:340px;background:var(--blanco);border-right:1px solid #dde;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width 0.3s ease}
-  .sidebar.contraido{width:0;border-right:none}
-
-  #btn-toggle-sidebar{
-    position:absolute;
-    top:50%;
-    left:0;
-    transform:translateY(-50%);
-    z-index:1000;
-    background:var(--rojo-oscuro);
-    color:white;
-    border:none;
-    border-radius:0 8px 8px 0;
-    width:22px;
-    height:64px;
-    cursor:pointer;
-    font-size:13px;
-    box-shadow:3px 0 8px rgba(0,0,0,0.25);
-    padding:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:background 0.2s, width 0.2s;
-    writing-mode:horizontal-tb;
-  }
-  #btn-toggle-sidebar:hover{background:var(--rojo);width:26px}
-
-  /* BOTONES GEO FLOTANTES — solo móvil */
-  #geo-buttons{position:absolute;bottom:80px;right:12px;display:none;flex-direction:column;gap:8px;z-index:900}
-  .btn-geo{background:white;border:none;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:var(--sombra);display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all 0.2s;color:var(--gris)}
-  .btn-geo:hover{background:var(--gris-claro);transform:translateX(-2px)}
-  .btn-geo:disabled{background:#eee;cursor:not-allowed;color:#aaa}
-
+@media(max-width:600px){
+  .sidebar{width:100%;height:200px;border-right:none;border-bottom:1px solid var(--gris-borde)}
+  .app-body{flex-direction:column}
+  #panel-detalle{width:calc(100% - 24px);right:12px}
+  #btn-toggle{display:none}
+}
 </style>
 </head>
 <body>
 
 <header>
-  <div>
-    <div class="logo">🔴 Hidrantes<span>GIS</span></div>
-    <div class="subtitle">Consorcio Bomberos · Provincia de Sevilla</div>
-  </div>
+  <a class="btn-back" href="../index.html">← Portal</a>
+  <div class="header-titulo">🅿️ Sótanos <span>& Garajes</span></div>
   <div class="header-right">
-    <a href="../index.html" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:6px;font-size:13px;text-decoration:none;font-family:inherit">← Portal</a>
-    <button class="btn-header" id="btn-geopos" onclick="miPosicion()" title="Ver mi posición">📍 Mi posición</button>
-    <button class="btn-header" id="btn-cercano" onclick="hidranteCercano()" title="Hidrante más cercano">🚒 Más cercano</button>
-    <span id="indicador-sync" class="sync-cargando">⟳ Conectando...</span>
-    <button class="btn-header" onclick="exportarCSV()">⬇ CSV</button>
-    <button class="btn-header" onclick="exportarGeoJSON()">⬇ GeoJSON</button>
-    <span id="h-usuario-badge" style="display:none;font-size:11px;color:#A9DFBF;background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.3);padding:4px 10px;border-radius:20px"></span>
-    <button id="h-btn-login" onclick="abrirLoginHidrantes()" class="btn-header">🔐 Acceso</button>
-    <button class="btn-header primario" id="btn-modo-añadir" onclick="activarModoAñadir()" style="display:none">+ Nuevo</button>
+    <span class="usuario-badge" id="usuario-badge"></span>
+    <button class="btn-nuevo-h" id="btn-nuevo" onclick="abrirFormNuevo()">+ Añadir sótano</button>
+    <button class="btn-login-h" id="btn-login" onclick="abrirLogin()">🔐 Acceso</button>
   </div>
 </header>
 
 <div class="app-body">
-  <div class="sidebar">
-    <div class="sidebar-tabs">
-      <div class="tab activo" onclick="cambiarTab('lista',this)">📋 Lista</div>
-      <div class="tab" onclick="cambiarTab('filtros',this)">🔍 Filtros</div>
-      <div class="tab" onclick="cambiarTab('form',this)">➕ Añadir</div>
-      <div class="tab" onclick="cambiarTab('stats',this)">📊 Stats</div>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-search">
+      <input type="text" id="busqueda" placeholder="Buscar sótano..." oninput="filtrar()">
     </div>
-
-    <!-- LISTA -->
-    <div id="tab-lista" class="tab-contenido activo">
-      <input type="text" id="busqueda-input" placeholder="Buscar dirección, ref, municipio..." oninput="filtrarLista()">
-      <div id="lista-hidrantes"></div>
-      <div class="paginacion" id="paginacion" style="display:none">
-        <button onclick="cambiarPagina(-1)" id="btn-prev">← Ant</button>
-        <span id="info-pagina"></span>
-        <button onclick="cambiarPagina(1)" id="btn-next">Sig →</button>
-      </div>
-    </div>
-
-    <!-- FILTROS -->
-    <div id="tab-filtros" class="tab-contenido">
-      <p class="seccion-titulo">Estado</p>
-      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('estado','operativo',this)"><span class="punto operativo"></span> Operativo</label>
-      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('estado','revision',this)"><span class="punto revision"></span> En revisión</label>
-      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('estado','inoperativo',this)"><span class="punto inoperativo"></span> Inoperativo</label>
-      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('estado','desconocido',this)"><span class="punto desconocido"></span> Desconocido</label>
-      <hr class="divider">
-      <p class="seccion-titulo">Tipo</p>
-      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('tipo','soterra',this)">🟢 Subterráneo</label>
-      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('tipo','boca',this)">🔴 Boca incendio</label>
-      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('tipo','columna',this)">🟣 Columna seca</label>
-      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('tipo','deposito',this)">🟤 Depósito</label>
-      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('tipo','toma_aspiration',this)">🟠 Toma aspiración</label>
-      <hr class="divider">
-      <p class="seccion-titulo">Municipio</p>
-      <select id="filtro-municipio" onchange="aplicarFiltros()">
-        <option value="">Todos los municipios</option>
-      </select>
-      <hr class="divider">
-      <button class="btn btn-secundario" onclick="resetFiltros()">Limpiar filtros</button>
-    </div>
-
-    <!-- FORMULARIO -->
-    <div id="tab-form" class="tab-contenido">
-      <div class="info-modo">📍 Pulsa <strong>"+ Nuevo"</strong> en la barra superior y haz clic en el mapa para ubicar el hidrante exactamente.</div>
-      <div class="campo">
-        <label>Coordenadas</label>
-        <div class="coords-display" id="coords-display">Sin seleccionar</div>
-      </div>
-      <div class="campo-fila">
-        <div class="campo">
-          <label>Tipo *</label>
-          <select id="f-tipo">
-            <option value="soterra">Subterráneo</option>
-            <option value="boca">Boca incendio</option>
-            <option value="columna">Columna seca</option>
-            <option value="deposito">Depósito</option>
-            <option value="toma_aspiration">Toma aspiración</option>
-          </select>
-        </div>
-        <div class="campo">
-          <label>Estado *</label>
-          <select id="f-estado">
-            <option value="operativo">Operativo</option>
-            <option value="desconocido">Desconocido</option>
-            <option value="revision">En revisión</option>
-            <option value="inoperativo">Inoperativo</option>
-          </select>
-        </div>
-      </div>
-      <div class="campo">
-        <label>Dirección / Referencia *</label>
-        <input type="text" id="f-direccion" placeholder="C/ Cervantes nº 12, junto a...">
-      </div>
-      <div class="campo">
-        <label>Municipio *</label>
-        <input type="text" id="f-municipio" placeholder="Los Palacios y Villafranca">
-      </div>
-      <div class="campo-fila">
-        <div class="campo">
-          <label>Diámetro (mm)</label>
-          <input type="number" id="f-diametro" placeholder="100">
-        </div>
-        <div class="campo">
-          <label>Presión (bar)</label>
-          <input type="number" id="f-presion" step="0.1" placeholder="3.5">
-        </div>
-      </div>
-      <div class="campo-fila">
-        <div class="campo">
-          <label>Caudal (l/min)</label>
-          <input type="number" id="f-caudal" placeholder="500">
-        </div>
-        <div class="campo">
-          <label>Última revisión</label>
-          <input type="text" id="f-revision" placeholder="AAAA-MM-DD">
-        </div>
-      </div>
-      <div class="campo">
-        <label>Ref. interna</label>
-        <input type="text" id="f-ref" placeholder="HID-00001">
-      </div>
-      <div class="campo">
-        <label>Observaciones</label>
-        <textarea id="f-obs" placeholder="Acceso difícil, tapa oxidada..."></textarea>
-      </div>
-      <button class="btn btn-primario" id="btn-guardar" onclick="guardarHidrante()">💾 Guardar en Supabase</button>
-      <button class="btn btn-secundario" onclick="cancelarFormulario()">Cancelar</button>
-    </div>
-
-    <!-- STATS -->
-    <div id="tab-stats" class="tab-contenido">
-      <p class="seccion-titulo">Resumen general</p>
-      <div class="stats-grid">
-        <div class="stat-card stat-total"><div class="stat-num" id="s-total">—</div><div class="stat-label">Total</div></div>
-        <div class="stat-card stat-operativo"><div class="stat-num" id="s-oper">—</div><div class="stat-label">Operativos</div></div>
-        <div class="stat-card stat-revision"><div class="stat-num" id="s-rev">—</div><div class="stat-label">Revisión</div></div>
-        <div class="stat-card stat-inoperativo"><div class="stat-num" id="s-inop">—</div><div class="stat-label">Inoperativos</div></div>
-      </div>
-      <hr class="divider">
-      <p class="seccion-titulo">Por tipo</p>
-      <div id="stats-tipo"></div>
-      <hr class="divider">
-      <p class="seccion-titulo">Por municipio</p>
-      <div id="stats-municipio"></div>
-      <hr class="divider">
-      <button class="btn btn-secundario" onclick="cargarDatos()">🔄 Recargar datos</button>
-    </div>
+    <div class="lista-sotanos" id="lista"></div>
   </div>
 
-  <!-- MAPA -->
   <div class="mapa-wrapper">
-    <button id="btn-toggle-sidebar" onclick="toggleSidebar()" title="Contraer/Expandir panel">◀</button>
+    <button id="btn-toggle" onclick="toggleSidebar()">◀</button>
     <div id="mapa"></div>
 
-    <div class="cargando-overlay" id="overlay-carga">
-      <div class="spinner"></div>
-      <span>Cargando hidrantes desde Supabase...</span>
-    </div>
-
-    <div id="panel-detalle">
+    <div id="panel-detalle" style="display:flex">
       <div class="pd-header">
-        <span class="pd-titulo" id="pd-titulo">Hidrante</span>
+        <span class="pd-titulo" id="pd-titulo">Sótano</span>
         <button class="pd-cerrar" onclick="cerrarDetalle()">×</button>
       </div>
-      <div class="pd-body" id="pd-body"></div>
-    </div>
-
-    <div id="geo-buttons">
-      <button class="btn-geo" id="btn-geopos-m" onclick="miPosicion()" title="Ver mi posición">📍 Mi posición</button>
-      <button class="btn-geo" id="btn-cercano-m" onclick="hidranteCercano()" title="Hidrante más cercano">🚒 Más cercano</button>
+      <div class="pd-scroll" id="pd-body"></div>
     </div>
 
     <div id="barra-estado">
-      <div class="be-item"><span class="be-num" id="be-total" style="color:var(--azul)">—</span><span>total</span></div>
-      <span style="color:#ccc">|</span>
-      <div class="be-item"><span class="be-num" style="color:var(--verde)" id="be-oper">—</span><span>oper.</span></div>
-      <span style="color:#ccc">|</span>
-      <div class="be-item"><span class="be-num" style="color:var(--naranja)" id="be-rev">—</span><span>rev.</span></div>
-      <span style="color:#ccc">|</span>
-      <div class="be-item"><span class="be-num" style="color:var(--rojo)" id="be-inop">—</span><span>inop.</span></div>
-    </div>
-
-    <div id="aviso-añadir" onclick="cancelarModoAñadir()">
-      📍 Haz clic en el mapa para ubicar el hidrante — Pulsa aquí para cancelar
+      <div class="be-item"><span class="be-num" id="be-total">0</span>sótanos</div>
+      <span style="color:var(--gris-borde2)">|</span>
+      <div class="be-item"><span class="be-num" style="color:#58D68D" id="be-vent">0</span>ventilados</div>
+      <span style="color:var(--gris-borde2)">|</span>
+      <div class="be-item"><span class="be-num" style="color:#EC7063" id="be-gas">0</span>con gases</div>
     </div>
   </div>
 </div>
 
+<!-- MODAL LOGIN -->
+<div id="modal-login">
+  <div class="login-box">
+    <button class="login-cerrar" onclick="cerrarLogin()">×</button>
+    <div class="login-titulo">🔐 Acceso Admin</div>
+    <div class="login-desc">Solo el administrador puede modificar los datos.</div>
+    <input class="login-input" type="email" id="login-email" placeholder="tu@email.com">
+    <input class="login-input" type="password" id="login-password" placeholder="Contraseña">
+    <button class="login-btn-modal" id="login-btn" onclick="hacerLogin()">Acceder</button>
+    <div class="login-msg" id="login-msg"></div>
+  </div>
+</div>
+
+<!-- MODAL FORMULARIO -->
+<div id="modal-form">
+  <div class="form-box">
+    <button class="form-cerrar" onclick="cerrarForm()">×</button>
+    <div class="form-titulo" id="form-titulo">Añadir sótano</div>
+    <div class="form-grid">
+      <div class="form-campo full">
+        <label class="form-label">Dirección *</label>
+        <input class="form-input" id="f-direccion" placeholder="C/ Ejemplo nº 12">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Nº Ficha</label>
+        <input class="form-input" id="f-ficha" placeholder="7">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Tipo inmueble</label>
+        <select class="form-select" id="f-tipo">
+          <option value="Residencial">Residencial</option>
+          <option value="Comercial">Comercial</option>
+          <option value="Industrial">Industrial</option>
+          <option value="Mixto">Mixto</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Latitud</label>
+        <input class="form-input" id="f-lat" placeholder="37.1580" type="number" step="0.000001">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Longitud</label>
+        <input class="form-input" id="f-lon" placeholder="-5.9250" type="number" step="0.000001">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Contacto</label>
+        <input class="form-input" id="f-contacto" placeholder="Nombre propietario / encargado">
+      </div>
+      <hr class="form-divider">
+      <div class="form-campo">
+        <label class="form-label">Nº de accesos</label>
+        <input class="form-input" id="f-num-accesos" type="number" placeholder="2" min="1" max="10">
+      </div>
+      <div class="form-campo full">
+        <label class="form-label">Accesos (uno por línea)</label>
+        <textarea class="form-input form-textarea" id="f-accesos" placeholder="Por la puerta del garaje&#10;Escalera interior portal 1&#10;Acceso peatonal C/ lateral"></textarea>
+      </div>
+      <hr class="form-divider">
+      <div class="form-campo">
+        <label class="form-label">Ventilación</label>
+        <select class="form-select" id="f-ventilacion">
+          <option value="true">Sí</option>
+          <option value="false">No</option>
+        </select>
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Iluminación</label>
+        <select class="form-select" id="f-iluminacion">
+          <option value="Adecuada">Adecuada</option>
+          <option value="Deficiente">Deficiente</option>
+          <option value="Sin iluminación">Sin iluminación</option>
+        </select>
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Humedad / Gases</label>
+        <select class="form-select" id="f-gases">
+          <option value="false">No</option>
+          <option value="true">Sí detectados</option>
+        </select>
+      </div>
+      <div class="form-campo full">
+        <label class="form-label">Observaciones</label>
+        <textarea class="form-input form-textarea" id="f-obs" placeholder="Extintores, cámaras, sistema contra incendios..."></textarea>
+      </div>
+      <hr class="form-divider">
+      <div class="form-campo">
+        <label class="form-label">Inspector</label>
+        <input class="form-input" id="f-inspector" placeholder="B-31" value="B-31">
+      </div>
+      <div class="form-campo">
+        <label class="form-label">Fecha inspección</label>
+        <input class="form-input" id="f-fecha" placeholder="DD/MM/AAAA">
+      </div>
+    </div>
+    <div class="form-acciones">
+      <button class="btn-cancelar" onclick="cerrarForm()">Cancelar</button>
+      <button class="btn-guardar" id="btn-guardar-form" onclick="guardarSotano()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="cerrarLightbox()">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
 <div id="toast"></div>
+<input type="file" id="input-foto" accept="image/*" multiple style="display:none">
+<input type="file" id="input-doc" accept=".pdf,.doc,.docx" style="display:none">
 
 <script>
-// ============================================
-// CONFIGURACIÓN SUPABASE
-// ============================================
-const SB_URL = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
-const HEADERS = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+const SB = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
+let TOKEN = null, USUARIO = null;
+let sotanos = [], marcadores = {};
+let seleccionado = null, editandoId = null;
+let subiendoParaId = null, subiendoTipoDoc = null;
+let sidebarOculto = false;
 
-async function sbGet(params=''){
-  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?${params}&order=created_at.desc`,{headers:HEADERS});
-  if(!r.ok) throw new Error(await r.text());
-  return r.json();
-}
-async function sbPost(body){
-  const r = await fetch(`${SB_URL}/rest/v1/hidrantes`,{method:'POST',headers:{...HEADERS,'Prefer':'return=representation'},body:JSON.stringify(body)});
-  if(!r.ok) throw new Error(await r.text());
-  return r.json();
-}
-async function sbPatch(id,body){
-  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?id=eq.${id}`,{method:'PATCH',headers:{...HEADERS,'Prefer':'return=minimal'},body:JSON.stringify(body)});
-  if(!r.ok) throw new Error(await r.text());
-}
-async function sbDelete(id){
-  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?id=eq.${id}`,{method:'DELETE',headers:HEADERS});
-  if(!r.ok) throw new Error(await r.text());
-}
-async function sbCount(){
-  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?select=id`,{headers:{...HEADERS,'Prefer':'count=exact','Range':'0-0'}});
-  return parseInt(r.headers.get('Content-Range')?.split('/')[1]||'0');
-}
-
-// ============================================
-// ESTADO
-// ============================================
-let todosHidrantes = [];
-let hidrantesFiltrados = [];
-let marcadores = {};
-let modoAñadir = false;
-let editandoId = null;
-let seleccionadoId = null;
-let pagina = 0;
-const POR_PAGINA = 30;
-
-let filtros = {
-  estado: new Set(['operativo','revision','inoperativo','desconocido']),
-  tipo: new Set(['soterra','boca','columna','deposito','toma_aspiration','otro']),
-  municipio: '',
-  busqueda: ''
-};
+const H = (x={})=>({'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+(TOKEN||KEY),...x});
 
 // ============================================
 // MAPA
 // ============================================
-const mapa = L.map('mapa').setView([37.158,-5.925],13);
-const capaOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'});
-const capaSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Esri'});
-const capaCarto = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19});
-capaOSM.addTo(mapa);
-L.control.layers({'Callejero':capaOSM,'Satélite':capaSat,'Claro':capaCarto}).addTo(mapa);
+const mapa = L.map('mapa').setView([37.162,-5.924],15);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(mapa);
+L.control.layers({
+  'Callejero':L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}),
+  'Satélite':L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19})
+}).addTo(mapa);
+setTimeout(()=>mapa.invalidateSize(),400);
+window.addEventListener('resize',()=>mapa.invalidateSize());
 
-mapa.on('click',function(e){
-  if(!modoAñadir) return;
-  const {lat,lng} = e.latlng;
-  document.getElementById('coords-display').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-  document.getElementById('coords-display').dataset.lat = lat;
-  document.getElementById('coords-display').dataset.lon = lng;
-  if(window._marcadorTemp) mapa.removeLayer(window._marcadorTemp);
-  window._marcadorTemp = L.marker([lat,lng]).addTo(mapa);
-  cancelarModoAñadir();
-  cambiarTab('form',document.querySelectorAll('.tab')[2]);
-  mostrarToast('📍 Ubicación seleccionada. Completa el formulario.');
-});
-
-function crearIcono(h){
-  const cls = {operativo:'m-operativo',revision:'m-revision',inoperativo:'m-inoperativo',desconocido:'m-desconocido'}[h.estado]||'m-desconocido';
-  const emoji = emojiTipo(h.tipo);
-  return L.divIcon({
-    html:`<div class="marcador-hidrante ${cls}" title="${h.ref||h.osm_id||''}">${emoji}</div>`,
-    iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-14],className:''
+function crearMarcador(s){
+  const icon = L.divIcon({
+    html:`<div class="marcador-sotano ${s.humedad_gases?'m-gas':'m-normal'}" title="${s.direccion}">${s.humedad_gases?'⚠️':'🅿️'}</div>`,
+    iconSize:[32,32],iconAnchor:[16,16],className:''
   });
-}
-
-function renderizarMapa(){
-  Object.values(marcadores).forEach(m=>mapa.removeLayer(m));
-  marcadores = {};
-  hidrantesFiltrados.forEach(h=>{
-    const m = L.marker([h.lat,h.lon],{icon:crearIcono(h)}).addTo(mapa);
-    m.on('click',()=>mostrarDetalle(h.id));
-    marcadores[h.id]=m;
-  });
-  actualizarBarraEstado();
+  const m = L.marker([s.lat,s.lon],{icon}).addTo(mapa);
+  m.on('click',()=>mostrarDetalle(s.id));
+  return m;
 }
 
 // ============================================
-// CARGA DATOS
+// DATOS
 // ============================================
 async function cargarDatos(){
-  document.getElementById('overlay-carga').style.display='flex';
-  setSyncStatus('cargando','⟳ Cargando...');
   try {
-    // Carga con límite alto (Supabase devuelve 1000 por defecto)
-    todosHidrantes = await sbGet('select=*&limit=2000');
-    setSyncStatus('ok',`✓ ${todosHidrantes.length} hidrantes`);
-    aplicarFiltros();
-    actualizarSelectMunicipios();
-    renderizarStats();
-    mostrarToast(`✅ ${todosHidrantes.length} hidrantes cargados`);
-  } catch(e){
-    setSyncStatus('err','⚠ Sin conexión');
-    mostrarToast('❌ Error al conectar con Supabase: '+e.message,4000);
-  }
-  document.getElementById('overlay-carga').style.display='none';
+    const r = await fetch(`${SB}/rest/v1/sotanos?select=*&order=ficha_num.asc,created_at.asc`,{headers:H()});
+    if(!r.ok) throw new Error();
+    sotanos = await r.json();
+  } catch(e){ sotanos = []; }
+  renderizarTodo();
 }
 
-function setSyncStatus(tipo,texto){
-  const el = document.getElementById('indicador-sync');
-  el.textContent=texto;
-  el.className='';
-  el.classList.add({ok:'sync-ok',err:'sync-err',cargando:'sync-cargando'}[tipo]||'sync-cargando');
+function renderizarTodo(){
+  Object.values(marcadores).forEach(m=>mapa.removeLayer(m));
+  marcadores = {};
+  sotanos.forEach(s=>{ if(s.lat&&s.lon) marcadores[s.id]=crearMarcador(s); });
+  renderizarLista(sotanos);
+  actualizarBarra(sotanos);
+  if(sotanos.length>0) mostrarDetalle(sotanos[0].id);
 }
 
-// ============================================
-// FILTROS
-// ============================================
-function esVisible(h){
-  if(!filtros.estado.has(h.estado||'desconocido')) return false;
-  if(!filtros.tipo.has(h.tipo||'otro')) return false;
-  if(filtros.municipio && (h.municipio||'')!==filtros.municipio) return false;
-  if(filtros.busqueda){
-    const q=filtros.busqueda.toLowerCase();
-    if(![(h.direccion||''),(h.ref||''),(h.municipio||''),(h.osm_id||''),(h.obs||'')].some(s=>s.toLowerCase().includes(q))) return false;
-  }
-  return true;
-}
-
-function aplicarFiltros(){
-  filtros.municipio = document.getElementById('filtro-municipio').value;
-  hidrantesFiltrados = todosHidrantes.filter(h=>esVisible(h));
-  pagina=0;
-  renderizarMapa();
-  renderizarLista();
-}
-
-function toggleFiltro(tipo,valor,cb){
-  const label=cb.closest('.filtro-chip');
-  if(cb.checked){filtros[tipo].add(valor);label.classList.add('activo');}
-  else{filtros[tipo].delete(valor);label.classList.remove('activo');}
-  aplicarFiltros();
-}
-
-function resetFiltros(){
-  filtros.estado=new Set(['operativo','revision','inoperativo','desconocido']);
-  filtros.tipo=new Set(['soterra','boca','columna','deposito','toma_aspiration','otro']);
-  filtros.municipio='';filtros.busqueda='';
-  document.getElementById('filtro-municipio').value='';
-  document.getElementById('busqueda-input').value='';
-  document.querySelectorAll('.filtro-chip input').forEach(cb=>{cb.checked=true;cb.closest('.filtro-chip').classList.add('activo');});
-  aplicarFiltros();
-}
-
-function filtrarLista(){
-  filtros.busqueda=document.getElementById('busqueda-input').value;
-  hidrantesFiltrados=todosHidrantes.filter(h=>esVisible(h));
-  pagina=0;
-  renderizarMapa();
-  renderizarLista();
-}
-
-function actualizarSelectMunicipios(){
-  const munis=[...new Set(todosHidrantes.map(h=>h.municipio).filter(Boolean))].sort();
-  const sel=document.getElementById('filtro-municipio');
-  sel.innerHTML='<option value="">Todos los municipios</option>';
-  munis.forEach(m=>sel.innerHTML+=`<option value="${m}">${m}</option>`);
-}
-
-// ============================================
-// LISTA CON PAGINACIÓN
-// ============================================
-function renderizarLista(){
-  const lista=document.getElementById('lista-hidrantes');
-  if(hidrantesFiltrados.length===0){
-    lista.innerHTML='<p style="text-align:center;color:var(--gris-medio);font-size:13px;padding:16px">Sin resultados</p>';
-    document.getElementById('paginacion').style.display='none';
-    return;
-  }
-  const inicio=pagina*POR_PAGINA;
-  const pagina_actual=hidrantesFiltrados.slice(inicio,inicio+POR_PAGINA);
-  const totalPags=Math.ceil(hidrantesFiltrados.length/POR_PAGINA);
-
-  lista.innerHTML=pagina_actual.map(h=>`
-    <div class="hidrante-item${seleccionadoId===h.id?' seleccionado':''}" onclick="mostrarDetalle('${h.id}')">
-      <div class="hi-icono" style="background:${colorEstado(h.estado)}20;color:${colorEstado(h.estado)}">${emojiTipo(h.tipo)}</div>
-      <div class="hi-info">
-        <div class="hi-nombre">${h.ref||h.osm_id?.replace('node/','#')||h.id.slice(0,8)} ${h.osm_id?'<span class="chip-osm">OSM</span>':''}</div>
-        <div class="hi-dir">${h.direccion||h.municipio||'Sin referencia'}</div>
-        <div class="hi-badges">
-          <span class="badge ${badgeEstado(h.estado)}">${etqEstado(h.estado)}</span>
-          <span class="chip-tipo ct-${h.tipo||'otro'}">${etqTipo(h.tipo)}</span>
-          ${h.diametro?`<span class="badge badge-azul">∅${h.diametro}</span>`:''}
-          ${h.presion!=null?`<span class="badge badge-gris">${h.presion}bar</span>`:''}
-        </div>
+function renderizarLista(lista){
+  document.getElementById('lista').innerHTML = lista.map(s=>`
+    <div class="sotano-card${seleccionado===s.id?' activo':''}" onclick="mostrarDetalle('${s.id}')">
+      <div class="sc-dir">${s.ficha_num?`<span style="color:var(--naranja);font-size:11px">FICHA ${s.ficha_num} · </span>`:''}${s.direccion}</div>
+      <div class="sc-chips">
+        ${s.ventilacion?'<span class="sc-chip chip-ok">Ventilado</span>':'<span class="sc-chip chip-alert">Sin ventilación</span>'}
+        ${s.humedad_gases?'<span class="sc-chip chip-warn">⚠ Gases</span>':''}
+        <span class="sc-chip chip-gris">${s.num_accesos||1} acceso${(s.num_accesos||1)!==1?'s':''}</span>
+        ${s.contacto?`<span class="sc-chip chip-gris">📞 ${s.contacto}</span>`:''}
       </div>
+      <div class="sc-fecha">Inspector: ${s.inspector||'—'} · ${s.fecha_inspeccion||'—'}</div>
     </div>
   `).join('');
-
-  const pag=document.getElementById('paginacion');
-  if(totalPags>1){
-    pag.style.display='flex';
-    document.getElementById('info-pagina').textContent=`${pagina+1}/${totalPags} (${hidrantesFiltrados.length})`;
-    document.getElementById('btn-prev').disabled=pagina===0;
-    document.getElementById('btn-next').disabled=pagina>=totalPags-1;
-  } else {
-    pag.style.display='none';
-  }
 }
 
-function cambiarPagina(dir){
-  pagina+=dir;
-  renderizarLista();
-  document.getElementById('tab-lista').scrollTop=0;
+function filtrar(){
+  const q = document.getElementById('busqueda').value.toLowerCase();
+  const f = q ? sotanos.filter(s=>[(s.direccion||''),(s.observaciones||''),(s.contacto||'')].some(x=>x.toLowerCase().includes(q))) : sotanos;
+  renderizarLista(f);
+  Object.entries(marcadores).forEach(([id,m])=>{
+    const vis = f.some(s=>s.id===id);
+    if(vis&&!mapa.hasLayer(m)) m.addTo(mapa);
+    else if(!vis&&mapa.hasLayer(m)) mapa.removeLayer(m);
+  });
+  actualizarBarra(f);
+}
+
+function actualizarBarra(lista){
+  document.getElementById('be-total').textContent=lista.length;
+  document.getElementById('be-vent').textContent=lista.filter(s=>s.ventilacion).length;
+  document.getElementById('be-gas').textContent=lista.filter(s=>s.humedad_gases).length;
 }
 
 // ============================================
 // DETALLE
 // ============================================
 function mostrarDetalle(id){
-  const h=todosHidrantes.find(x=>x.id===id);
-  if(!h) return;
-  seleccionadoId=id;
-  document.getElementById('pd-titulo').textContent=`${emojiTipo(h.tipo)} ${h.ref||h.osm_id||'Hidrante'}`;
-  const campos=[
-    ['Estado',`<span class="badge ${badgeEstado(h.estado)}">${etqEstado(h.estado)}</span>`],
-    ['Tipo',etqTipo(h.tipo)],
-    ['Municipio',h.municipio||'—'],
-    ['Dirección',h.direccion||'—'],
-    ['Diámetro',h.diametro?h.diametro+' mm':'—'],
-    ['Presión',h.presion!=null?h.presion+' bar':'—'],
-    ['Caudal',h.caudal?h.caudal+' l/min':'—'],
-    ['Operador',h.operador||'—'],
-    ['Última revisión',h.ultima_revision||'—'],
-    ['Ref. interna',h.ref||'—'],
-    ['ID OSM',h.osm_id||'—'],
-    ['Coordenadas',`${h.lat.toFixed(5)}, ${h.lon.toFixed(5)}`],
-    ['Observaciones',h.obs||'—'],
-  ];
-  document.getElementById('pd-body').innerHTML=`
-    ${campos.map(([k,v])=>`<div class="pd-campo"><span class="pd-clave">${k}</span><span class="pd-valor">${v}</span></div>`).join('')}
-    <div class="pd-acciones">
-      <button class="pd-btn-editar" onclick="editarHidrante('${h.id}')">✏️ Editar</button>
-      <button class="pd-btn-nav" onclick="verEnOSM('${h.id}')">🗺 OSM</button>
-      <button class="pd-btn-borrar" onclick="borrarHidrante('${h.id}')">🗑</button>
+  const s = sotanos.find(x=>x.id===id);
+  if(!s) return;
+  seleccionado = id;
+  Object.entries(marcadores).forEach(([mid,m])=>{
+    m.getElement()?.querySelector('.marcador-sotano')?.classList.toggle('activo',mid===id);
+  });
+  if(s.lat&&s.lon&&!mapa.getBounds().contains([s.lat,s.lon])){
+    mapa.flyTo([s.lat,s.lon],16,{animate:true,duration:0.8});
+  }
+
+  document.getElementById('pd-titulo').textContent=s.direccion;
+  document.getElementById('panel-detalle').style.display='flex';
+
+  const fotos = Array.isArray(s.fotos)?s.fotos:[];
+  const docs = Array.isArray(s.documentos)?s.documentos:[];
+  const accesosArr = [s.acceso_1,s.acceso_2,s.acceso_3,s.acceso_4,s.acceso_5].filter(Boolean);
+
+  const galeriaHTML = `
+    <div class="galeria">
+      ${fotos.map(f=>`
+        <div class="galeria-foto">
+          <img src="${f.url}" loading="lazy" onclick="abrirLightbox('${f.url}')">
+          <button class="btn-del-foto${USUARIO?' admin':''}" onclick="eliminarFoto('${id}','${f.url}')">×</button>
+        </div>
+      `).join('')}
+      ${USUARIO?`<button class="btn-add-foto" onclick="iniciarFoto('${id}')">📷<br>Añadir foto</button>`:''}
+      ${fotos.length===0&&!USUARIO?`<div class="sin-fotos">Sin fotografías registradas</div>`:''}
     </div>
   `;
-  document.getElementById('panel-detalle').style.display='block';
-  // Solo mueve si el hidrante no está visible en el área actual
-  if(!mapa.getBounds().contains([h.lat,h.lon])){
-    mapa.flyTo([h.lat,h.lon], Math.max(mapa.getZoom(),16), {animate:true, duration:0.8});
+
+  const docsHTML = docs.length>0||USUARIO ? `
+    <div class="pd-seccion">
+      <div class="pd-sec-titulo">📄 Documentos</div>
+      ${docs.map(d=>`
+        <div class="doc-item">
+          <span class="doc-nombre">📄 ${d.nombre||'Documento'}</span>
+          <div class="doc-acciones-small">
+            <button class="btn-doc-small btn-ver-s" onclick="window.open('${d.url}','_blank')">Ver</button>
+            ${USUARIO?`<button class="btn-doc-small btn-del-s" onclick="eliminarDoc('${id}','${d.url}')">×</button>`:''}
+          </div>
+        </div>
+      `).join('')}
+      ${USUARIO?`<button class="btn-add-doc" onclick="iniciarDoc('${id}')">📎 Añadir documento (PDF, plano...)</button>`:''}
+    </div>
+  ` : '';
+
+  document.getElementById('pd-body').innerHTML = `
+    ${galeriaHTML}
+    <div class="pd-seccion">
+      <div class="pd-sec-titulo">Información general</div>
+      ${s.ficha_num?`<div class="pd-fila"><span class="pd-clave">Nº ficha</span><span class="pd-valor">${s.ficha_num}</span></div>`:''}
+      <div class="pd-fila"><span class="pd-clave">Tipo</span><span class="pd-valor">${s.tipo_inmueble||'Residencial'}</span></div>
+      <div class="pd-fila"><span class="pd-clave">Contacto</span><span class="pd-valor">${s.contacto||'No registrado'}</span></div>
+      <div class="pd-fila"><span class="pd-clave">Coordenadas</span><span class="pd-valor">${s.lat?s.lat.toFixed(5)+', '+s.lon.toFixed(5):'—'}</span></div>
+      <div class="pd-fila"><span class="pd-clave">Inspector</span><span class="pd-valor">${s.inspector||'—'} · ${s.fecha_inspeccion||'—'}</span></div>
+    </div>
+    <div class="pd-seccion">
+      <div class="pd-sec-titulo">Accesos (${accesosArr.length})</div>
+      ${accesosArr.map((a,i)=>`<div class="acceso-item"><div class="acceso-num">${i+1}</div><span>${a}</span></div>`).join('')}
+    </div>
+    <div class="pd-seccion">
+      <div class="pd-sec-titulo">Condiciones</div>
+      <div class="cond-fila"><span class="pd-clave">Ventilación</span><span class="cond-badge ${s.ventilacion?'chip-ok':'chip-alert'}">${s.ventilacion?'✓ Sí':'✗ No'}</span></div>
+      <div class="cond-fila"><span class="pd-clave">Iluminación</span><span class="cond-badge chip-ok">${s.iluminacion||'Adecuada'}</span></div>
+      <div class="cond-fila"><span class="pd-clave">Humedad / Gases</span><span class="cond-badge ${s.humedad_gases?'chip-alert':'chip-ok'}">${s.humedad_gases?'⚠ Detectados':'✓ No'}</span></div>
+      ${s.observaciones?`<div class="${s.humedad_gases?'obs-box':'obs-box normal'}">${s.observaciones}</div>`:''}
+    </div>
+    ${docsHTML}
+    <div class="pd-acciones">
+      <button class="pd-btn pd-btn-osm" onclick="verOSM('${id}')">🗺 OSM</button>
+      <button class="pd-btn pd-btn-editar" id="pd-editar" onclick="abrirFormEditar('${id}')">✏️ Editar</button>
+      <button class="pd-btn pd-btn-borrar" id="pd-borrar" onclick="borrarSotano('${id}')">🗑 Borrar</button>
+    </div>
+  `;
+
+  if(USUARIO){
+    document.getElementById('pd-editar').style.display='block';
+    document.getElementById('pd-borrar').style.display='block';
   }
-  Object.entries(marcadores).forEach(([mid,m])=>{
-    m.getElement()?.querySelector('.marcador-hidrante')?.classList.toggle('m-seleccionado',mid===id);
-  });
-  renderizarLista();
+  renderizarLista(sotanos.filter(s=>{
+    const q=document.getElementById('busqueda').value.toLowerCase();
+    return !q||(s.direccion||'').toLowerCase().includes(q);
+  }));
 }
 
 function cerrarDetalle(){
   document.getElementById('panel-detalle').style.display='none';
-  seleccionadoId=null;
-  Object.values(marcadores).forEach(m=>m.getElement()?.querySelector('.marcador-hidrante')?.classList.remove('m-seleccionado'));
-  renderizarLista();
+  seleccionado=null;
 }
 
-async function borrarHidrante(id){
-  if(!confirm('¿Eliminar este hidrante de Supabase? No se puede deshacer.')) return;
-  try{
-    await sbDelete(id);
-    todosHidrantes=todosHidrantes.filter(h=>h.id!==id);
+function verOSM(id){
+  const s=sotanos.find(x=>x.id===id);
+  if(s&&s.lat) window.open(`https://www.openstreetmap.org/?mlat=${s.lat}&mlon=${s.lon}&zoom=18`,'_blank');
+}
+
+async function borrarSotano(id){
+  if(!confirm('¿Eliminar este sótano? Esta acción no se puede deshacer.')) return;
+  try {
+    await fetch(`${SB}/rest/v1/sotanos?id=eq.${id}`,{method:'DELETE',headers:H()});
+    sotanos=sotanos.filter(s=>s.id!==id);
+    if(marcadores[id]){mapa.removeLayer(marcadores[id]);delete marcadores[id];}
     cerrarDetalle();
-    aplicarFiltros();
-    renderizarStats();
-    mostrarToast('🗑 Hidrante eliminado');
-  }catch(e){ mostrarToast('❌ Error al borrar: '+e.message,3000); }
+    renderizarLista(sotanos);
+    actualizarBarra(sotanos);
+    mostrarToast('🗑 Sótano eliminado');
+  } catch(e){mostrarToast('❌ Error al eliminar');}
 }
 
-function verEnOSM(id){
-  const h=todosHidrantes.find(x=>x.id===id);
-  if(!h) return;
-  window.open(`https://www.openstreetmap.org/?mlat=${h.lat}&mlon=${h.lon}&zoom=18`,'_blank');
+// ============================================
+// FOTOS
+// ============================================
+function iniciarFoto(id){subiendoParaId=id;document.getElementById('input-foto').click();}
+
+document.getElementById('input-foto').addEventListener('change',async function(){
+  const files=Array.from(this.files);if(!files.length)return;
+  mostrarToast('📤 Subiendo fotos...',10000);
+  const s=sotanos.find(x=>x.id===subiendoParaId);
+  const fotos=Array.isArray(s.fotos)?[...s.fotos]:[];
+  for(const file of files){
+    const ext=file.name.split('.').pop();
+    const path=`${subiendoParaId}/${Date.now()}.${ext}`;
+    try {
+      const r=await fetch(`${SB}/storage/v1/object/sotanos-fotos/${path}`,{
+        method:'POST',headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':file.type},body:file
+      });
+      if(r.ok) fotos.push({url:`${SB}/storage/v1/object/public/sotanos-fotos/${path}`,path});
+    }catch(e){}
+  }
+  await patchSotano(subiendoParaId,{fotos});
+  mostrarToast('✅ Fotos subidas');
+  mostrarDetalle(subiendoParaId);
+  this.value='';
+});
+
+async function eliminarFoto(id,url){
+  if(!confirm('¿Eliminar esta foto?'))return;
+  const s=sotanos.find(x=>x.id===id);
+  const fotos=(s.fotos||[]).filter(f=>f.url!==url);
+  await patchSotano(id,{fotos});
+  mostrarDetalle(id);mostrarToast('🗑 Foto eliminada');
 }
 
-function editarHidrante(id){
-  const h=todosHidrantes.find(x=>x.id===id);
-  if(!h) return;
+// ============================================
+// DOCUMENTOS
+// ============================================
+function iniciarDoc(id){subiendoParaId=id;document.getElementById('input-doc').click();}
+
+document.getElementById('input-doc').addEventListener('change',async function(){
+  const file=this.files[0];if(!file)return;
+  mostrarToast('📤 Subiendo documento...',10000);
+  const ext=file.name.split('.').pop();
+  const path=`${subiendoParaId}/${Date.now()}.${ext}`;
+  try {
+    const r=await fetch(`${SB}/storage/v1/object/sotanos-fotos/${path}`,{
+      method:'POST',headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':file.type},body:file
+    });
+    if(r.ok){
+      const url=`${SB}/storage/v1/object/public/sotanos-fotos/${path}`;
+      const s=sotanos.find(x=>x.id===subiendoParaId);
+      const docs=Array.isArray(s.documentos)?[...s.documentos]:[];
+      docs.push({url,nombre:file.name,path});
+      await patchSotano(subiendoParaId,{documentos:docs});
+      mostrarToast('✅ Documento subido');
+      mostrarDetalle(subiendoParaId);
+    }else{mostrarToast('❌ Error al subir');}
+  }catch(e){mostrarToast('❌ Error de conexión');}
+  this.value='';
+});
+
+async function eliminarDoc(id,url){
+  if(!confirm('¿Quitar este documento?'))return;
+  const s=sotanos.find(x=>x.id===id);
+  const docs=(s.documentos||[]).filter(d=>d.url!==url);
+  await patchSotano(id,{documentos:docs});
+  mostrarDetalle(id);mostrarToast('🗑 Documento eliminado');
+}
+
+// ============================================
+// FORMULARIO
+// ============================================
+function abrirFormNuevo(){
+  editandoId=null;
+  document.getElementById('form-titulo').textContent='➕ Añadir sótano';
+  limpiarForm();
+  document.getElementById('modal-form').classList.add('visible');
+}
+
+function abrirFormEditar(id){
+  const s=sotanos.find(x=>x.id===id);if(!s)return;
   editandoId=id;
-  document.getElementById('coords-display').textContent=`${h.lat.toFixed(6)}, ${h.lon.toFixed(6)}`;
-  document.getElementById('coords-display').dataset.lat=h.lat;
-  document.getElementById('coords-display').dataset.lon=h.lon;
-  document.getElementById('f-tipo').value=h.tipo||'soterra';
-  document.getElementById('f-estado').value=h.estado||'desconocido';
-  document.getElementById('f-direccion').value=h.direccion||'';
-  document.getElementById('f-municipio').value=h.municipio||'';
-  document.getElementById('f-diametro').value=h.diametro||'';
-  document.getElementById('f-presion').value=h.presion!=null?h.presion:'';
-  document.getElementById('f-caudal').value=h.caudal||'';
-  document.getElementById('f-ref').value=h.ref||'';
-  document.getElementById('f-revision').value=h.ultima_revision||'';
-  document.getElementById('f-obs').value=h.obs||'';
-  document.getElementById('btn-guardar').textContent='💾 Guardar cambios';
-  cambiarTab('form',document.querySelectorAll('.tab')[2]);
-  cerrarDetalle();
+  document.getElementById('form-titulo').textContent='✏️ Editar — '+s.direccion;
+  document.getElementById('f-direccion').value=s.direccion||'';
+  document.getElementById('f-ficha').value=s.ficha_num||'';
+  document.getElementById('f-tipo').value=s.tipo_inmueble||'Residencial';
+  document.getElementById('f-lat').value=s.lat||'';
+  document.getElementById('f-lon').value=s.lon||'';
+  document.getElementById('f-contacto').value=s.contacto||'';
+  document.getElementById('f-num-accesos').value=s.num_accesos||'';
+  const accesos=[s.acceso_1,s.acceso_2,s.acceso_3,s.acceso_4,s.acceso_5].filter(Boolean);
+  document.getElementById('f-accesos').value=accesos.join('\n');
+  document.getElementById('f-ventilacion').value=s.ventilacion?'true':'false';
+  document.getElementById('f-iluminacion').value=s.iluminacion||'Adecuada';
+  document.getElementById('f-gases').value=s.humedad_gases?'true':'false';
+  document.getElementById('f-obs').value=s.observaciones||'';
+  document.getElementById('f-inspector').value=s.inspector||'B-31';
+  document.getElementById('f-fecha').value=s.fecha_inspeccion||'';
+  document.getElementById('modal-form').classList.add('visible');
 }
 
-// ============================================
-// FORMULARIO / GUARDADO
-// ============================================
-function activarModoAñadir(){
-  modoAñadir=true;
-  document.getElementById('aviso-añadir').style.display='block';
-  document.getElementById('btn-modo-añadir').style.background='#E67E22';
-  mostrarToast('Haz clic en el mapa para ubicar el hidrante');
+function cerrarForm(){document.getElementById('modal-form').classList.remove('visible');}
+
+function limpiarForm(){
+  ['f-direccion','f-ficha','f-lat','f-lon','f-contacto','f-num-accesos','f-accesos','f-obs','f-fecha'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-tipo').value='Residencial';
+  document.getElementById('f-ventilacion').value='true';
+  document.getElementById('f-iluminacion').value='Adecuada';
+  document.getElementById('f-gases').value='false';
+  document.getElementById('f-inspector').value='B-31';
 }
 
-function cancelarModoAñadir(){
-  modoAñadir=false;
-  document.getElementById('aviso-añadir').style.display='none';
-  document.getElementById('btn-modo-añadir').style.background='';
-}
-
-async function guardarHidrante(){
-  const lat=parseFloat(document.getElementById('coords-display').dataset.lat);
-  const lon=parseFloat(document.getElementById('coords-display').dataset.lon);
-  if(!lat||!lon){mostrarToast('⚠️ Selecciona una ubicación en el mapa');return;}
+async function guardarSotano(){
   const dir=document.getElementById('f-direccion').value.trim();
   if(!dir){mostrarToast('⚠️ La dirección es obligatoria');return;}
-
+  const accesosRaw=document.getElementById('f-accesos').value.trim();
+  const accesosList=accesosRaw?accesosRaw.split('\n').filter(Boolean):[];
   const datos={
-    lat,lon,
-    tipo:document.getElementById('f-tipo').value,
-    estado:document.getElementById('f-estado').value,
     direccion:dir,
-    municipio:document.getElementById('f-municipio').value.trim()||null,
-    diametro:parseInt(document.getElementById('f-diametro').value)||null,
-    presion:parseFloat(document.getElementById('f-presion').value)||null,
-    caudal:parseInt(document.getElementById('f-caudal').value)||null,
-    ref:document.getElementById('f-ref').value.trim()||null,
-    ultima_revision:document.getElementById('f-revision').value.trim()||null,
-    obs:document.getElementById('f-obs').value.trim()||null,
+    ficha_num:document.getElementById('f-ficha').value.trim()||null,
+    tipo_inmueble:document.getElementById('f-tipo').value,
+    lat:parseFloat(document.getElementById('f-lat').value)||null,
+    lon:parseFloat(document.getElementById('f-lon').value)||null,
+    contacto:document.getElementById('f-contacto').value.trim()||null,
+    num_accesos:parseInt(document.getElementById('f-num-accesos').value)||accesosList.length||1,
+    acceso_1:accesosList[0]||null,acceso_2:accesosList[1]||null,
+    acceso_3:accesosList[2]||null,acceso_4:accesosList[3]||null,acceso_5:accesosList[4]||null,
+    ventilacion:document.getElementById('f-ventilacion').value==='true',
+    iluminacion:document.getElementById('f-iluminacion').value,
+    humedad_gases:document.getElementById('f-gases').value==='true',
+    observaciones:document.getElementById('f-obs').value.trim()||null,
+    inspector:document.getElementById('f-inspector').value.trim()||'B-31',
+    fecha_inspeccion:document.getElementById('f-fecha').value.trim()||null,
     updated_at:new Date().toISOString()
   };
-
-  const btn=document.getElementById('btn-guardar');
-  btn.disabled=true; btn.textContent='Guardando...';
-
-  try{
-    if(editandoId){
-      await sbPatch(editandoId,datos);
-      const idx=todosHidrantes.findIndex(h=>h.id===editandoId);
-      todosHidrantes[idx]={...todosHidrantes[idx],...datos};
-      editandoId=null;
-      mostrarToast('✅ Hidrante actualizado en Supabase');
-    } else {
-      const [nuevo]=await sbPost(datos);
-      todosHidrantes.unshift(nuevo);
-      mostrarToast('✅ Hidrante añadido a Supabase');
-    }
-    limpiarFormulario();
-    if(window._marcadorTemp){mapa.removeLayer(window._marcadorTemp);window._marcadorTemp=null;}
-    aplicarFiltros();
-    actualizarSelectMunicipios();
-    renderizarStats();
-    cambiarTab('lista',document.querySelectorAll('.tab')[0]);
-  }catch(e){
-    mostrarToast('❌ Error al guardar: '+e.message,4000);
-  }
-  btn.disabled=false; btn.textContent=editandoId?'💾 Guardar cambios':'💾 Guardar en Supabase';
-}
-
-function cancelarFormulario(){
-  editandoId=null;
-  limpiarFormulario();
-  if(window._marcadorTemp){mapa.removeLayer(window._marcadorTemp);window._marcadorTemp=null;}
-  cancelarModoAñadir();
-}
-
-function limpiarFormulario(){
-  ['f-tipo','f-estado','f-direccion','f-municipio','f-diametro','f-presion','f-caudal','f-ref','f-revision','f-obs'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('coords-display').textContent='Sin seleccionar';
-  delete document.getElementById('coords-display').dataset.lat;
-  delete document.getElementById('coords-display').dataset.lon;
-  document.getElementById('btn-guardar').textContent='💾 Guardar en Supabase';
-}
-
-// ============================================
-// ESTADÍSTICAS
-// ============================================
-function renderizarStats(){
-  const h=todosHidrantes;
-  document.getElementById('s-total').textContent=h.length;
-  document.getElementById('s-oper').textContent=h.filter(x=>x.estado==='operativo').length;
-  document.getElementById('s-rev').textContent=h.filter(x=>x.estado==='revision').length;
-  document.getElementById('s-inop').textContent=h.filter(x=>x.estado==='inoperativo').length;
-
-  const tipos={soterra:'Subterráneo',boca:'Boca incendio',columna:'Columna seca',deposito:'Depósito',toma_aspiration:'Toma aspiración'};
-  const colT={soterra:'#16A085',boca:'#2980B9',columna:'#8E44AD',deposito:'#C0392B',toma_aspiration:'#E67E22'};
-  document.getElementById('stats-tipo').innerHTML=Object.entries(tipos).map(([k,v])=>{
-    const n=h.filter(x=>(x.tipo||'otro')===k).length;
-    const pct=h.length?Math.round(n/h.length*100):0;
-    return `<div class="barra-tipo-fila"><span class="barra-tipo-label">${v}</span><div class="barra-tipo-barra"><div class="barra-tipo-fill" style="width:${pct}%;background:${colT[k]}"></div></div><span class="barra-tipo-num">${n}</span></div>`;
-  }).join('');
-
-  const munis={};
-  h.forEach(x=>{if(x.municipio)munis[x.municipio]=(munis[x.municipio]||0)+1;});
-  const maxM=Math.max(...Object.values(munis),1);
-  document.getElementById('stats-municipio').innerHTML=Object.entries(munis).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([m,n])=>`
-    <div class="barra-tipo-fila">
-      <span class="barra-tipo-label" title="${m}">${m.length>14?m.substring(0,13)+'…':m}</span>
-      <div class="barra-tipo-barra"><div class="barra-tipo-fill" style="width:${Math.round(n/maxM*100)}%;background:var(--azul)"></div></div>
-      <span class="barra-tipo-num">${n}</span>
-    </div>`).join('')||'<p style="font-size:12px;color:var(--gris-medio)">Sin datos de municipio</p>';
-}
-
-// ============================================
-// EXPORTACIÓN
-// ============================================
-function exportarCSV(){
-  const cols=['id','osm_id','ref','tipo','estado','direccion','municipio','lat','lon','diametro','presion','caudal','operador','ultima_revision','obs'];
-  const csv=[cols.join(';'),...todosHidrantes.map(h=>cols.map(c=>JSON.stringify(h[c]??'')).join(';'))].join('\n');
-  descargar('hidrantes_gis.csv','text/csv',csv);
-  mostrarToast('⬇ CSV exportado ('+todosHidrantes.length+' registros)');
-}
-
-function exportarGeoJSON(){
-  const geo={type:'FeatureCollection',features:todosHidrantes.map(h=>({
-    type:'Feature',
-    geometry:{type:'Point',coordinates:[h.lon,h.lat]},
-    properties:{id:h.id,osm_id:h.osm_id,ref:h.ref,tipo:h.tipo,estado:h.estado,direccion:h.direccion,municipio:h.municipio,diametro:h.diametro,presion:h.presion,caudal:h.caudal,operador:h.operador,ultima_revision:h.ultima_revision,obs:h.obs}
-  }))};
-  descargar('hidrantes_gis.geojson','application/json',JSON.stringify(geo,null,2));
-  mostrarToast('⬇ GeoJSON exportado');
-}
-
-function descargar(nombre,tipo,contenido){
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([contenido],{type:tipo}));
-  a.download=nombre; a.click();
-}
-
-// ============================================
-// UTILS
-// ============================================
-function actualizarBarraEstado(){
-  const h=hidrantesFiltrados;
-  document.getElementById('be-total').textContent=h.length;
-  document.getElementById('be-oper').textContent=h.filter(x=>x.estado==='operativo').length;
-  document.getElementById('be-rev').textContent=h.filter(x=>x.estado==='revision').length;
-  document.getElementById('be-inop').textContent=h.filter(x=>x.estado==='inoperativo').length;
-}
-
-function cambiarTab(nombre,el){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('activo'));
-  document.querySelectorAll('.tab-contenido').forEach(t=>t.classList.remove('activo'));
-  if(el) el.classList.add('activo');
-  const c=document.getElementById('tab-'+nombre);
-  if(c) c.classList.add('activo');
-  if(nombre==='stats') renderizarStats();
-}
-
-function mostrarToast(msg,dur=2500){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.style.display='block';
-  clearTimeout(window._toastT);
-  window._toastT=setTimeout(()=>t.style.display='none',dur);
-}
-
-function colorEstado(e){return{operativo:'#27AE60',revision:'#E67E22',inoperativo:'#E74C3C',desconocido:'#95A5A6'}[e]||'#95A5A6';}
-function badgeEstado(e){return{operativo:'badge-verde',revision:'badge-naranja',inoperativo:'badge-rojo',desconocido:'badge-gris'}[e]||'badge-gris';}
-function etqEstado(e){return{operativo:'Operativo',revision:'Revisión',inoperativo:'Inoperativo',desconocido:'Desconocido'}[e]||e;}
-function etqTipo(t){return{soterra:'Subterráneo',boca:'Boca incendio',columna:'Columna seca',deposito:'Depósito',toma_aspiration:'Toma aspiración',otro:'Otro'}[t]||t;}
-function emojiTipo(t){return{soterra:'🟢',boca:'🔴',columna:'🟣',deposito:'🟤',toma_aspiration:'🟠',otro:'⚪'}[t]||'🔴';}
-
-
-
-// ============================================
-// AUTH HIDRANTES
-// ============================================
-let USUARIO_H = null;
-let TOKEN_H = null;
-
-function abrirLoginHidrantes(){
-  document.getElementById('h-modal-login').style.display='flex';
-}
-
-async function enviarLoginHidrantes(){
-  const email = document.getElementById('h-login-email').value.trim();
-  const password = document.getElementById('h-login-password').value;
-  if(!email||!password){ document.getElementById('h-login-msg').textContent='Rellena email y contraseña'; return; }
-  const msg = document.getElementById('h-login-msg');
-  const btn = document.getElementById('h-login-btn');
-  btn.disabled=true; msg.style.color='#666'; msg.textContent='Accediendo...';
+  const btn=document.getElementById('btn-guardar-form');
+  btn.disabled=true;btn.textContent='Guardando...';
   try {
-    const r = await fetch(`${SB_URL}/auth/v1/token?grant_type=password`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SB_KEY},
+    if(editandoId){
+      const r=await fetch(`${SB}/rest/v1/sotanos?id=eq.${editandoId}`,{
+        method:'PATCH',headers:{...H(),'Prefer':'return=representation'},body:JSON.stringify(datos)
+      });
+      if(!r.ok)throw new Error(await r.text());
+      const [u]=await r.json();
+      const idx=sotanos.findIndex(x=>x.id===editandoId);
+      sotanos[idx]={...sotanos[idx],...u};
+      // Actualizar marcador
+      if(marcadores[editandoId]){mapa.removeLayer(marcadores[editandoId]);delete marcadores[editandoId];}
+      if(u.lat&&u.lon) marcadores[u.id]=crearMarcador(u);
+      mostrarToast('✅ Sótano actualizado');
+      mostrarDetalle(editandoId);
+    } else {
+      const r=await fetch(`${SB}/rest/v1/sotanos`,{
+        method:'POST',headers:{...H(),'Prefer':'return=representation'},body:JSON.stringify({...datos,fotos:[],documentos:[]})
+      });
+      if(!r.ok)throw new Error(await r.text());
+      const [nuevo]=await r.json();
+      sotanos.push(nuevo);
+      if(nuevo.lat&&nuevo.lon) marcadores[nuevo.id]=crearMarcador(nuevo);
+      seleccionado=nuevo.id;
+      mostrarToast('✅ Sótano añadido');
+      mostrarDetalle(nuevo.id);
+    }
+    cerrarForm();
+    renderizarLista(sotanos);
+    actualizarBarra(sotanos);
+  }catch(e){mostrarToast('❌ Error: '+e.message,4000);}
+  btn.disabled=false;btn.textContent='💾 Guardar';
+}
+
+async function patchSotano(id,datos){
+  try {
+    const r=await fetch(`${SB}/rest/v1/sotanos?id=eq.${id}`,{
+      method:'PATCH',headers:{...H(),'Prefer':'return=representation'},
+      body:JSON.stringify({...datos,updated_at:new Date().toISOString()})
+    });
+    if(r.ok){const [u]=await r.json();const idx=sotanos.findIndex(x=>x.id===id);if(idx>=0)sotanos[idx]={...sotanos[idx],...u};}
+  }catch(e){}
+}
+
+// ============================================
+// AUTH
+// ============================================
+function abrirLogin(){document.getElementById('modal-login').classList.add('visible');}
+function cerrarLogin(){document.getElementById('modal-login').classList.remove('visible');}
+
+async function hacerLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const password=document.getElementById('login-password').value;
+  const msg=document.getElementById('login-msg');
+  const btn=document.getElementById('login-btn');
+  if(!email||!password){msg.textContent='Rellena email y contraseña';return;}
+  btn.disabled=true;btn.textContent='Accediendo...';
+  try {
+    const r=await fetch(`${SB}/auth/v1/token?grant_type=password`,{
+      method:'POST',headers:{'Content-Type':'application/json','apikey':KEY},
       body:JSON.stringify({email,password})
     });
-    const data = await r.json();
-    if(r.ok && data.access_token){
-      TOKEN_H = data.access_token;
-      USUARIO_H = email;
-      sessionStorage.setItem('sb_token',TOKEN_H);
-      sessionStorage.setItem('sb_user',USUARIO_H);
-      document.getElementById('h-usuario-badge').textContent='● '+email;
-      document.getElementById('h-usuario-badge').style.display='inline-block';
-      document.getElementById('h-btn-login').style.display='none';
-      document.getElementById('btn-modo-añadir').style.display='inline-block';
-      document.getElementById('h-modal-login').style.display='none';
-      msg.textContent='';
-    } else {
-      msg.style.color='#E74C3C';
-      msg.textContent='Email o contraseña incorrectos';
-    }
-  } catch(e){ msg.textContent='Error de conexión'; }
-  btn.disabled=false;
+    const data=await r.json();
+    if(r.ok&&data.access_token){
+      TOKEN=data.access_token;USUARIO=email;
+      sessionStorage.setItem('sb_token',TOKEN);sessionStorage.setItem('sb_user',USUARIO);
+      document.getElementById('usuario-badge').textContent='● '+email;
+      document.getElementById('usuario-badge').style.display='inline-block';
+      document.getElementById('btn-login').style.display='none';
+      document.getElementById('btn-nuevo').style.display='inline-block';
+      cerrarLogin();
+      if(seleccionado)mostrarDetalle(seleccionado);
+      mostrarToast('✅ Sesión iniciada');
+    }else{msg.style.color='#EC7063';msg.textContent='Email o contraseña incorrectos';}
+  }catch(e){msg.textContent='Error de conexión';}
+  btn.disabled=false;btn.textContent='Acceder';
 }
 
-function detectarSesionHidrantes(){
-  const token = sessionStorage.getItem('sb_token');
-  const user = sessionStorage.getItem('sb_user');
-  if(token && user){
-    TOKEN_H = token;
-    USUARIO_H = user;
-    document.getElementById('h-usuario-badge').textContent = '● '+user;
-    document.getElementById('h-usuario-badge').style.display = 'inline-block';
-    document.getElementById('h-btn-login').style.display = 'none';
-    document.getElementById('btn-modo-añadir').style.display = 'inline-block';
+function detectarSesion(){
+  const token=sessionStorage.getItem('sb_token');
+  const user=sessionStorage.getItem('sb_user');
+  if(token&&user){
+    TOKEN=token;USUARIO=user;
+    document.getElementById('usuario-badge').textContent='● '+user;
+    document.getElementById('usuario-badge').style.display='inline-block';
+    document.getElementById('btn-login').style.display='none';
+    document.getElementById('btn-nuevo').style.display='inline-block';
   }
 }
-
-// ============================================
-// GEOLOCALIZACIÓN
-// ============================================
-let marcadorPosicion = null;
-let circuloPosicion = null;
-let marcadorCercano = null;
-
-function miPosicion(){
-  if(!navigator.geolocation){
-    mostrarToast('❌ Tu navegador no soporta geolocalización');
-    return;
-  }
-  const btn = document.getElementById('btn-geopos');
-  const btnM = document.getElementById('btn-geopos-m');
-  if(btn){btn.textContent='⟳ Localizando...';btn.disabled=true;}
-  if(btnM){btnM.textContent='⟳ Localizando...';btnM.disabled=true;}
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      const {latitude: lat, longitude: lon, accuracy} = pos.coords;
-      // Eliminar marcador anterior
-      if(marcadorPosicion) mapa.removeLayer(marcadorPosicion);
-      if(circuloPosicion) mapa.removeLayer(circuloPosicion);
-      // Icono de posición
-      const iconoPosicion = L.divIcon({
-        html: `<div style="width:20px;height:20px;border-radius:50%;background:#1A73E8;border:3px solid white;box-shadow:0 0 0 3px rgba(26,115,232,0.3)"></div>`,
-        iconSize:[20,20], iconAnchor:[10,10], className:''
-      });
-      marcadorPosicion = L.marker([lat,lon],{icon:iconoPosicion,zIndexOffset:1000}).addTo(mapa);
-      marcadorPosicion.bindPopup(`<b>📍 Tu posición</b><br>Precisión: ±${Math.round(accuracy)} m`).openPopup();
-      // Círculo de precisión
-      circuloPosicion = L.circle([lat,lon],{radius:accuracy,color:'#1A73E8',fillColor:'#1A73E8',fillOpacity:0.1,weight:1}).addTo(mapa);
-      // Solo mueve si la posición no está ya visible en pantalla
-      if(!mapa.getBounds().contains([lat,lon])){
-        mapa.flyTo([lat,lon], 16, {animate:true, duration:1.2});
-      }
-      if(btn){btn.textContent='📍 Mi posición';btn.disabled=false;}
-      if(btnM){btnM.textContent='📍 Mi posición';btnM.disabled=false;}
-      mostrarToast(`📍 Posición encontrada (±${Math.round(accuracy)} m)`);
-    },
-    err => {
-      if(btn){btn.textContent='📍 Mi posición';btn.disabled=false;}
-      if(btnM){btnM.textContent='📍 Mi posición';btnM.disabled=false;}
-      const msgs = {1:'Permiso denegado — activa la ubicación en el navegador', 2:'No se pudo obtener la posición', 3:'Tiempo de espera agotado'};
-      mostrarToast('❌ ' + (msgs[err.code]||'Error de geolocalización'), 4000);
-    },
-    {enableHighAccuracy: true, timeout: 10000, maximumAge: 0}
-  );
-}
-
-function hidranteCercano(){
-  if(!navigator.geolocation){
-    mostrarToast('❌ Tu navegador no soporta geolocalización');
-    return;
-  }
-  if(todosHidrantes.length === 0){
-    mostrarToast('⚠️ No hay hidrantes cargados');
-    return;
-  }
-  const btn = document.getElementById('btn-cercano');
-  btn.textContent = '⟳ Buscando...';
-  btn.disabled = true;
-
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      const {latitude: lat, longitude: lon, accuracy} = pos.coords;
-
-      // Actualizar marcador de posición
-      if(marcadorPosicion) mapa.removeLayer(marcadorPosicion);
-      if(circuloPosicion) mapa.removeLayer(circuloPosicion);
-      const iconoPosicion = L.divIcon({
-        html:`<div style="width:20px;height:20px;border-radius:50%;background:#1A73E8;border:3px solid white;box-shadow:0 0 0 3px rgba(26,115,232,0.3)"></div>`,
-        iconSize:[20,20],iconAnchor:[10,10],className:''
-      });
-      marcadorPosicion = L.marker([lat,lon],{icon:iconoPosicion,zIndexOffset:1000}).addTo(mapa);
-      circuloPosicion = L.circle([lat,lon],{radius:accuracy,color:'#1A73E8',fillColor:'#1A73E8',fillOpacity:0.1,weight:1}).addTo(mapa);
-
-      // Calcular distancias usando fórmula de Haversine
-      let cercano = null;
-      let minDist = Infinity;
-      todosHidrantes.forEach(h => {
-        const d = haversine(lat, lon, h.lat, h.lon);
-        if(d < minDist){ minDist = d; cercano = h; }
-      });
-
-      if(!cercano){ mostrarToast('No se encontró ningún hidrante'); return; }
-
-      // Eliminar marcador cercano anterior
-      if(marcadorCercano) mapa.removeLayer(marcadorCercano);
-
-      // Marcador especial para el más cercano
-      const iconoCercano = L.divIcon({
-        html:`<div style="width:38px;height:38px;border-radius:50%;background:#E74C3C;border:4px solid white;box-shadow:0 0 0 4px #E74C3C,0 4px 12px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:16px;animation:pulse 1s infinite">🚒</div>`,
-        iconSize:[38,38],iconAnchor:[19,19],className:''
-      });
-      marcadorCercano = L.marker([cercano.lat,cercano.lon],{icon:iconoCercano,zIndexOffset:2000}).addTo(mapa);
-
-      const distStr = minDist < 1000 ? `${Math.round(minDist)} m` : `${(minDist/1000).toFixed(2)} km`;
-
-      // Línea entre posición e hidrante
-      const linea = L.polyline([[lat,lon],[cercano.lat,cercano.lon]],{
-        color:'#E74C3C', weight:2, dashArray:'6,6', opacity:0.8
-      }).addTo(mapa);
-      setTimeout(()=>mapa.removeLayer(linea), 8000);
-
-      marcadorCercano.bindPopup(`
-        <div style="font-family:sans-serif;min-width:180px">
-          <b style="color:#922B21">🚒 Hidrante más cercano</b><br>
-          <hr style="margin:6px 0;border-color:#eee">
-          <b>📏 Distancia:</b> <span style="color:#E74C3C;font-size:15px;font-weight:700">${distStr}</span><br>
-          <b>Ref:</b> ${cercano.ref||cercano.osm_id||'—'}<br>
-          <b>Tipo:</b> ${etqTipo(cercano.tipo)}<br>
-          <b>Estado:</b> ${etqEstado(cercano.estado)}<br>
-          ${cercano.direccion?`<b>Dirección:</b> ${cercano.direccion}<br>`:''}
-          ${cercano.diametro?`<b>Diámetro:</b> ${cercano.diametro} mm<br>`:''}
-          ${cercano.presion!=null?`<b>Presión:</b> ${cercano.presion} bar<br>`:''}
-        </div>
-      `).openPopup();
-
-      // Ajustar vista para ver ambos puntos
-      const bounds = L.latLngBounds([[lat,lon],[cercano.lat,cercano.lon]]);
-      mapa.flyToBounds(bounds, {padding:[80,80], animate:true, duration:1.2});
-
-      btn.textContent = '🚒 Más cercano';
-      btn.disabled = false;
-      mostrarToast(`🚒 Hidrante más cercano a ${distStr}`, 4000);
-
-      // Mostrar detalle en sidebar
-      mostrarDetalle(cercano.id);
-    },
-    err => {
-      btn.textContent = '🚒 Más cercano';
-      btn.disabled = false;
-      const msgs = {1:'Permiso denegado — activa la ubicación', 2:'No se pudo obtener posición', 3:'Tiempo agotado'};
-      mostrarToast('❌ ' + (msgs[err.code]||'Error GPS'), 4000);
-    },
-    {enableHighAccuracy: true, timeout: 10000, maximumAge: 0}
-  );
-}
-
-// Fórmula Haversine — distancia en metros entre dos coordenadas
-function haversine(lat1, lon1, lat2, lon2){
-  const R = 6371000;
-  const dLat = (lat2-lat1) * Math.PI/180;
-  const dLon = (lon2-lon1) * Math.PI/180;
-  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-}
-
 
 // ============================================
 // TOGGLE SIDEBAR
 // ============================================
 function toggleSidebar(){
-  const sidebar = document.querySelector('.sidebar');
-  const btn = document.getElementById('btn-toggle-sidebar');
-  const contraido = sidebar.classList.toggle('contraido');
-  btn.textContent = contraido ? '▶' : '◀';
-  btn.title = contraido ? 'Expandir panel' : 'Contraer panel';
-  setTimeout(() => mapa.invalidateSize(), 320);
+  sidebarOculto=!sidebarOculto;
+  document.getElementById('sidebar').classList.toggle('oculto',sidebarOculto);
+  document.getElementById('btn-toggle').textContent=sidebarOculto?'▶':'◀';
+  setTimeout(()=>mapa.invalidateSize(),320);
 }
 
 // ============================================
-// ARRANQUE
+// LIGHTBOX / TOAST
 // ============================================
-detectarSesionHidrantes();
+function abrirLightbox(src){document.getElementById('lightbox-img').src=src;document.getElementById('lightbox').classList.add('visible');}
+function cerrarLightbox(){document.getElementById('lightbox').classList.remove('visible');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){cerrarLightbox();cerrarForm();cerrarLogin();}});
+
+function mostrarToast(msg,dur=2500){
+  const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';
+  clearTimeout(window._tT);window._tT=setTimeout(()=>t.style.display='none',dur);
+}
+
+// ============================================
+// INICIO
+// ============================================
+detectarSesion();
 cargarDatos();
-window.addEventListener('load',()=>setTimeout(()=>mapa.invalidateSize(),400));
-window.addEventListener('resize',()=>mapa.invalidateSize());
 </script>
-
-<!-- MODAL LOGIN HIDRANTES -->
-<div id="h-modal-login" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
-  <div style="background:#fff;border-radius:12px;padding:28px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative">
-    <button onclick="document.getElementById('h-modal-login').style.display='none'" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#666">×</button>
-    <div style="font-size:18px;font-weight:700;margin-bottom:6px;color:#1C2833">🔐 Acceso Admin</div>
-    <div style="font-size:13px;color:#666;margin-bottom:16px;line-height:1.4">Solo el administrador puede modificar los datos.</div>
-    <input id="h-login-email" type="email" placeholder="tu@email.com" style="width:100%;border:1px solid #dde;border-radius:6px;padding:10px 12px;font-size:14px;margin-bottom:8px;font-family:inherit">
-    <input id="h-login-password" type="password" placeholder="Contraseña" style="width:100%;border:1px solid #dde;border-radius:6px;padding:10px 12px;font-size:14px;margin-bottom:10px;font-family:inherit">
-    <button id="h-login-btn" onclick="enviarLoginHidrantes()" style="width:100%;background:#922B21;border:none;color:white;padding:11px;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer">Acceder</button>
-    <div id="h-login-msg" style="font-size:12px;color:#666;text-align:center;margin-top:10px;min-height:18px"></div>
-  </div>
-</div>
-
 </body>
 </html>

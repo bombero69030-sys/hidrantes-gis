@@ -343,6 +343,7 @@ let sotanos = [], marcadores = {};
 let seleccionado = null, editandoId = null;
 let subiendoParaId = null, subiendoTipoDoc = null;
 let sidebarOculto = false;
+let marcadorTempSot = null;
 
 const H = (x={})=>({'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+(TOKEN||KEY),...x});
 

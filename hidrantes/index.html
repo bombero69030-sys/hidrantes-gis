@@ -405,20 +405,20 @@
 // ============================================
 const SB_URL = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
-const HEADERS = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+const getHEADERS = () => ({'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+(TOKEN_H||SB_KEY)});
 
 async function sbGet(params=''){
-  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?${params}&order=created_at.desc`,{headers:HEADERS});
+  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?${params}&order=created_at.desc`,{headers:getHEADERS()});
   if(!r.ok) throw new Error(await r.text());
   return r.json();
 }
 async function sbPost(body){
-  const r = await fetch(`${SB_URL}/rest/v1/hidrantes`,{method:'POST',headers:{...HEADERS,'Prefer':'return=representation'},body:JSON.stringify(body)});
+  const r = await fetch(`${SB_URL}/rest/v1/hidrantes`,{method:'POST',headers:{...getHEADERS(),'Prefer':'return=representation'},body:JSON.stringify(body)});
   if(!r.ok) throw new Error(await r.text());
   return r.json();
 }
 async function sbPatch(id,body){
-  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?id=eq.${id}`,{method:'PATCH',headers:{...HEADERS,'Prefer':'return=minimal'},body:JSON.stringify(body)});
+  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?id=eq.${id}`,{method:'PATCH',headers:{...getHEADERS(),'Prefer':'return=minimal'},body:JSON.stringify(body)});
   if(!r.ok) throw new Error(await r.text());
 }
 async function sbDelete(id){
@@ -426,7 +426,7 @@ async function sbDelete(id){
   if(!r.ok) throw new Error(await r.text());
 }
 async function sbCount(){
-  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?select=id`,{headers:{...HEADERS,'Prefer':'count=exact','Range':'0-0'}});
+  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?select=id`,{headers:{...getHEADERS(),'Prefer':'count=exact','Range':'0-0'}});
   return parseInt(r.headers.get('Content-Range')?.split('/')[1]||'0');
 }
 
@@ -647,12 +647,19 @@ function mostrarDetalle(id){
   document.getElementById('pd-body').innerHTML=`
     ${campos.map(([k,v])=>`<div class="pd-campo"><span class="pd-clave">${k}</span><span class="pd-valor">${v}</span></div>`).join('')}
     <div class="pd-acciones">
-      <button class="pd-btn-editar" onclick="editarHidrante('${h.id}')">✏️ Editar</button>
+      <button class="pd-btn-editar" id="pd-editar-${h.id}" onclick="editarHidrante('${h.id}')" style="display:none">✏️ Editar</button>
       <button class="pd-btn-nav" onclick="verEnOSM('${h.id}')">🗺 OSM</button>
-      <button class="pd-btn-borrar" onclick="borrarHidrante('${h.id}')">🗑</button>
+      <button class="pd-btn-borrar" id="pd-borrar-${h.id}" onclick="borrarHidrante('${h.id}')" style="display:none">🗑 Borrar</button>
     </div>
   `;
   document.getElementById('panel-detalle').style.display='block';
+  // Mostrar botones solo si hay sesión activa
+  if(USUARIO_H){
+    const be = document.getElementById('pd-editar-'+h.id);
+    const bb = document.getElementById('pd-borrar-'+h.id);
+    if(be) be.style.display='flex';
+    if(bb) bb.style.display='flex';
+  }
   // Solo mueve si el hidrante no está visible en el área actual
   if(!mapa.getBounds().contains([h.lat,h.lon])){
     mapa.flyTo([h.lat,h.lon], Math.max(mapa.getZoom(),16), {animate:true, duration:0.8});

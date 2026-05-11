@@ -612,6 +612,8 @@ function activarUbicar(){
   window._modoUbicarSotano = true;
   document.getElementById('modal-form').classList.remove('visible');
   document.getElementById('aviso-ubicar').style.display='block';
+  // Cerrar panel detalle para que no intercepte el clic en el mapa
+  document.getElementById('panel-detalle').style.display='none';
 }
 
 function cancelarUbicar(){

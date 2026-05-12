@@ -148,7 +148,50 @@ body{font-family:var(--font-body);background:var(--crema);color:var(--texto);hei
 /* TOAST */
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1A1A;color:#fff;padding:9px 18px;border-radius:30px;font-size:13px;z-index:9999;display:none;box-shadow:0 4px 20px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);font-family:var(--font-display);letter-spacing:.04em}
 
+
+/* MODAL EDICION BIEN */
+#modal-bien{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9000;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px;backdrop-filter:blur(4px)}
+#modal-bien.visible{display:flex}
+.bien-form{background:var(--blanco);border-radius:6px;padding:24px;width:620px;max-width:95vw;margin:auto;position:relative}
+.bien-form-titulo{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--rojo);margin-bottom:16px;padding-right:30px}
+.bf-cerrar{position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--texto-muted)}
+.bf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bf-campo{display:flex;flex-direction:column;gap:3px}
+.bf-campo.full{grid-column:span 2}
+.bf-label{font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-muted)}
+.bf-input{border:1px solid var(--gris-borde);border-radius:3px;padding:8px 10px;font-family:var(--font-body);font-size:13px;color:var(--texto);background:var(--crema);width:100%}
+.bf-input:focus{outline:none;border-color:var(--rojo)}
+.bf-textarea{resize:vertical;min-height:70px}
+.bf-select{border:1px solid var(--gris-borde);border-radius:3px;padding:8px 10px;font-family:var(--font-body);font-size:13px;background:var(--crema);width:100%}
+.bf-divider{grid-column:span 2;border:none;border-top:1px solid var(--gris-borde);margin:4px 0}
+.bf-acciones{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.bf-btn-guardar{font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 20px;background:var(--rojo);color:white;border:none;cursor:pointer;border-radius:2px}
+.bf-btn-guardar:disabled{background:#999;cursor:not-allowed}
+.bf-btn-cancelar{font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:10px 20px;background:var(--gris-panel);color:var(--texto-muted);border:1px solid var(--gris-borde);cursor:pointer;border-radius:2px}
+.bf-btn-borrar{font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;background:#FEE2E2;color:#7F1D1D;border:1px solid #FECACA;cursor:pointer;border-radius:2px}
+.bf-riesgos{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.bf-riesgo-cb{display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer}
+.bf-foto-preview{width:100%;height:120px;object-fit:cover;border-radius:3px;margin-bottom:8px;display:none}
+.bf-nuevo-btn{font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;background:var(--gris-oscuro);color:white;border:none;cursor:pointer;border-radius:2px;margin-bottom:12px}
+
 /* PRINT */
+
+@media(max-width:700px){
+  .panel{width:100%;height:180px;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);overflow-x:auto;overflow-y:hidden;display:flex;flex-direction:column}
+  .layout{flex-direction:column}
+  .main{overflow-y:auto}
+  .grid-bienes{grid-template-columns:1fr 1fr}
+  .stats-strip{grid-template-columns:1fr 1fr}
+  .ficha-nombre{font-size:16px}
+  .cabecera{flex-wrap:wrap;height:auto;padding:10px 14px;gap:8px}
+  .cab-der{flex-wrap:wrap;gap:4px}
+  .cab-btn{font-size:10px;padding:4px 8px}
+  .sel-grid{grid-template-columns:1fr}
+  .bf-grid{grid-template-columns:1fr}
+  .bf-campo.full{grid-column:span 1}
+  .bf-divider{display:none}
+}
+
 @media print{.cabecera,.panel,.cab-der{display:none!important}.layout{display:block;height:auto}.main{overflow:visible}.stats-strip,.badge-rescate{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 
 @media(max-width:700px){
@@ -209,6 +252,95 @@ body{font-family:var(--font-body);background:var(--crema);color:var(--texto);hei
     <input class="login-input" type="password" id="login-pass" placeholder="Contraseña">
     <button class="login-submit" id="login-btn" onclick="hacerLogin()">Acceder</button>
     <div class="login-msg" id="login-msg"></div>
+  </div>
+</div>
+
+
+<!-- MODAL EDICION BIEN -->
+<div id="modal-bien">
+  <div class="bien-form">
+    <button class="bf-cerrar" onclick="cerrarModalBien()">×</button>
+    <div class="bien-form-titulo" id="bf-titulo">Editar bien</div>
+    <div class="bf-grid">
+      <div class="bf-campo full">
+        <label class="bf-label">Nombre del bien *</label>
+        <input class="bf-input" id="bf-nombre" placeholder="Ntra. Sra. de la Asunción...">
+      </div>
+      <div class="bf-campo">
+        <label class="bf-label">Zona</label>
+        <input class="bf-input" id="bf-zona" placeholder="Altar Mayor / Camarín">
+      </div>
+      <div class="bf-campo">
+        <label class="bf-label">Ubicación exacta</label>
+        <input class="bf-input" id="bf-ubicacion" placeholder="Hornacina central del retablo...">
+      </div>
+      <div class="bf-campo">
+        <label class="bf-label">Prioridad rescate</label>
+        <select class="bf-select" id="bf-rescate">
+          <option value="R1">Rescate nº 1 — Primera prioridad</option>
+          <option value="R2">Rescate nº 2 — Segunda prioridad</option>
+          <option value="R3">Rescate nº 3 — Tercera prioridad</option>
+          <option value="RI">Inamovible — Proteger in situ</option>
+        </select>
+      </div>
+      <div class="bf-campo">
+        <label class="bf-label">Orden numérico</label>
+        <input class="bf-input" id="bf-orden" type="number" placeholder="1">
+      </div>
+      <hr class="bf-divider">
+      <div class="bf-campo">
+        <label class="bf-label">Autor / Atribución</label>
+        <input class="bf-input" id="bf-autor" placeholder="Pablo Legot, 1631...">
+      </div>
+      <div class="bf-campo">
+        <label class="bf-label">Cronología</label>
+        <input class="bf-input" id="bf-cronologia" placeholder="S. XVIII — anónima">
+      </div>
+      <div class="bf-campo">
+        <label class="bf-label">Tipo / Tipología</label>
+        <input class="bf-input" id="bf-tipo" placeholder="Imagen de madera policromada">
+      </div>
+      <div class="bf-campo">
+        <label class="bf-label">Material / Fragilidad</label>
+        <input class="bf-input" id="bf-material" placeholder="Madera policromada — fragilidad alta">
+      </div>
+      <div class="bf-campo">
+        <label class="bf-label">Personas para el rescate</label>
+        <input class="bf-input" id="bf-personas" placeholder="2–3">
+      </div>
+      <div class="bf-campo">
+        <label class="bf-label">Peso estimado</label>
+        <input class="bf-input" id="bf-peso" placeholder="Pendiente de medir">
+      </div>
+      <div class="bf-campo full">
+        <label class="bf-label">Dimensiones</label>
+        <input class="bf-input" id="bf-dimensiones" placeholder="Pendiente de medir">
+      </div>
+      <hr class="bf-divider">
+      <div class="bf-campo full">
+        <label class="bf-label">Riesgos</label>
+        <div class="bf-riesgos">
+          <label class="bf-riesgo-cb"><input type="checkbox" id="bf-r-fuego" value="fuego"> 🔴 Fuego</label>
+          <label class="bf-riesgo-cb"><input type="checkbox" id="bf-r-agua" value="agua"> 🔵 Agua</label>
+          <label class="bf-riesgo-cb"><input type="checkbox" id="bf-r-estruc" value="estruc"> 🟡 Derrumbe</label>
+          <label class="bf-riesgo-cb"><input type="checkbox" id="bf-r-mani" value="mani"> 🟣 Manipulación delicada</label>
+          <label class="bf-riesgo-cb"><input type="checkbox" id="bf-r-inam" value="inam"> ⚪ Inamovible</label>
+        </div>
+      </div>
+      <div class="bf-campo full">
+        <label class="bf-label">Notas de manipulación</label>
+        <textarea class="bf-input bf-textarea" id="bf-notas" placeholder="Instrucciones específicas para el rescate..."></textarea>
+      </div>
+      <div class="bf-campo full">
+        <label class="bf-label">Contacto responsable</label>
+        <input class="bf-input" id="bf-contacto" placeholder="Hermandad / Parroquia — teléfono">
+      </div>
+    </div>
+    <div class="bf-acciones">
+      <button class="bf-btn-borrar" id="bf-btn-borrar" onclick="borrarBien()">🗑 Eliminar</button>
+      <button class="bf-btn-cancelar" onclick="cerrarModalBien()">Cancelar</button>
+      <button class="bf-btn-guardar" id="bf-btn-guardar" onclick="guardarBien()">💾 Guardar cambios</button>
+    </div>
   </div>
 </div>
 
@@ -282,8 +414,7 @@ async function cargarEdificios(){
   try {
     const r = await fetch(`${SB}/rest/v1/patrimonio?select=id,nombre,tipo,prioridad,minutos,km,imagen_url&order=prioridad.asc,nombre.asc`,{headers:H()});
     const data = await r.json();
-    // Verificar bienes sembrados
-    await verificarSeed();
+    if(TOKEN) await verificarSeed();
     renderSelector(data);
   } catch(e){
     document.getElementById('sel-grid').innerHTML = '<div class="cargando-sel">Error de conexión</div>';
@@ -472,7 +603,7 @@ function mostrarFicha(id){
           <div class="cv">${b.contacto||'—'}</div>
           <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
             <button style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;background:var(--rojo);color:white;border:none;cursor:pointer;border-radius:2px" onclick="window.print()">🖨 Imprimir ficha</button>
-            ${USUARIO?`<button style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;background:rgba(139,26,26,.12);color:var(--rojo);border:1px solid rgba(139,26,26,.2);cursor:pointer;border-radius:2px" onclick="editarBien('${b.id}')">✏️ Editar ficha</button>`:''}
+            ${USUARIO?`<button style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;background:rgba(139,26,26,.12);color:var(--rojo);border:1px solid rgba(139,26,26,.2);cursor:pointer;border-radius:2px" onclick="editarBien('${b.id}')">✏️ Editar ficha</button><button style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;background:#F0FDF4;color:#166534;border:1px solid #86EFAC;cursor:pointer;border-radius:2px" onclick="abrirFormNuevoBien()">+ Añadir bien</button>`:''}
           </div>
         </div>
       </div>
@@ -486,7 +617,10 @@ function mostrarEdificio(){
   document.getElementById('main-content').innerHTML = `
     <div class="vista-edificio">
       <div class="edificio-titulo">${nombre}</div>
-      <div class="edificio-sub">Fichas de rescate — ${bienesActuales.length} bienes catalogados · Haz clic en un bien para ver su ficha</div>
+      <div class="edificio-sub" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <span>Fichas de rescate — ${bienesActuales.length} bienes catalogados · Haz clic en un bien para ver su ficha</span>
+        ${USUARIO?`<button class="bf-nuevo-btn" onclick="abrirFormNuevoBien()">+ Añadir bien</button>`:''}
+      </div>
       ${zonas.map(zona=>`
         <div class="zona-grupo">
           <div class="zona-titulo">${zona}</div>
@@ -552,10 +686,123 @@ document.getElementById('input-foto').addEventListener('change', async function(
 });
 
 // ============================================
-// EDITAR BIEN (básico)
+// EDITAR / AÑADIR BIEN
 // ============================================
+let editandoBienId = null;
+
 function editarBien(id){
-  mostrarToast('Función de edición — próximamente');
+  const b = bienesActuales.find(x=>x.id===id);
+  if(!b) return;
+  editandoBienId = id;
+  document.getElementById('bf-titulo').textContent = 'Editar bien — '+b.nombre;
+  document.getElementById('bf-nombre').value = b.nombre||'';
+  document.getElementById('bf-zona').value = b.zona||'';
+  document.getElementById('bf-ubicacion').value = b.ubicacion||'';
+  document.getElementById('bf-rescate').value = b.rescate_codigo||'R1';
+  document.getElementById('bf-orden').value = b.orden_rescate||'';
+  document.getElementById('bf-autor').value = b.autor||'';
+  document.getElementById('bf-cronologia').value = b.cronologia||'';
+  document.getElementById('bf-tipo').value = b.tipo||'';
+  document.getElementById('bf-material').value = b.material||'';
+  document.getElementById('bf-personas').value = b.personas||'';
+  document.getElementById('bf-peso').value = b.peso||'';
+  document.getElementById('bf-dimensiones').value = b.dimensiones||'';
+  document.getElementById('bf-notas').value = b.notas||'';
+  document.getElementById('bf-contacto').value = b.contacto||'';
+  const riesgos = Array.isArray(b.riesgos)?b.riesgos:[];
+  ['fuego','agua','estruc','mani','inam'].forEach(r=>{
+    document.getElementById('bf-r-'+r).checked = riesgos.includes(r);
+  });
+  document.getElementById('bf-btn-borrar').style.display='inline-block';
+  document.getElementById('modal-bien').classList.add('visible');
+}
+
+function abrirFormNuevoBien(){
+  if(!editandoBienId===null) editandoBienId = null;
+  editandoBienId = null;
+  document.getElementById('bf-titulo').textContent = '➕ Añadir nuevo bien';
+  ['bf-nombre','bf-zona','bf-ubicacion','bf-autor','bf-cronologia','bf-tipo','bf-material','bf-personas','bf-peso','bf-dimensiones','bf-notas','bf-contacto'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('bf-rescate').value='R1';
+  document.getElementById('bf-orden').value='';
+  ['fuego','agua','estruc','mani','inam'].forEach(r=>document.getElementById('bf-r-'+r).checked=false);
+  document.getElementById('bf-btn-borrar').style.display='none';
+  document.getElementById('modal-bien').classList.add('visible');
+}
+
+function cerrarModalBien(){
+  document.getElementById('modal-bien').classList.remove('visible');
+  editandoBienId = null;
+}
+
+async function guardarBien(){
+  const nombre = document.getElementById('bf-nombre').value.trim();
+  if(!nombre){ mostrarToast('⚠️ El nombre es obligatorio'); return; }
+  const riesgos = ['fuego','agua','estruc','mani','inam'].filter(r=>document.getElementById('bf-r-'+r).checked);
+  const datos = {
+    nombre,
+    zona: document.getElementById('bf-zona').value.trim()||null,
+    ubicacion: document.getElementById('bf-ubicacion').value.trim()||null,
+    rescate_codigo: document.getElementById('bf-rescate').value,
+    orden_rescate: parseInt(document.getElementById('bf-orden').value)||99,
+    autor: document.getElementById('bf-autor').value.trim()||null,
+    cronologia: document.getElementById('bf-cronologia').value.trim()||null,
+    tipo: document.getElementById('bf-tipo').value.trim()||null,
+    material: document.getElementById('bf-material').value.trim()||null,
+    personas: document.getElementById('bf-personas').value.trim()||null,
+    peso: document.getElementById('bf-peso').value.trim()||null,
+    dimensiones: document.getElementById('bf-dimensiones').value.trim()||null,
+    notas: document.getElementById('bf-notas').value.trim()||null,
+    contacto: document.getElementById('bf-contacto').value.trim()||null,
+    riesgos,
+    updated_at: new Date().toISOString()
+  };
+  const btn = document.getElementById('bf-btn-guardar');
+  btn.disabled=true; btn.textContent='Guardando...';
+  try {
+    if(editandoBienId){
+      const r = await fetch(`${SB}/rest/v1/bienes_muebles?id=eq.${editandoBienId}`,{
+        method:'PATCH',
+        headers:{...H(),'Prefer':'return=representation'},
+        body:JSON.stringify(datos)
+      });
+      if(!r.ok) throw new Error(await r.text());
+      const [updated] = await r.json();
+      const idx = bienesActuales.findIndex(x=>x.id===editandoBienId);
+      if(idx>=0) bienesActuales[idx]={...bienesActuales[idx],...updated};
+      mostrarToast('✅ Bien actualizado');
+      cerrarModalBien();
+      renderPanel();
+      mostrarFicha(editandoBienId);
+    } else {
+      const r = await fetch(`${SB}/rest/v1/bienes_muebles`,{
+        method:'POST',
+        headers:{...H(),'Prefer':'return=representation'},
+        body:JSON.stringify({...datos,patrimonio_id:edificioActual,foto_url:null})
+      });
+      if(!r.ok) throw new Error(await r.text());
+      const [nuevo] = await r.json();
+      bienesActuales.push(nuevo);
+      mostrarToast('✅ Bien añadido');
+      cerrarModalBien();
+      renderPanel();
+      seleccionado=nuevo.id;
+      mostrarFicha(nuevo.id);
+    }
+  } catch(e){ mostrarToast('❌ Error: '+e.message,4000); }
+  btn.disabled=false; btn.textContent='💾 Guardar cambios';
+}
+
+async function borrarBien(){
+  if(!confirm('¿Eliminar este bien? Esta acción no se puede deshacer.')) return;
+  try {
+    await fetch(`${SB}/rest/v1/bienes_muebles?id=eq.${editandoBienId}`,{method:'DELETE',headers:H()});
+    bienesActuales = bienesActuales.filter(x=>x.id!==editandoBienId);
+    cerrarModalBien();
+    renderPanel();
+    if(bienesActuales.length>0){ seleccionado=bienesActuales[0].id; mostrarFicha(seleccionado); }
+    else document.getElementById('main-content').innerHTML='<div style="padding:40px;text-align:center;color:var(--texto-muted)">Sin bienes catalogados</div>';
+    mostrarToast('🗑 Bien eliminado');
+  } catch(e){ mostrarToast('❌ Error al eliminar'); }
 }
 
 // ============================================
@@ -587,6 +834,10 @@ async function hacerLogin(){
       document.getElementById('btn-login').style.display = 'none';
       cerrarLogin();
       if(seleccionado) mostrarFicha(seleccionado);
+      // Tras login, sembrar datos si faltan y recargar
+      await verificarSeed();
+      if(edificioActual) await cargarBienes(edificioActual);
+      else if(edificioIdUrl) await cargarEdificioDirecto(edificioIdUrl);
       mostrarToast('✅ Sesión iniciada');
     } else {
       msg.style.color='#EF4444';
@@ -606,6 +857,8 @@ function detectarSesion(){
     document.getElementById('btn-login').style.display='none';
   }
 }
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')cerrarModalBien();});
 
 // ============================================
 // TOAST
@@ -635,18 +888,17 @@ if(edificioIdUrl){
 }
 
 async function cargarEdificioDirecto(id){
-  // Obtener nombre del edificio
   try {
     const r = await fetch(`${SB}/rest/v1/patrimonio?id=eq.${id}&select=id,nombre,tipo`,{headers:H()});
     const data = await r.json();
     if(data.length > 0){
       const e = data[0];
-      await verificarSeed();
+      // Sembrar datos solo si hay token (admin logado)
+      if(TOKEN) await verificarSeed();
       await abrirEdificio(e.id, e.nombre);
       return;
     }
   } catch(err){}
-  // Si falla, mostrar selector
   cargarEdificios();
 }
 </script>

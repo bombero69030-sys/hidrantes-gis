@@ -170,7 +170,7 @@ body{font-family:var(--font-body);background:var(--crema);color:var(--texto);hei
     </div>
   </div>
   <div class="cab-der">
-    <a href="../index.html" class="cab-btn portal">← Portal</a>
+    <a href="../patrimonio/index.html" class="cab-btn portal">← Patrimonio</a>
     <div class="cab-sep"></div>
     <button class="cab-btn active" id="btn-ficha" onclick="setVista('ficha')" style="display:none">Ficha individual</button>
     <button class="cab-btn" id="btn-edificio" onclick="setVista('edificio')" style="display:none">Vista edificio</button>
@@ -621,7 +621,34 @@ function mostrarToast(msg, dur=2500){
 // INICIO
 // ============================================
 detectarSesion();
-cargarEdificios();
+
+// Leer ID de edificio desde URL
+const urlParams = new URLSearchParams(window.location.search);
+const edificioIdUrl = urlParams.get('id');
+
+if(edificioIdUrl){
+  // Venir directo desde patrimonio con un edificio concreto
+  cargarEdificioDirecto(edificioIdUrl);
+} else {
+  // Mostrar selector
+  cargarEdificios();
+}
+
+async function cargarEdificioDirecto(id){
+  // Obtener nombre del edificio
+  try {
+    const r = await fetch(`${SB}/rest/v1/patrimonio?id=eq.${id}&select=id,nombre,tipo`,{headers:H()});
+    const data = await r.json();
+    if(data.length > 0){
+      const e = data[0];
+      await verificarSeed();
+      await abrirEdificio(e.id, e.nombre);
+      return;
+    }
+  } catch(err){}
+  // Si falla, mostrar selector
+  cargarEdificios();
+}
 </script>
 </body>
 </html>

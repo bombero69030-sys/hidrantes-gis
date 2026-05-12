@@ -486,7 +486,7 @@ function renderizarLista(lista){
   const arr = lista || edificios;
   const el = document.getElementById('lista');
   el.innerHTML = arr.map(b=>`
-    <div class="edificio-card${seleccionado===b.id?' activo':''}" onclick="mostrarFicha('${b.id}')">
+    <div class="edificio-card${seleccionado===b.id?' activo':''}" onclick="abrirFichas('${b.id}')">
       ${b.imagen_url
         ? `<img class="edificio-img" src="${b.imagen_url}" alt="${b.nombre}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
         : ''}
@@ -933,6 +933,11 @@ function mostrarToast(msg,dur=2500){
   const t=document.getElementById('toast');
   t.textContent=msg;t.style.display='block';
   clearTimeout(window._tT);window._tT=setTimeout(()=>t.style.display='none',dur);
+}
+
+
+function abrirFichas(id){
+  window.location.href = '../fichas/index.html?id=' + id;
 }
 
 // ============================================

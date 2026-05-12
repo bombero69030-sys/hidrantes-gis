@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fichas de Rescate · Patrimonio · Bomberos Los Palacios</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--rojo:#8B1A1A;--rojo-dark:#5C0F0F;--naranja:#C05000;--verde:#166534;--gris-oscuro:#1A1A1A;--gris-medio:#2D2D2D;--gris-panel:#F5F2EE;--gris-borde:#DDD8D0;--texto:#1A1A1A;--texto-muted:#6B6560;--blanco:#FFFEF9;--crema:#F9F6F0;--font-display:'Oswald',sans-serif;--font-body:'Source Serif 4',serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--crema);color:var(--texto);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* CABECERA */
+.cabecera{background:var(--gris-oscuro);border-bottom:4px solid var(--rojo);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:100}
+.cab-izq{display:flex;align-items:center;gap:14px}
+.cab-emblema{width:38px;height:38px;border:2px solid var(--rojo);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
+.cab-titulo{font-family:var(--font-display);font-size:13px;font-weight:600;color:#fff;letter-spacing:.1em;text-transform:uppercase}
+.cab-sub{font-size:11px;color:rgba(255,255,255,.4);font-family:var(--font-display);letter-spacing:.06em;margin-top:1px}
+.cab-der{display:flex;gap:6px;align-items:center}
+.cab-btn{font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border:1px solid rgba(255,255,255,.2);border-radius:3px;cursor:pointer;color:rgba(255,255,255,.5);background:transparent;transition:all .2s;text-decoration:none;display:inline-block}
+.cab-btn:hover{color:white;border-color:rgba(255,255,255,.4)}
+.cab-btn.active{background:var(--rojo);color:#fff;border-color:var(--rojo)}
+.cab-btn.portal{color:rgba(255,255,255,.4);border-color:rgba(255,255,255,.15)}
+.cab-btn.portal:hover{color:white}
+.cab-sep{width:1px;height:20px;background:rgba(255,255,255,.1);margin:0 2px}
+
+/* SELECTOR EDIFICIO */
+#pantalla-selector{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:var(--crema);overflow-y:auto}
+.sel-titulo{font-family:var(--font-display);font-size:28px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--rojo);margin-bottom:8px;text-align:center}
+.sel-sub{font-size:14px;color:var(--texto-muted);margin-bottom:36px;text-align:center}
+.sel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;max-width:900px;width:100%}
+.sel-card{background:var(--blanco);border:1px solid var(--gris-borde);border-radius:6px;overflow:hidden;cursor:pointer;transition:all .2s}
+.sel-card:hover{border-color:var(--rojo);box-shadow:0 6px 20px rgba(139,26,26,.15);transform:translateY(-2px)}
+.sel-card-img{width:100%;height:140px;object-fit:cover;background:var(--gris-panel)}
+.sel-card-img-ph{width:100%;height:140px;background:linear-gradient(135deg,#2D1A1A,#1A1A1A);display:flex;align-items:center;justify-content:center;font-size:40px}
+.sel-card-body{padding:14px 16px}
+.sel-card-tipo{font-family:var(--font-display);font-size:10px;font-weight:600;color:var(--rojo);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.sel-card-nombre{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--texto);text-transform:uppercase;letter-spacing:.04em;line-height:1.2;margin-bottom:6px}
+.sel-card-meta{display:flex;gap:10px;align-items:center}
+.sel-card-num{font-size:12px;color:var(--texto-muted)}
+.sel-card-prior{font-family:var(--font-display);font-size:10px;font-weight:700;padding:2px 8px;border-radius:2px;background:#FEE2E2;color:#7F1D1D}
+.cargando-sel{font-family:var(--font-display);font-size:13px;color:var(--texto-muted);letter-spacing:.08em;text-transform:uppercase}
+
+/* LAYOUT FICHAS */
+#pantalla-fichas{display:none;flex:1;overflow:hidden}
+.layout{display:flex;height:100%}
+.panel{width:260px;flex-shrink:0;background:var(--gris-medio);overflow-y:auto;border-right:1px solid rgba(255,255,255,.06)}
+.panel::-webkit-scrollbar{width:3px}
+.panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1)}
+.panel-zona{padding:8px 12px 4px;font-family:var(--font-display);font-size:9px;font-weight:600;color:rgba(255,255,255,.3);letter-spacing:.14em;text-transform:uppercase;border-top:1px solid rgba(255,255,255,.06);margin-top:4px}
+.panel-zona:first-child{border-top:none;margin-top:0}
+.bien-item{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;transition:background .15s;border-bottom:1px solid rgba(255,255,255,.04)}
+.bien-item:hover{background:rgba(255,255,255,.05)}
+.bien-item.active{background:rgba(139,26,26,.3);border-left:3px solid var(--rojo);padding-left:9px}
+.bien-thumb{width:36px;height:36px;border-radius:3px;object-fit:cover;flex-shrink:0}
+.bien-thumb-ph{width:36px;height:36px;border-radius:3px;flex-shrink:0;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:14px}
+.bien-info{flex:1;min-width:0}
+.bien-nombre-panel{font-family:var(--font-display);font-size:12px;font-weight:500;color:rgba(255,255,255,.85);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bien-num-panel{font-family:var(--font-display);font-size:10px;color:var(--rojo);letter-spacing:.04em;margin-top:1px}
+.main{flex:1;overflow-y:auto;background:var(--crema)}
+.main::-webkit-scrollbar{width:4px}
+.main::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15)}
+
+/* FICHA INDIVIDUAL */
+.ficha-hero{position:relative;height:240px;overflow:hidden;background:var(--gris-oscuro)}
+.ficha-hero img{width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
+.ficha-hero-ph{width:100%;height:100%;background:linear-gradient(135deg,#2D1A1A,#1A1A1A);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.ph-icon{font-size:52px;color:rgba(255,255,255,.08)}
+.ph-label{font-family:var(--font-display);font-size:11px;color:rgba(255,255,255,.2);letter-spacing:.1em;text-transform:uppercase}
+.ficha-hero-overlay{position:absolute;bottom:0;left:0;right:0;padding:18px 24px 16px;background:linear-gradient(transparent,rgba(0,0,0,.85))}
+.ficha-num{font-family:var(--font-display);font-size:11px;font-weight:600;color:var(--rojo);letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
+.ficha-nombre{font-family:var(--font-display);font-size:22px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.04em;line-height:1.1}
+.ficha-autor{font-size:12px;color:rgba(255,255,255,.5);font-style:italic;margin-top:3px}
+.badge-rescate{position:absolute;top:14px;right:14px;font-family:var(--font-display);font-size:11px;font-weight:700;padding:5px 12px;border-radius:2px;letter-spacing:.08em;text-transform:uppercase}
+.badge-r1{background:var(--rojo);color:white}
+.badge-r2{background:var(--naranja);color:white}
+.badge-r3{background:#854D0E;color:white}
+.badge-ri{background:#374151;color:#D1D5DB}
+.badge-upload{position:absolute;top:14px;left:14px;font-family:var(--font-display);font-size:10px;font-weight:600;padding:4px 10px;border-radius:2px;letter-spacing:.06em;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.3);color:white;cursor:pointer;transition:background .15s;display:none}
+.badge-upload.admin-visible{display:block}
+.badge-upload:hover{background:rgba(139,26,26,.7)}
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);background:var(--gris-oscuro);border-bottom:3px solid var(--rojo)}
+.stat{padding:10px 12px;text-align:center;border-right:1px solid rgba(255,255,255,.07)}
+.stat:last-child{border-right:none}
+.stat-val{font-family:var(--font-display);font-size:18px;font-weight:700;color:#fff;line-height:1}
+.stat-key{font-family:var(--font-display);font-size:9px;font-weight:600;color:rgba(255,255,255,.35);letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+.seccion{background:var(--blanco);margin-bottom:6px}
+.sec-header{padding:8px 18px;border-bottom:1px solid var(--gris-borde);font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--texto-muted);display:flex;align-items:center;gap:10px}
+.sec-header::after{content:'';flex:1;height:1px;background:var(--gris-borde)}
+.sec-grid{display:grid;grid-template-columns:1fr 1fr}
+.cb{padding:10px 16px;border-bottom:1px solid var(--gris-borde);border-right:1px solid var(--gris-borde)}
+.cb:nth-child(even){border-right:none}
+.cb.full{grid-column:1/-1;border-right:none}
+.cl{font-family:var(--font-display);font-size:9px;font-weight:700;color:var(--texto-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.cv{font-size:13px;color:var(--texto);line-height:1.5}
+.cv.alert{color:var(--rojo);font-weight:600}
+.cv.warn{color:var(--naranja);font-weight:600}
+.personas-num{font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--texto);line-height:1}
+.personas-sub{font-size:12px;color:var(--texto-muted);margin-top:2px}
+.riesgo-chip{display:inline-block;font-family:var(--font-display);font-size:11px;font-weight:600;padding:3px 9px;border-radius:2px;margin:2px 2px 2px 0;letter-spacing:.04em}
+.riesgo-fuego{background:#FEE2E2;color:#7F1D1D}
+.riesgo-agua{background:#DBEAFE;color:#1E3A5F}
+.riesgo-estruc{background:#FEF3C7;color:#78350F}
+.riesgo-mani{background:#F3E8FF;color:#4A1D96}
+.riesgo-inam{background:#F0FDF4;color:#14532D;border:1px solid #86EFAC}
+.alerta-box{display:flex;gap:10px;padding:12px 16px;border-left:4px solid var(--rojo);background:#FFF5F5;font-size:13px;color:#5C0F0F;line-height:1.5}
+.zona-mapa{background:var(--gris-panel);padding:12px 18px;display:flex;align-items:center;gap:14px}
+.zona-valor{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--rojo);letter-spacing:.04em}
+.sec-body{padding:12px 18px}
+
+/* VISTA EDIFICIO */
+.vista-edificio{padding:20px}
+.edificio-titulo{font-family:var(--font-display);font-size:20px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--rojo);margin-bottom:4px}
+.edificio-sub{font-size:13px;color:var(--texto-muted);margin-bottom:20px}
+.zona-grupo{margin-bottom:20px}
+.zona-titulo{font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--gris-oscuro);padding:6px 12px;margin-bottom:8px}
+.grid-bienes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bien-card{background:var(--blanco);border:1px solid var(--gris-borde);border-radius:4px;overflow:hidden;cursor:pointer;transition:all .15s}
+.bien-card:hover{border-color:var(--rojo);transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,26,26,.15)}
+.bien-card-img{width:100%;height:90px;object-fit:cover;background:var(--gris-panel)}
+.bien-card-ph{width:100%;height:90px;background:var(--gris-panel);display:flex;align-items:center;justify-content:center;font-size:22px;flex-direction:column;gap:4px}
+.bien-card-ph span{font-family:var(--font-display);font-size:9px;color:var(--texto-muted);letter-spacing:.06em}
+.bien-card-body{padding:8px 10px}
+.bien-card-num{font-family:var(--font-display);font-size:10px;color:var(--rojo);font-weight:700;letter-spacing:.06em;margin-bottom:2px}
+.bien-card-nombre{font-family:var(--font-display);font-size:12px;font-weight:500;color:var(--texto);line-height:1.3}
+.bien-card-ubi{font-size:10px;color:var(--texto-muted);margin-top:2px}
+.bien-card-badges{display:flex;gap:3px;margin-top:5px;flex-wrap:wrap}
+
+/* LOGIN BADGE */
+.admin-badge{font-size:11px;color:#86EFAC;background:rgba(22,101,52,.2);border:1px solid rgba(22,101,52,.3);padding:4px 10px;border-radius:20px;display:none}
+.login-btn-cab{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.5);padding:5px 12px;border-radius:3px;font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.login-btn-cab:hover{color:white;background:rgba(255,255,255,.12)}
+
+/* MODAL LOGIN */
+#modal-login{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+#modal-login.visible{display:flex}
+.login-box{background:#1E1E1E;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:28px;width:320px;max-width:90vw}
+.login-titulo{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:.06em;color:#fff;margin-bottom:6px}
+.login-desc{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:20px;line-height:1.4}
+.login-input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:4px;color:#fff;padding:10px 12px;font-size:14px;margin-bottom:10px;font-family:var(--font-body)}
+.login-input:focus{outline:none;border-color:var(--rojo)}
+.login-input::placeholder{color:rgba(255,255,255,.25)}
+.login-submit{width:100%;background:var(--rojo);border:none;color:white;padding:11px;border-radius:4px;font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:.06em;cursor:pointer;text-transform:uppercase}
+.login-submit:disabled{background:#444;cursor:not-allowed}
+.login-msg{font-size:12px;text-align:center;margin-top:10px;min-height:16px;color:rgba(255,255,255,.4)}
+.login-cerrar{float:right;background:none;border:none;color:rgba(255,255,255,.4);font-size:20px;cursor:pointer;margin-top:-4px}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1A1A;color:#fff;padding:9px 18px;border-radius:30px;font-size:13px;z-index:9999;display:none;box-shadow:0 4px 20px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);font-family:var(--font-display);letter-spacing:.04em}
+
+/* PRINT */
+@media print{.cabecera,.panel,.cab-der{display:none!important}.layout{display:block;height:auto}.main{overflow:visible}.stats-strip,.badge-rescate{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+@media(max-width:700px){
+  .panel{width:220px}
+  .grid-bienes{grid-template-columns:1fr 1fr}
+  .stats-strip{grid-template-columns:1fr 1fr}
+  .sel-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="cabecera">
+  <div class="cab-izq">
+    <div class="cab-emblema">🔥</div>
+    <div>
+      <div class="cab-titulo" id="cab-titulo">Fichas de Rescate · Patrimonio</div>
+      <div class="cab-sub" id="cab-sub">Los Palacios y Villafranca · Parque de Bomberos</div>
+    </div>
+  </div>
+  <div class="cab-der">
+    <a href="../index.html" class="cab-btn portal">← Portal</a>
+    <div class="cab-sep"></div>
+    <button class="cab-btn active" id="btn-ficha" onclick="setVista('ficha')" style="display:none">Ficha individual</button>
+    <button class="cab-btn" id="btn-edificio" onclick="setVista('edificio')" style="display:none">Vista edificio</button>
+    <button class="cab-btn" id="btn-volver" onclick="volverSelector()" style="display:none">↩ Edificios</button>
+    <button class="cab-btn" onclick="window.print()" style="display:none" id="btn-imprimir">🖨 Imprimir</button>
+    <div class="cab-sep"></div>
+    <span class="admin-badge" id="admin-badge"></span>
+    <button class="login-btn-cab" id="btn-login" onclick="abrirLogin()">🔐 Acceso</button>
+  </div>
+</div>
+
+<!-- SELECTOR DE EDIFICIO -->
+<div id="pantalla-selector">
+  <div class="sel-titulo">Fichas de Rescate</div>
+  <div class="sel-sub">Selecciona el edificio patrimonial</div>
+  <div class="sel-grid" id="sel-grid">
+    <div class="cargando-sel">Cargando edificios...</div>
+  </div>
+</div>
+
+<!-- PANTALLA FICHAS -->
+<div id="pantalla-fichas">
+  <div class="layout">
+    <div class="panel" id="panel-lateral"></div>
+    <div class="main" id="main-content"></div>
+  </div>
+</div>
+
+<!-- MODAL LOGIN -->
+<div id="modal-login">
+  <div class="login-box">
+    <button class="login-cerrar" onclick="cerrarLogin()">×</button>
+    <div class="login-titulo">🔐 Acceso Admin</div>
+    <div class="login-desc">Solo el administrador puede añadir y editar fichas.</div>
+    <input class="login-input" type="email" id="login-email" placeholder="tu@email.com">
+    <input class="login-input" type="password" id="login-pass" placeholder="Contraseña">
+    <button class="login-submit" id="login-btn" onclick="hacerLogin()">Acceder</button>
+    <div class="login-msg" id="login-msg"></div>
+  </div>
+</div>
+
+<input type="file" id="input-foto" accept="image/*" style="display:none">
+<div id="toast"></div>
+
+<script>
+// ============================================
+// SUPABASE CONFIG
+// ============================================
+const SB = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
+let TOKEN = null, USUARIO = null;
+const H = (x={}) => ({'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+(TOKEN||KEY),...x});
+
+// IDs de edificios
+const IDS = {
+  aurora: '6f35291d-0db7-469f-b26b-8fd39d4aa647',
+  sebastian: 'c85b21c5-e791-4f0f-93f3-6bcd084afcb1',
+  santa_maria: '577f272e-984f-4d05-aa61-738365b59ed5'
+};
+
+// ============================================
+// DATOS SEED
+// ============================================
+const SEED_BIENES = [
+  // AURORA
+  {patrimonio_id:IDS.aurora,orden_rescate:1,rescate_codigo:'R1',nombre:'Ntra. Sra. de la Asunción (Virgen de la Aurora)',zona:'Altar Mayor / Camarín',ubicacion:'Altar mayor / Camarín de la Virgen',autor:'Anónimo — S. XVIII',tipo:'Imagen de madera policromada',cronologia:'Siglo XVIII — anónima',material:'Madera policromada — fragilidad alta',personas:'2–3',peso:'Pendiente de medir',dimensiones:'Pendiente de medir',riesgos:['fuego','agua','mani'],notas:'PRIMERA PRIORIDAD DE RESCATE. Imagen titular del altar mayor, ubicada en camarín elevado. Acceso al camarín por escalera de caracol de hierro — solo puede subir UNA persona a la vez. Prever mínimo 3 efectivos: uno sube, dos reciben abajo. Sujeción por la base, nunca por extremidades ni atributos. Extremadamente sensible al calor y la humedad. El camarín tiene una escalera oculta descubierta en 1995 que da acceso al ático.',contacto:'Hermandad del Gran Poder — pendiente de obtener teléfono',foto_url:null},
+  {patrimonio_id:IDS.aurora,orden_rescate:2,rescate_codigo:'R2',nombre:'Ntro. Padre Jesús del Gran Poder',zona:'Altar Mayor / Camarín',ubicacion:'Retablo — lado derecho del crucero',autor:'Pendiente de confirmar',tipo:'Imagen de madera policromada',cronologia:'Pendiente de confirmar',material:'Madera policromada',personas:'2–3',peso:'Pendiente de medir',dimensiones:'Pendiente de medir',riesgos:['fuego','agua','mani'],notas:'Segunda prioridad de rescate. Medalla de Oro de la Villa. Verificar si la imagen está anclada al retablo antes de extraer. Sujeción por la base o el cuerpo del paso, nunca por las manos ni el rostro.',contacto:'Hermandad del Gran Poder — pendiente',foto_url:null},
+  {patrimonio_id:IDS.aurora,orden_rescate:2,rescate_codigo:'R2',nombre:'María Stma. de la Soledad',zona:'Retablo derecho del crucero',ubicacion:'Retablo — lado derecho del crucero',autor:'Pendiente de confirmar',tipo:'Imagen de madera policromada',cronologia:'Pendiente de confirmar',material:'Madera policromada — vestimenta de tela',personas:'2',peso:'Pendiente de medir',dimensiones:'Pendiente de medir',riesgos:['fuego','agua','mani'],notas:'Titular mariana de la cofradía. Vestimenta de tela puede arder con rapidez — priorizar rescate antes de que el fuego alcance la zona del crucero.',contacto:'Hermandad del Gran Poder — pendiente',foto_url:null},
+  {patrimonio_id:IDS.aurora,orden_rescate:3,rescate_codigo:'R3',nombre:'San Juan Evangelista',zona:'Retablo derecho del crucero',ubicacion:'Pendiente de confirmar ubicación exacta',autor:'Pendiente de confirmar',tipo:'Imagen de madera policromada',cronologia:'Pendiente de confirmar',material:'Madera policromada',personas:'1–2',peso:'Pendiente',dimensiones:'Pendiente',riesgos:['fuego','agua'],notas:'Rescatar tras asegurar el rescate de las titulares. Confirmar ubicación exacta con la Hermandad antes de la visita presencial.',contacto:'Hermandad del Gran Poder — pendiente',foto_url:null},
+  {patrimonio_id:IDS.aurora,orden_rescate:3,rescate_codigo:'R3',nombre:'Ntra. Sra. de los Dolores',zona:'Nave — junto al titular cristífero',ubicacion:'Junto al titular cristífero',autor:'Anónimo — 2ª mitad S. XVIII',tipo:'Imagen de madera policromada',cronologia:'2ª mitad S. XVIII — anónima',material:'Madera policromada',personas:'1–2',peso:'Pendiente',dimensiones:'Pendiente',riesgos:['fuego','agua'],notas:'Imagen antigua de gran valor devocional. Rescatar tras asegurar las titulares.',contacto:'Hermandad del Gran Poder — pendiente',foto_url:null},
+  {patrimonio_id:IDS.aurora,orden_rescate:99,rescate_codigo:'RI',nombre:'Yeserías del S. XVIII con simbología mariana',zona:'Ornamentación mural — nave',ubicacion:'Muros interiores de la nave',autor:'Anónimo — S. XVIII',tipo:'Decoración mural en yeso policromado',cronologia:'S. XVIII — restauradas en 1999–2005',material:'Yeso policromado con estofados y dorados — extremadamente sensible al agua y al calor',personas:'INAMOVIBLE',peso:'INAMOVIBLE',dimensiones:'Toda la superficie interior de la nave',riesgos:['fuego','agua','inam'],notas:'INAMOVIBLE — No intentar rescatar en ningún caso. EVITAR PROYECCIÓN DIRECTA DE AGUA sobre los muros interiores. Usar niebla de baja presión si es posible.',contacto:'Hermandad del Gran Poder',foto_url:null},
+  // SAN SEBASTIÁN
+  {patrimonio_id:IDS.sebastian,orden_rescate:1,rescate_codigo:'R1',nombre:'María Stma. de los Remedios',zona:'Retablo principal — Altar mayor',ubicacion:'Retablo principal — preside el altar mayor',autor:'Anónimo — S. XVI. Medalla de Oro de la Villa (2002)',tipo:'Imagen de madera policromada',cronologia:'Siglo XVI — anónima. Imagen más antigua del municipio.',material:'Madera policromada — fragilidad máxima por antigüedad',personas:'2–3',peso:'Pendiente de medir',dimensiones:'Pendiente de medir',riesgos:['fuego','agua','mani'],notas:'PRIMERA PRIORIDAD ABSOLUTA DE RESCATE. Imagen más antigua del municipio. Medalla de Oro de la Villa. Siglo XVI — manipulación con extrema delicadeza. No exponer al agua directa.',contacto:'Hermandad de la Vera Cruz — Casa-Hermandad abierta jueves 20-22h. Web: veracruzlospalacios.com',foto_url:null},
+  {patrimonio_id:IDS.sebastian,orden_rescate:1,rescate_codigo:'R1',nombre:'San Sebastián (Patrón)',zona:'Retablo principal — Altar mayor',ubicacion:'Retablo principal — flanquea a la Virgen de los Remedios',autor:'Anónimo — S. XVI. Restaurado en 1895.',tipo:'Talla de madera policromada',cronologia:'S. XVI — anónima. Restaurada 1895.',material:'Madera policromada — altura aproximada 1 m',personas:'1–2',peso:'Pendiente de medir',dimensiones:'Aproximadamente 1 metro de altura',riesgos:['fuego','agua','mani'],notas:'Primera prioridad junto a la Virgen de los Remedios. Imagen del patrón de Villafranca. Talla de pequeño formato — más fácil de rescatar.',contacto:'Hermandad de la Vera Cruz',foto_url:null},
+  {patrimonio_id:IDS.sebastian,orden_rescate:1,rescate_codigo:'R1',nombre:'Stmo. Cristo de la Vera Cruz',zona:'Altar — muro derecho del presbiterio',ubicacion:'Altar en muro derecho del presbiterio',autor:'S. XVI — pasta de cola. Posible origen Michoacán (México).',tipo:'Imagen elaborada en pasta de cola — técnica excepcional',cronologia:'S. XVI — reminiscencias góticas y renacentistas',material:'PASTA DE COLA — extremadamente sensible al agua y a la humedad. Material único en el municipio.',personas:'2–3',peso:'Pendiente de medir',dimensiones:'Pendiente de medir',riesgos:['fuego','agua','mani'],notas:'PIEZA DE VALOR EXCEPCIONAL — técnica y procedencia únicas. CRÍTICO: el agua destruye irremediablemente este material. PRIORIZAR RESCATE ANTES DE APLICAR AGUA en la zona del presbiterio.',contacto:'Hermandad de la Vera Cruz',foto_url:null},
+  {patrimonio_id:IDS.sebastian,orden_rescate:2,rescate_codigo:'R2',nombre:'Ntro. Padre Jesús Cautivo ante Pilato',zona:'Nave — retablo',ubicacion:'Retablo en nave — pendiente de confirmar ubicación exacta',autor:'Juan Manuel Miñarro López, 1988',tipo:'Misterio escultórico — conjunto de 6 figuras',cronologia:'1988 — Juan Manuel Miñarro López',material:'Madera policromada — conjunto múltiple',personas:'6 (una por figura)',peso:'Considerable — peso total del conjunto',dimensiones:'6 figuras: Jesús Cautivo, Pilato, sanedrita, escriba, 2 soldados romanos',riesgos:['fuego','agua','mani'],notas:'CONJUNTO DE 6 FIGURAS — rescate simultáneo complejo. Prever 6 efectivos o más. Coordinar extracción figura por figura. Prioridad: Jesús Cautivo primero, luego las demás.',contacto:'Hermandad de la Vera Cruz',foto_url:null},
+  {patrimonio_id:IDS.sebastian,orden_rescate:2,rescate_codigo:'R2',nombre:'Ntra. Sra. del Mayor Dolor',zona:'Nave',ubicacion:'Pendiente de confirmar ubicación exacta',autor:'Anónimo — atribuida a la Roldana',tipo:'Imagen de madera policromada',cronologia:'Pendiente de confirmar',material:'Madera policromada — posible atribución a la Roldana',personas:'2',peso:'Pendiente',dimensiones:'Pendiente',riesgos:['fuego','agua','mani'],notas:'Atribuida a la Roldana (primera escultora real española, 1652–1706). Si se confirma la atribución, sería una pieza de valor artístico extraordinario. CONFIRMAR UBICACIÓN EXACTA en visita presencial.',contacto:'Hermandad de la Vera Cruz',foto_url:null},
+  {patrimonio_id:IDS.sebastian,orden_rescate:3,rescate_codigo:'R3',nombre:'Virgen de los Dolores (pequeña talla)',zona:'A los pies del Cristo de la Vera Cruz',ubicacion:'A los pies del Cristo de la Vera Cruz',autor:'Anónima — muy antigua',tipo:'Talla de pequeño formato',cronologia:'Muy antigua — pendiente de datar',material:'Madera policromada — talla pequeña',personas:'1',peso:'Pequeño formato',dimensiones:'Pequeño formato',riesgos:['fuego','agua'],notas:'Talla de pequeño tamaño y gran antigüedad. Rescatar tras asegurar las piezas principales. Fácil de transportar.',contacto:'Hermandad de la Vera Cruz',foto_url:null},
+  {patrimonio_id:IDS.sebastian,orden_rescate:99,rescate_codigo:'RI',nombre:'Artesonado de madera — nave central',zona:'Nave — artesonado',ubicacion:'Cubierta de la nave central',autor:'Origen medieval — múltiples intervenciones',tipo:'Artesonado de madera histórico',cronologia:'Origen medieval con modificaciones sucesivas',material:'Madera — propagación de fuego extremadamente rápida',personas:'INAMOVIBLE',peso:'INAMOVIBLE',dimensiones:'Toda la nave central',riesgos:['fuego','estruc','inam'],notas:'INAMOVIBLE — RIESGO ESTRUCTURAL CRÍTICO. NO permanecer bajo el artesonado en caso de incendio avanzado — riesgo de derrumbe. Priorizar el rescate de bienes muebles ANTES de que el fuego alcance la cubierta.',contacto:'Hermandad de la Vera Cruz',foto_url:null},
+  // SANTA MARÍA
+  {patrimonio_id:IDS.santa_maria,orden_rescate:1,rescate_codigo:'R1',nombre:'Ntra. Sra. de las Nieves (Patrona)',zona:'Altar Mayor y Presbiterio',ubicacion:'Hornacina central del retablo mayor',autor:'Gabriel de Astorga Miranda, 1864',tipo:'Imagen de candelero de madera policromada',cronologia:'1864 (sobre imagen anterior de 1530)',material:'Madera policromada — fragilidad alta',personas:'2–3',peso:'Pendiente de medir',dimensiones:'Reducidas proporciones — imagen de candelero',riesgos:['fuego','agua','mani'],notas:'PRIMERA PRIORIDAD ABSOLUTA DE RESCATE. Imagen inclina el rostro hacia un hombro (rasgo singular de los Astorga). Análisis radiográfico por Miñarro en 1996. Sujeción por la base, nunca por extremidades ni atributos.',contacto:'Parroquia — pendiente de obtener teléfono directo',foto_url:null},
+  {patrimonio_id:IDS.santa_maria,orden_rescate:99,rescate_codigo:'RI',nombre:'Retablo Mayor — La Adoración de los Pastores',zona:'Altar Mayor y Presbiterio',ubicacion:'Capilla mayor — altar mayor',autor:'Pablo Legot, 1631–1636',tipo:'Lienzo sobre tela (4,60 × 2,08 m)',cronologia:'1631–1636. Reconstruido 1865. Restaurado 2002.',material:'Óleo sobre lienzo — inamovible',personas:'INAMOVIBLE',peso:'INAMOVIBLE',dimensiones:'4,60 × 2,08 metros',riesgos:['fuego','agua','inam'],notas:'INAMOVIBLE — No intentar descolgar. Proteger con mantas ignífugas in situ. Documentar fotográficamente de inmediato al llegar. Obra excepcional: único Pablo Legot en el municipio.',contacto:'Parroquia',foto_url:null},
+  {patrimonio_id:IDS.santa_maria,orden_rescate:2,rescate_codigo:'R2',nombre:'San Juan Bautista',zona:'Altar Mayor y Presbiterio',ubicacion:'Retablo mayor — lateral izquierdo',autor:'Pablo Legot, 1631–1636',tipo:'Lienzo sobre tela',cronologia:'1631–1636. Restaurado 2002.',material:'Óleo sobre lienzo',personas:'2',peso:'Pendiente',dimensiones:'Pendiente',riesgos:['fuego','agua'],notas:'Lienzo lateral del retablo mayor. Restaurado en 2002 junto al lienzo central.',contacto:'Parroquia',foto_url:null},
+  {patrimonio_id:IDS.santa_maria,orden_rescate:2,rescate_codigo:'R2',nombre:'San Juan Evangelista',zona:'Altar Mayor y Presbiterio',ubicacion:'Retablo mayor — lateral derecho',autor:'Pablo Legot, 1631–1636',tipo:'Lienzo sobre tela',cronologia:'1631–1636. Restaurado 2002.',material:'Óleo sobre lienzo',personas:'2',peso:'Pendiente',dimensiones:'Pendiente',riesgos:['fuego','agua'],notas:'Lienzo lateral del retablo mayor. Restaurado en 2002.',contacto:'Parroquia',foto_url:null},
+  {patrimonio_id:IDS.santa_maria,orden_rescate:2,rescate_codigo:'R2',nombre:'Cristo de la Salud',zona:'Capilla del Cristo de la Salud',ubicacion:'Retablo capilla Cristo de la Salud — nave derecha',autor:'Anónimo — Escuela granadina',tipo:'Talla de madera policromada',cronologia:'Fin S. XVI / inicio S. XVII',material:'Madera policromada — fragilidad alta. Policromía expresiva del maltrato y la muerte.',personas:'2–3',peso:'Pendiente de medir',dimensiones:'Pendiente',riesgos:['fuego','agua','mani'],notas:'Obra creada para retablo, no procesional — puede estar fijada a la estructura. Verificar anclaje antes de extraer. Sujeción por la base o por los brazos del travesaño, nunca por la cabeza ni el sudario.',contacto:'Parroquia',foto_url:null},
+  {patrimonio_id:IDS.santa_maria,orden_rescate:1,rescate_codigo:'R1',nombre:'Custodia',zona:'Museo Parroquial / Sacristía',ubicacion:'Museo Parroquial — Sacristía',autor:'Pendiente de atribuir',tipo:'Orfebrería',cronologia:'Pendiente de datar',material:'Metal precioso — muy sensible a golpes y calor',personas:'1–2',peso:'Pendiente',dimensiones:'Pendiente',riesgos:['fuego','mani'],notas:'SEGUNDA PRIORIDAD DE RESCATE junto a la Patrona. Pieza de orfebrería de primer orden. Manipular con guantes. Transportar en posición vertical. No inclinar ni golpear.',contacto:'Parroquia',foto_url:null},
+  {patrimonio_id:IDS.santa_maria,orden_rescate:1,rescate_codigo:'R1',nombre:'Cruz procesional (Guión de Plata)',zona:'Museo Parroquial / Sacristía',ubicacion:'Museo Parroquial / Sacristía',autor:'Posiblemente S. XV–XVI',tipo:'Orfebrería — cruz procesional',cronologia:'S. XV–XVI (pendiente de confirmar)',material:'Plata — sensible a golpes',personas:'1–2',peso:'Pendiente',dimensiones:'Pendiente',riesgos:['fuego','mani'],notas:'Único vestigio del vínculo histórico con los Ponce de León. Tondo central con representación del antiguo castillo de Los Palacios. Pieza histórica excepcional.',contacto:'Parroquia',foto_url:null},
+  {patrimonio_id:IDS.santa_maria,orden_rescate:99,rescate_codigo:'RI',nombre:'Órgano de Francisco de Ortíguez',zona:'Coro y Órgano',ubicacion:'Coro — tribuna del órgano',autor:'Francisco de Ortíguez, 1747',tipo:'Instrumento de tubos histórico',cronologia:'1747',material:'Madera, metal, cuero — inamovible. Extremadamente sensible a la humedad y al fuego.',personas:'INAMOVIBLE',peso:'INAMOVIBLE',dimensiones:'Gran formato — inamovible',riesgos:['fuego','agua','inam'],notas:'INAMOVIBLE. No intentar rescatar. Evitar proyección de agua directa — el cuero y la madera de los fuelles se destruyen con la humedad. Comunicar al mando la presencia del órgano antes de usar agua en la zona del coro.',contacto:'Parroquia',foto_url:null},
+];
+
+// ============================================
+// ESTADO
+// ============================================
+let edificioActual = null;
+let bienesActuales = [];
+let seleccionado = null;
+let vista = 'ficha';
+let subiendoBienId = null;
+
+const riesgoLabels = {fuego:'Fuego',agua:'Agua',estruc:'Derrumbe',mani:'Manipulación delicada',inam:'Inamovible'};
+const riesgoClass = {fuego:'riesgo-fuego',agua:'riesgo-agua',estruc:'riesgo-estruc',mani:'riesgo-mani',inam:'riesgo-inam'};
+const rescateLabel = {R1:'Rescate nº 1',R2:'Rescate nº 2',R3:'Rescate nº 3',RI:'Inamovible — proteger in situ'};
+const rescateClass = {R1:'badge-r1',R2:'badge-r2',R3:'badge-r3',RI:'badge-ri'};
+
+// ============================================
+// SELECTOR DE EDIFICIO
+// ============================================
+async function cargarEdificios(){
+  try {
+    const r = await fetch(`${SB}/rest/v1/patrimonio?select=id,nombre,tipo,prioridad,minutos,km,imagen_url&order=prioridad.asc,nombre.asc`,{headers:H()});
+    const data = await r.json();
+    // Verificar bienes sembrados
+    await verificarSeed();
+    renderSelector(data);
+  } catch(e){
+    document.getElementById('sel-grid').innerHTML = '<div class="cargando-sel">Error de conexión</div>';
+  }
+}
+
+async function verificarSeed(){
+  try {
+    const r = await fetch(`${SB}/rest/v1/bienes_muebles?select=id&limit=1`,{headers:H()});
+    const data = await r.json();
+    if(data.length === 0){
+      // Sembrar datos
+      await fetch(`${SB}/rest/v1/bienes_muebles`,{
+        method:'POST',
+        headers:{...H(),'Prefer':'return=minimal'},
+        body:JSON.stringify(SEED_BIENES)
+      });
+    }
+  } catch(e){}
+}
+
+function renderSelector(edificios){
+  const sel = document.getElementById('sel-grid');
+  if(!edificios.length){ sel.innerHTML='<div class="cargando-sel">Sin edificios registrados</div>'; return; }
+  sel.innerHTML = edificios.map(e=>`
+    <div class="sel-card" onclick="abrirEdificio('${e.id}','${e.nombre.replace(/'/g,"\\'")}')">
+      ${e.imagen_url
+        ? `<img class="sel-card-img" src="${e.imagen_url}" alt="${e.nombre}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        : ''}
+      <div class="sel-card-img-ph" ${e.imagen_url?'style="display:none"':''}>🏛️</div>
+      <div class="sel-card-body">
+        <div class="sel-card-tipo">${e.tipo||'Edificio patrimonial'}</div>
+        <div class="sel-card-nombre">${e.nombre}</div>
+        <div class="sel-card-meta">
+          <span class="sel-card-num">${e.minutos!=='—'?e.minutos+' min · '+e.km+' km':'Datos pendientes'}</span>
+          <span class="sel-card-prior">Prioridad ${e.prioridad||'A'}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function abrirEdificio(id, nombre){
+  edificioActual = id;
+  document.getElementById('cab-titulo').textContent = 'Fichas de Rescate · Patrimonio';
+  document.getElementById('cab-sub').textContent = nombre + ' · Los Palacios y Villafranca';
+  // Mostrar botones
+  ['btn-ficha','btn-edificio','btn-volver','btn-imprimir'].forEach(b=>{
+    document.getElementById(b).style.display='inline-block';
+  });
+  // Cambiar pantallas
+  document.getElementById('pantalla-selector').style.display='none';
+  document.getElementById('pantalla-fichas').style.display='block';
+  // Cargar bienes
+  await cargarBienes(id);
+}
+
+function volverSelector(){
+  document.getElementById('pantalla-selector').style.display='flex';
+  document.getElementById('pantalla-fichas').style.display='none';
+  ['btn-ficha','btn-edificio','btn-volver','btn-imprimir'].forEach(b=>{
+    document.getElementById(b).style.display='none';
+  });
+  edificioActual = null;
+  bienesActuales = [];
+}
+
+// ============================================
+// BIENES
+// ============================================
+async function cargarBienes(edificioId){
+  try {
+    const r = await fetch(`${SB}/rest/v1/bienes_muebles?patrimonio_id=eq.${edificioId}&select=*&order=orden_rescate.asc,nombre.asc`,{headers:H()});
+    bienesActuales = await r.json();
+  } catch(e){ bienesActuales = []; }
+  renderPanel();
+  if(bienesActuales.length > 0){
+    seleccionado = bienesActuales[0].id;
+    setVista('ficha');
+  }
+}
+
+function renderPanel(){
+  const zonas = [...new Set(bienesActuales.map(b=>b.zona))];
+  document.getElementById('panel-lateral').innerHTML = zonas.map(zona=>`
+    <div class="panel-zona">${zona}</div>
+    ${bienesActuales.filter(b=>b.zona===zona).map(b=>`
+      <div class="bien-item ${b.id===seleccionado?'active':''}" id="pi-${b.id}" onclick="seleccionar('${b.id}')">
+        ${b.foto_url
+          ? `<img class="bien-thumb" src="${b.foto_url}" alt="" onerror="this.style.display='none'">`
+          : `<div class="bien-thumb-ph">🎨</div>`}
+        <div class="bien-info">
+          <div class="bien-nombre-panel">${b.nombre}</div>
+          <div class="bien-num-panel">${rescateLabel[b.rescate_codigo]||b.rescate_codigo}</div>
+        </div>
+      </div>
+    `).join('')}
+  `).join('');
+}
+
+function seleccionar(id){
+  seleccionado = id;
+  document.querySelectorAll('.bien-item').forEach(el=>el.classList.remove('active'));
+  const el = document.getElementById('pi-'+id);
+  if(el) el.classList.add('active');
+  if(vista==='ficha') mostrarFicha(id);
+}
+
+function setVista(v){
+  vista = v;
+  document.getElementById('btn-ficha').classList.toggle('active', v==='ficha');
+  document.getElementById('btn-edificio').classList.toggle('active', v==='edificio');
+  if(v==='ficha') mostrarFicha(seleccionado);
+  else mostrarEdificio();
+}
+
+function mostrarFicha(id){
+  const b = bienesActuales.find(x=>x.id===id);
+  if(!b) return;
+  const riesgos = Array.isArray(b.riesgos) ? b.riesgos : [];
+  const chips = riesgos.map(r=>`<span class="riesgo-chip ${riesgoClass[r]||''}">${riesgoLabels[r]||r}</span>`).join('');
+  const esInam = b.rescate_codigo === 'RI';
+  const rescCode = b.rescate_codigo || 'R1';
+
+  document.getElementById('main-content').innerHTML = `
+    <div>
+      <div class="ficha-hero">
+        ${b.foto_url ? `<img src="${b.foto_url}" alt="${b.nombre}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+        <div class="ficha-hero-ph" ${b.foto_url?'style="display:none"':''}>
+          <div class="ph-icon">🎨</div>
+          <div class="ph-label">Foto pendiente de añadir</div>
+        </div>
+        <div class="ficha-hero-overlay">
+          <div class="ficha-num">${document.getElementById('cab-sub').textContent.split(' · ')[0]} · ${b.zona}</div>
+          <div class="ficha-nombre">${b.nombre}</div>
+          <div class="ficha-autor">${b.autor||''}</div>
+        </div>
+        <div class="badge-rescate ${rescateClass[rescCode]||'badge-ri'}">${rescateLabel[rescCode]||rescCode}</div>
+        <button class="badge-upload${USUARIO?' admin-visible':''}" onclick="subirFotoBien('${b.id}')">📷 Añadir foto</button>
+      </div>
+      <div class="stats-strip">
+        <div class="stat">
+          <div class="stat-val" style="color:${rescCode==='R1'?'#EF4444':rescCode==='R2'?'#F97316':rescCode==='RI'?'#6B7280':'#D97706'}">${esInam?'—':rescCode}</div>
+          <div class="stat-key">Prioridad</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" style="font-size:${(b.personas||'').length>4?'14px':'18px'};padding-top:${(b.personas||'').length>4?'4px':'0'}">${b.personas||'—'}</div>
+          <div class="stat-key">Personas</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" style="font-size:12px;padding-top:4px">${riesgos.map(r=>riesgoLabels[r]||r).join(' / ')||'—'}</div>
+          <div class="stat-key">Riesgos</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" style="font-size:12px;padding-top:3px">${(b.zona||'').split(' — ')[0].split(' — ')[0].substring(0,18)}</div>
+          <div class="stat-key">Zona</div>
+        </div>
+      </div>
+      <div class="seccion">
+        <div class="sec-header">Ubicación en el edificio</div>
+        <div class="zona-mapa"><div><div class="cl">Localización exacta</div><div class="zona-valor">${b.ubicacion||'—'}</div></div></div>
+      </div>
+      <div class="seccion">
+        <div class="sec-header">Datos del bien</div>
+        <div class="sec-grid">
+          <div class="cb"><div class="cl">Tipo / Tipología</div><div class="cv">${b.tipo||'—'}</div></div>
+          <div class="cb"><div class="cl">Cronología</div><div class="cv">${b.cronologia||'—'}</div></div>
+          <div class="cb"><div class="cl">Peso estimado</div><div class="cv ${b.peso==='INAMOVIBLE'?'alert':''}">${b.peso||'—'}</div></div>
+          <div class="cb"><div class="cl">Dimensiones</div><div class="cv ${b.dimensiones==='INAMOVIBLE'?'alert':''}">${b.dimensiones||'—'}</div></div>
+          <div class="cb full"><div class="cl">Material / Fragilidad</div><div class="cv">${b.material||'—'}</div></div>
+        </div>
+      </div>
+      <div class="seccion">
+        <div class="sec-header">Para la intervención</div>
+        <div class="sec-grid">
+          <div class="cb"><div class="cl">Personas necesarias</div>${esInam?`<div class="cv alert">NO RESCATAR</div>`:`<div class="personas-num">${b.personas||'—'}</div><div class="personas-sub">personas mínimo</div>`}</div>
+          <div class="cb"><div class="cl">Riesgos específicos</div><div style="margin-top:4px">${chips||'—'}</div></div>
+          <div class="cb full"><div class="cl">Notas especiales de manipulación</div><div class="cv">${b.notas||'—'}</div></div>
+        </div>
+      </div>
+      ${esInam?`<div class="seccion"><div class="alerta-box"><span>⚠️</span><div>BIEN INAMOVIBLE — No intentar trasladar. Proteger in situ con mantas ignífugas y comunicar al mando su localización exacta.</div></div></div>`:''}
+      <div class="seccion" style="margin-bottom:0">
+        <div class="sec-header">Contacto</div>
+        <div class="sec-body">
+          <div class="cl">Responsable del bien</div>
+          <div class="cv">${b.contacto||'—'}</div>
+          <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+            <button style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;background:var(--rojo);color:white;border:none;cursor:pointer;border-radius:2px" onclick="window.print()">🖨 Imprimir ficha</button>
+            ${USUARIO?`<button style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;background:rgba(139,26,26,.12);color:var(--rojo);border:1px solid rgba(139,26,26,.2);cursor:pointer;border-radius:2px" onclick="editarBien('${b.id}')">✏️ Editar ficha</button>`:''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function mostrarEdificio(){
+  const zonas = [...new Set(bienesActuales.map(b=>b.zona))];
+  const nombre = document.getElementById('cab-sub').textContent.split(' · ')[0];
+  document.getElementById('main-content').innerHTML = `
+    <div class="vista-edificio">
+      <div class="edificio-titulo">${nombre}</div>
+      <div class="edificio-sub">Fichas de rescate — ${bienesActuales.length} bienes catalogados · Haz clic en un bien para ver su ficha</div>
+      ${zonas.map(zona=>`
+        <div class="zona-grupo">
+          <div class="zona-titulo">${zona}</div>
+          <div class="grid-bienes">
+            ${bienesActuales.filter(b=>b.zona===zona).map(b=>`
+              <div class="bien-card" onclick="seleccionar('${b.id}');setVista('ficha')">
+                ${b.foto_url
+                  ? `<img class="bien-card-img" src="${b.foto_url}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+                  : ''}
+                <div class="bien-card-ph" ${b.foto_url?'style="display:none"':''}><span>🎨</span><span>Foto pendiente</span></div>
+                <div class="bien-card-body">
+                  <div class="bien-card-num">${rescateLabel[b.rescate_codigo]||b.rescate_codigo}</div>
+                  <div class="bien-card-nombre">${b.nombre}</div>
+                  <div class="bien-card-ubi">${b.ubicacion||''}</div>
+                  <div class="bien-card-badges">
+                    ${(Array.isArray(b.riesgos)?b.riesgos:[]).map(r=>`<span class="riesgo-chip ${riesgoClass[r]||''}" style="font-size:9px;padding:1px 5px">${riesgoLabels[r]||r}</span>`).join('')}
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ============================================
+// SUBIDA DE FOTOS
+// ============================================
+function subirFotoBien(id){
+  subiendoBienId = id;
+  document.getElementById('input-foto').click();
+}
+
+document.getElementById('input-foto').addEventListener('change', async function(){
+  const file = this.files[0];
+  if(!file || !subiendoBienId) return;
+  mostrarToast('📤 Subiendo foto...');
+  const ext = file.name.split('.').pop();
+  const path = `${subiendoBienId}/${Date.now()}.${ext}`;
+  try {
+    const r = await fetch(`${SB}/storage/v1/object/bienes-fotos/${path}`,{
+      method:'POST',
+      headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':file.type},
+      body:file
+    });
+    if(r.ok){
+      const url = `${SB}/storage/v1/object/public/bienes-fotos/${path}`;
+      await fetch(`${SB}/rest/v1/bienes_muebles?id=eq.${subiendoBienId}`,{
+        method:'PATCH',
+        headers:{...H(),'Prefer':'return=minimal'},
+        body:JSON.stringify({foto_url:url,updated_at:new Date().toISOString()})
+      });
+      const b = bienesActuales.find(x=>x.id===subiendoBienId);
+      if(b) b.foto_url = url;
+      renderPanel();
+      mostrarFicha(subiendoBienId);
+      mostrarToast('✅ Foto añadida correctamente');
+    } else { mostrarToast('❌ Error al subir la foto'); }
+  } catch(e){ mostrarToast('❌ Error de conexión'); }
+  this.value = '';
+});
+
+// ============================================
+// EDITAR BIEN (básico)
+// ============================================
+function editarBien(id){
+  mostrarToast('Función de edición — próximamente');
+}
+
+// ============================================
+// AUTH
+// ============================================
+function abrirLogin(){ document.getElementById('modal-login').classList.add('visible'); }
+function cerrarLogin(){ document.getElementById('modal-login').classList.remove('visible'); }
+
+async function hacerLogin(){
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const msg = document.getElementById('login-msg');
+  const btn = document.getElementById('login-btn');
+  if(!email||!pass){ msg.textContent='Rellena email y contraseña'; return; }
+  btn.disabled=true; btn.textContent='Accediendo...';
+  try {
+    const r = await fetch(`${SB}/auth/v1/token?grant_type=password`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':KEY},
+      body:JSON.stringify({email,password:pass})
+    });
+    const data = await r.json();
+    if(r.ok && data.access_token){
+      TOKEN = data.access_token; USUARIO = email;
+      sessionStorage.setItem('sb_token',TOKEN);
+      sessionStorage.setItem('sb_user',USUARIO);
+      document.getElementById('admin-badge').textContent = '● '+email;
+      document.getElementById('admin-badge').style.display = 'inline-block';
+      document.getElementById('btn-login').style.display = 'none';
+      cerrarLogin();
+      if(seleccionado) mostrarFicha(seleccionado);
+      mostrarToast('✅ Sesión iniciada');
+    } else {
+      msg.style.color='#EF4444';
+      msg.textContent = 'Email o contraseña incorrectos';
+    }
+  } catch(e){ msg.textContent='Error de conexión'; }
+  btn.disabled=false; btn.textContent='Acceder';
+}
+
+function detectarSesion(){
+  const token = sessionStorage.getItem('sb_token');
+  const user = sessionStorage.getItem('sb_user');
+  if(token && user){
+    TOKEN=token; USUARIO=user;
+    document.getElementById('admin-badge').textContent='● '+user;
+    document.getElementById('admin-badge').style.display='inline-block';
+    document.getElementById('btn-login').style.display='none';
+  }
+}
+
+// ============================================
+// TOAST
+// ============================================
+function mostrarToast(msg, dur=2500){
+  const t = document.getElementById('toast');
+  t.textContent=msg; t.style.display='block';
+  clearTimeout(window._tT);
+  window._tT=setTimeout(()=>t.style.display='none',dur);
+}
+
+// ============================================
+// INICIO
+// ============================================
+detectarSesion();
+cargarEdificios();
+</script>
+</body>
+</html>

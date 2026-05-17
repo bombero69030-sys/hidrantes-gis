@@ -422,16 +422,18 @@ async function cargarEdificios(){
 }
 
 async function verificarSeed(){
+  // Solo sembrar si la tabla está completamente vacía
   try {
     const r = await fetch(`${SB}/rest/v1/bienes_muebles?select=id&limit=1`,{headers:H()});
+    if(!r.ok) return;
     const data = await r.json();
     if(data.length === 0){
-      // Sembrar datos
-      await fetch(`${SB}/rest/v1/bienes_muebles`,{
+      const r2 = await fetch(`${SB}/rest/v1/bienes_muebles`,{
         method:'POST',
         headers:{...H(),'Prefer':'return=minimal'},
         body:JSON.stringify(SEED_BIENES)
       });
+      if(r2.ok) mostrarToast('✅ Fichas de rescate cargadas correctamente');
     }
   } catch(e){}
 }
@@ -486,15 +488,60 @@ function volverSelector(){
 // BIENES
 // ============================================
 async function cargarBienes(edificioId){
+  document.getElementById('main-content').innerHTML = '<div style="padding:60px;text-align:center;color:var(--texto-muted);font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase;font-size:13px">Cargando fichas...</div>';
+  document.getElementById('panel-lateral').innerHTML = '';
   try {
     const r = await fetch(`${SB}/rest/v1/bienes_muebles?patrimonio_id=eq.${edificioId}&select=*&order=orden_rescate.asc,nombre.asc`,{headers:H()});
+    if(!r.ok) throw new Error('HTTP '+r.status);
     bienesActuales = await r.json();
-  } catch(e){ bienesActuales = []; }
-  renderPanel();
-  if(bienesActuales.length > 0){
-    seleccionado = bienesActuales[0].id;
-    setVista('ficha');
+  } catch(e){
+    bienesActuales = [];
+    document.getElementById('main-content').innerHTML = `<div style="padding:60px;text-align:center"><div style="font-family:var(--font-display);color:var(--rojo);font-size:14px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px">Error de conexión</div><div style="font-size:13px;color:var(--texto-muted)">No se pudieron cargar las fichas. Comprueba la conexión.</div></div>`;
+    return;
   }
+  if(bienesActuales.length === 0){
+    // Sin bienes — mostrar mensaje y opción de sembrar si admin
+    document.getElementById('panel-lateral').innerHTML = '<div style="padding:16px;font-family:var(--font-display);font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase">Sin bienes catalogados</div>';
+    document.getElementById('main-content').innerHTML = `
+      <div style="padding:60px 40px;text-align:center;max-width:480px;margin:0 auto">
+        <div style="font-size:40px;margin-bottom:16px">🏛️</div>
+        <div style="font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--rojo);margin-bottom:8px">Sin fichas de rescate</div>
+        <div style="font-size:13px;color:var(--texto-muted);line-height:1.6;margin-bottom:20px">Este edificio aún no tiene bienes catalogados. ${USUARIO?'Puedes añadir bienes manualmente o cargar los datos de ejemplo.':' Inicia sesión como administrador para añadir bienes.'}</div>
+        ${USUARIO ? `
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <button onclick="sembrarEsteEdificio('${edificioId}')" style="font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 18px;background:var(--rojo);color:white;border:none;cursor:pointer;border-radius:2px">📥 Cargar datos de ejemplo</button>
+            <button onclick="abrirFormNuevoBien()" style="font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 18px;background:var(--gris-oscuro);color:white;border:none;cursor:pointer;border-radius:2px">+ Añadir bien nuevo</button>
+          </div>
+        ` : `<button onclick="abrirLogin()" style="font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 18px;background:var(--gris-oscuro);color:white;border:none;cursor:pointer;border-radius:2px">🔐 Iniciar sesión</button>`}
+      </div>`;
+    return;
+  }
+  renderPanel();
+  seleccionado = bienesActuales[0].id;
+  setVista(vista || 'ficha');
+}
+
+async function sembrarEsteEdificio(edificioId){
+  const bienesSeed = SEED_BIENES.filter(b=>b.patrimonio_id === edificioId);
+  if(bienesSeed.length === 0){
+    mostrarToast('No hay datos de ejemplo para este edificio');
+    return;
+  }
+  mostrarToast('📥 Cargando datos de ejemplo...', 8000);
+  try {
+    const r = await fetch(`${SB}/rest/v1/bienes_muebles`,{
+      method:'POST',
+      headers:{...H(),'Prefer':'return=minimal'},
+      body:JSON.stringify(bienesSeed)
+    });
+    if(r.ok){
+      mostrarToast('✅ Datos cargados correctamente');
+      await cargarBienes(edificioId);
+    } else {
+      const err = await r.text();
+      mostrarToast('❌ Error: '+err, 4000);
+    }
+  } catch(e){ mostrarToast('❌ Error de conexión', 4000); }
 }
 
 function renderPanel(){
@@ -834,10 +881,14 @@ async function hacerLogin(){
       document.getElementById('btn-login').style.display = 'none';
       cerrarLogin();
       if(seleccionado) mostrarFicha(seleccionado);
-      // Tras login, sembrar datos si faltan y recargar
+      // Tras login, sembrar datos y recargar
       await verificarSeed();
-      if(edificioActual) await cargarBienes(edificioActual);
-      else if(edificioIdUrl) await cargarEdificioDirecto(edificioIdUrl);
+      if(edificioActual){
+        await cargarBienes(edificioActual);
+      } else {
+        const uid = new URLSearchParams(window.location.search).get('id');
+        if(uid) await cargarEdificioDirecto(uid);
+      }
       mostrarToast('✅ Sesión iniciada');
     } else {
       msg.style.color='#EF4444';
@@ -888,17 +939,29 @@ if(edificioIdUrl){
 }
 
 async function cargarEdificioDirecto(id){
+  // Ocultar selector y mostrar spinner mientras carga
+  document.getElementById('pantalla-selector').style.display='none';
+  document.getElementById('pantalla-fichas').style.display='block';
+  document.getElementById('main-content').innerHTML='<div style="padding:60px;text-align:center;color:var(--texto-muted);font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase;font-size:13px">Cargando edificio...</div>';
+  ['btn-ficha','btn-edificio','btn-volver','btn-imprimir'].forEach(b=>{
+    document.getElementById(b).style.display='inline-block';
+  });
   try {
     const r = await fetch(`${SB}/rest/v1/patrimonio?id=eq.${id}&select=id,nombre,tipo`,{headers:H()});
+    if(!r.ok) throw new Error();
     const data = await r.json();
     if(data.length > 0){
       const e = data[0];
-      // Sembrar datos solo si hay token (admin logado)
+      edificioActual = e.id;
+      document.getElementById('cab-sub').textContent = e.nombre + ' · Los Palacios y Villafranca';
       if(TOKEN) await verificarSeed();
-      await abrirEdificio(e.id, e.nombre);
+      await cargarBienes(e.id);
       return;
     }
   } catch(err){}
+  // Si falla, mostrar selector
+  document.getElementById('pantalla-selector').style.display='flex';
+  document.getElementById('pantalla-fichas').style.display='none';
   cargarEdificios();
 }
 </script>

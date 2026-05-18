@@ -25,7 +25,7 @@ body{font-family:var(--font-body);background:var(--crema);color:var(--texto);hei
 .cab-sep{width:1px;height:20px;background:rgba(255,255,255,.1);margin:0 2px}
 
 /* SELECTOR EDIFICIO */
-#pantalla-selector{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:var(--crema);overflow-y:auto}
+.pantalla-selector{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:var(--crema);overflow-y:auto}
 .sel-titulo{font-family:var(--font-display);font-size:28px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--rojo);margin-bottom:8px;text-align:center}
 .sel-sub{font-size:14px;color:var(--texto-muted);margin-bottom:36px;text-align:center}
 .sel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;max-width:900px;width:100%}
@@ -42,7 +42,7 @@ body{font-family:var(--font-body);background:var(--crema);color:var(--texto);hei
 .cargando-sel{font-family:var(--font-display);font-size:13px;color:var(--texto-muted);letter-spacing:.08em;text-transform:uppercase}
 
 /* LAYOUT FICHAS */
-#pantalla-fichas{display:none;flex:1;overflow:hidden}
+.pantalla-fichas{flex:1;overflow:hidden;display:flex;flex-direction:row}
 .layout{display:flex;height:100%}
 .panel{width:260px;flex-shrink:0;background:var(--gris-medio);overflow-y:auto;border-right:1px solid rgba(255,255,255,.06)}
 .panel::-webkit-scrollbar{width:3px}
@@ -192,6 +192,19 @@ body{font-family:var(--font-body);background:var(--crema);color:var(--texto);hei
   .bf-divider{display:none}
 }
 
+
+/* RECORTADOR */
+#modal-cropper{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9500;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:20px}
+#modal-cropper.visible{display:flex}
+.cropper-titulo{font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:white}
+.cropper-wrap{position:relative;overflow:hidden;background:#111;border:2px solid var(--rojo);border-radius:4px;cursor:move;user-select:none}
+.cropper-img{position:absolute;transform-origin:0 0;pointer-events:none}
+.cropper-hint{font-size:12px;color:rgba(255,255,255,.5);text-align:center}
+.cropper-acciones{display:flex;gap:10px}
+.cropper-btn{font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 20px;border:none;border-radius:3px;cursor:pointer}
+.cropper-btn-ok{background:var(--rojo);color:white}
+.cropper-btn-cancel{background:rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+
 @media print{.cabecera,.panel,.cab-der{display:none!important}.layout{display:block;height:auto}.main{overflow:visible}.stats-strip,.badge-rescate{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 
 @media(max-width:700px){
@@ -226,20 +239,8 @@ body{font-family:var(--font-body);background:var(--crema);color:var(--texto);hei
 </div>
 
 <!-- SELECTOR DE EDIFICIO -->
-<div id="pantalla-selector">
-  <div class="sel-titulo">Fichas de Rescate</div>
-  <div class="sel-sub">Selecciona el edificio patrimonial</div>
-  <div class="sel-grid" id="sel-grid">
-    <div class="cargando-sel">Cargando edificios...</div>
-  </div>
-</div>
-
-<!-- PANTALLA FICHAS -->
-<div id="pantalla-fichas">
-  <div class="layout">
-    <div class="panel" id="panel-lateral"></div>
-    <div class="main" id="main-content"></div>
-  </div>
+<div id="app-container" style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+  <!-- Se rellena por JS -->
 </div>
 
 <!-- MODAL LOGIN -->
@@ -344,6 +345,21 @@ body{font-family:var(--font-body);background:var(--crema);color:var(--texto);hei
   </div>
 </div>
 
+
+<!-- RECORTADOR -->
+<div id="modal-cropper">
+  <div class="cropper-titulo" id="cropper-titulo">Ajustar encuadre</div>
+  <div class="cropper-wrap" id="cropper-wrap" style="width:480px;height:320px">
+    <img id="cropper-img" class="cropper-img" src="">
+    <div style="position:absolute;inset:0;box-shadow:inset 0 0 0 2px rgba(255,255,255,.3)"></div>
+  </div>
+  <div class="cropper-hint">Arrastra para encuadrar · Rueda del ratón para zoom</div>
+  <div class="cropper-acciones">
+    <button class="cropper-btn cropper-btn-cancel" onclick="cancelarCropper()">Cancelar</button>
+    <button class="cropper-btn cropper-btn-ok" onclick="confirmarCropper()">✓ Usar este encuadre</button>
+  </div>
+</div>
+
 <input type="file" id="input-foto" accept="image/*" style="display:none">
 <div id="toast"></div>
 
@@ -407,17 +423,38 @@ const riesgoClass = {fuego:'riesgo-fuego',agua:'riesgo-agua',estruc:'riesgo-estr
 const rescateLabel = {R1:'Rescate nº 1',R2:'Rescate nº 2',R3:'Rescate nº 3',RI:'Inamovible — proteger in situ'};
 const rescateClass = {R1:'badge-r1',R2:'badge-r2',R3:'badge-r3',RI:'badge-ri'};
 
+
+function mostrarSelectorHTML(){
+  document.getElementById('app-container').innerHTML = `
+    <div class="pantalla-selector">
+      <div class="sel-titulo">Fichas de Rescate</div>
+      <div class="sel-sub">Selecciona el edificio patrimonial</div>
+      <div class="sel-grid" id="sel-grid"><div class="cargando-sel">Cargando edificios...</div></div>
+    </div>`;
+}
+
+function mostrarFichasHTML(){
+  document.getElementById('app-container').innerHTML = `
+    <div class="pantalla-fichas">
+      <div class="panel" id="panel-lateral"></div>
+      <div class="main" id="main-content"></div>
+    </div>`;
+}
+
 // ============================================
 // SELECTOR DE EDIFICIO
 // ============================================
 async function cargarEdificios(){
+  mostrarSelectorHTML();
   try {
     const r = await fetch(`${SB}/rest/v1/patrimonio?select=id,nombre,tipo,prioridad,minutos,km,imagen_url&order=prioridad.asc,nombre.asc`,{headers:H()});
+    if(!r.ok) throw new Error();
     const data = await r.json();
     if(TOKEN) await verificarSeed();
     renderSelector(data);
   } catch(e){
-    document.getElementById('sel-grid').innerHTML = '<div class="cargando-sel">Error de conexión</div>';
+    const grid = document.getElementById('sel-grid');
+    if(grid) grid.innerHTML = '<div class="cargando-sel">Error de conexión</div>';
   }
 }
 
@@ -468,20 +505,19 @@ async function abrirEdificio(id, nombre){
     document.getElementById(b).style.display='inline-block';
   });
   // Cambiar pantallas
-  document.getElementById('pantalla-selector').style.display='none';
-  document.getElementById('pantalla-fichas').style.display='block';
+  mostrarFichasHTML();
   // Cargar bienes
   await cargarBienes(id);
 }
 
 function volverSelector(){
-  document.getElementById('pantalla-selector').style.display='flex';
-  document.getElementById('pantalla-fichas').style.display='none';
+  mostrarSelectorHTML();
   ['btn-ficha','btn-edificio','btn-volver','btn-imprimir'].forEach(b=>{
     document.getElementById(b).style.display='none';
   });
   edificioActual = null;
   bienesActuales = [];
+  cargarEdificios();
 }
 
 // ============================================
@@ -703,32 +739,34 @@ function subirFotoBien(id){
   document.getElementById('input-foto').click();
 }
 
-document.getElementById('input-foto').addEventListener('change', async function(){
+document.getElementById('input-foto').addEventListener('change', function(){
   const file = this.files[0];
   if(!file || !subiendoBienId) return;
-  mostrarToast('📤 Subiendo foto...');
-  const ext = file.name.split('.').pop();
-  const path = `${subiendoBienId}/${Date.now()}.${ext}`;
-  try {
-    const r = await fetch(`${SB}/storage/v1/object/bienes-fotos/${path}`,{
-      method:'POST',
-      headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':file.type},
-      body:file
-    });
-    if(r.ok){
-      const url = `${SB}/storage/v1/object/public/bienes-fotos/${path}`;
-      await fetch(`${SB}/rest/v1/bienes_muebles?id=eq.${subiendoBienId}`,{
-        method:'PATCH',
-        headers:{...H(),'Prefer':'return=minimal'},
-        body:JSON.stringify({foto_url:url,updated_at:new Date().toISOString()})
+  // Abrir recortador 3:2 para foto del bien
+  abrirCropper(file, 480, 320, 'Ajustar foto del bien', async croppedFile => {
+    mostrarToast('📤 Subiendo foto...', 8000);
+    const path = `${subiendoBienId}/${Date.now()}.jpg`;
+    try {
+      const r = await fetch(`${SB}/storage/v1/object/bienes-fotos/${path}`,{
+        method:'POST',
+        headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':'image/jpeg'},
+        body:croppedFile
       });
-      const b = bienesActuales.find(x=>x.id===subiendoBienId);
-      if(b) b.foto_url = url;
-      renderPanel();
-      mostrarFicha(subiendoBienId);
-      mostrarToast('✅ Foto añadida correctamente');
-    } else { mostrarToast('❌ Error al subir la foto'); }
-  } catch(e){ mostrarToast('❌ Error de conexión'); }
+      if(r.ok){
+        const url = `${SB}/storage/v1/object/public/bienes-fotos/${path}`;
+        await fetch(`${SB}/rest/v1/bienes_muebles?id=eq.${subiendoBienId}`,{
+          method:'PATCH',
+          headers:{...H(),'Prefer':'return=minimal'},
+          body:JSON.stringify({foto_url:url,updated_at:new Date().toISOString()})
+        });
+        const b = bienesActuales.find(x=>x.id===subiendoBienId);
+        if(b) b.foto_url = url;
+        renderPanel();
+        mostrarFicha(subiendoBienId);
+        mostrarToast('✅ Foto añadida correctamente');
+      } else { mostrarToast('❌ Error al subir la foto'); }
+    } catch(e){ mostrarToast('❌ Error de conexión'); }
+  });
   this.value = '';
 });
 
@@ -852,6 +890,109 @@ async function borrarBien(){
   } catch(e){ mostrarToast('❌ Error al eliminar'); }
 }
 
+
+// ============================================
+// RECORTADOR UNIVERSAL
+// ============================================
+let cropperState = {
+  x:0,y:0,scale:1,dragging:false,startX:0,startY:0,
+  onConfirm:null,file:null,originalUrl:null
+};
+
+function abrirCropper(file,wrapW,wrapH,titulo,onConfirm){
+  cropperState.onConfirm=onConfirm; cropperState.file=file;
+  cropperState.x=0; cropperState.y=0; cropperState.scale=1;
+  const wrap=document.getElementById('cropper-wrap');
+  wrap.style.width=wrapW+'px'; wrap.style.height=wrapH+'px';
+  document.getElementById('cropper-titulo').textContent=titulo||'Ajustar encuadre';
+  const url=URL.createObjectURL(file);
+  cropperState.originalUrl=url;
+  const img=document.getElementById('cropper-img');
+  img.onload=()=>{
+    const minS=Math.max(wrapW/img.naturalWidth,wrapH/img.naturalHeight);
+    cropperState.scale=minS;
+    cropperState.x=(wrapW-img.naturalWidth*minS)/2;
+    cropperState.y=(wrapH-img.naturalHeight*minS)/2;
+    aplicarTransformCropper();
+  };
+  img.src=url;
+  document.getElementById('modal-cropper').classList.add('visible');
+}
+
+function aplicarTransformCropper(){
+  const img=document.getElementById('cropper-img');
+  const wrap=document.getElementById('cropper-wrap');
+  const wW=wrap.offsetWidth,wH=wrap.offsetHeight;
+  const iW=img.naturalWidth*cropperState.scale;
+  const iH=img.naturalHeight*cropperState.scale;
+  cropperState.x=Math.min(0,Math.max(wW-iW,cropperState.x));
+  cropperState.y=Math.min(0,Math.max(wH-iH,cropperState.y));
+  img.style.transform=`translate(${cropperState.x}px,${cropperState.y}px) scale(${cropperState.scale})`;
+}
+
+document.getElementById('cropper-wrap').addEventListener('mousedown',e=>{
+  cropperState.dragging=true;
+  cropperState.startX=e.clientX-cropperState.x;
+  cropperState.startY=e.clientY-cropperState.y;
+  e.preventDefault();
+});
+document.addEventListener('mousemove',e=>{
+  if(!cropperState.dragging)return;
+  cropperState.x=e.clientX-cropperState.startX;
+  cropperState.y=e.clientY-cropperState.startY;
+  aplicarTransformCropper();
+});
+document.addEventListener('mouseup',()=>cropperState.dragging=false);
+document.getElementById('cropper-wrap').addEventListener('touchstart',e=>{
+  cropperState.dragging=true;
+  cropperState.startX=e.touches[0].clientX-cropperState.x;
+  cropperState.startY=e.touches[0].clientY-cropperState.y;
+  e.preventDefault();
+},{passive:false});
+document.addEventListener('touchmove',e=>{
+  if(!cropperState.dragging)return;
+  cropperState.x=e.touches[0].clientX-cropperState.startX;
+  cropperState.y=e.touches[0].clientY-cropperState.startY;
+  aplicarTransformCropper();
+},{passive:false});
+document.addEventListener('touchend',()=>cropperState.dragging=false);
+document.getElementById('cropper-wrap').addEventListener('wheel',e=>{
+  e.preventDefault();
+  const wrap=document.getElementById('cropper-wrap');
+  const img=document.getElementById('cropper-img');
+  const minS=Math.max(wrap.offsetWidth/img.naturalWidth,wrap.offsetHeight/img.naturalHeight);
+  const delta=e.deltaY>0?-0.05:0.05;
+  cropperState.scale=Math.max(minS,Math.min(4,cropperState.scale+delta));
+  aplicarTransformCropper();
+},{passive:false});
+
+function cancelarCropper(){
+  document.getElementById('modal-cropper').classList.remove('visible');
+  URL.revokeObjectURL(cropperState.originalUrl);
+  cropperState.onConfirm=null;
+}
+
+async function confirmarCropper(){
+  const img=document.getElementById('cropper-img');
+  const wrap=document.getElementById('cropper-wrap');
+  const wW=wrap.offsetWidth,wH=wrap.offsetHeight;
+  const canvas=document.createElement('canvas');
+  canvas.width=wW*2; canvas.height=wH*2;
+  const ctx=canvas.getContext('2d');
+  const scale=cropperState.scale;
+  ctx.drawImage(img,
+    -cropperState.x/scale,-cropperState.y/scale,
+    wW/scale,wH/scale,
+    0,0,canvas.width,canvas.height
+  );
+  canvas.toBlob(blob=>{
+    const croppedFile=new File([blob],cropperState.file.name,{type:'image/jpeg'});
+    document.getElementById('modal-cropper').classList.remove('visible');
+    URL.revokeObjectURL(cropperState.originalUrl);
+    if(cropperState.onConfirm) cropperState.onConfirm(croppedFile);
+  },'image/jpeg',0.92);
+}
+
 // ============================================
 // AUTH
 // ============================================
@@ -940,8 +1081,7 @@ if(edificioIdUrl){
 
 async function cargarEdificioDirecto(id){
   // Ocultar selector y mostrar spinner mientras carga
-  document.getElementById('pantalla-selector').style.display='none';
-  document.getElementById('pantalla-fichas').style.display='block';
+  mostrarFichasHTML();
   document.getElementById('main-content').innerHTML='<div style="padding:60px;text-align:center;color:var(--texto-muted);font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase;font-size:13px">Cargando edificio...</div>';
   ['btn-ficha','btn-edificio','btn-volver','btn-imprimir'].forEach(b=>{
     document.getElementById(b).style.display='inline-block';
@@ -960,8 +1100,7 @@ async function cargarEdificioDirecto(id){
     }
   } catch(err){}
   // Si falla, mostrar selector
-  document.getElementById('pantalla-selector').style.display='flex';
-  document.getElementById('pantalla-fichas').style.display='none';
+  mostrarSelectorHTML();
   cargarEdificios();
 }
 </script>

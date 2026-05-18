@@ -211,6 +211,20 @@ header{
 .spinner{width:24px;height:24px;border:2px solid var(--gris-borde);border-top-color:var(--rojo);border-radius:50%;animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+
+/* RECORTADOR DE IMAGEN */
+#modal-cropper{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9500;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:20px}
+#modal-cropper.visible{display:flex}
+.cropper-titulo{font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:white}
+.cropper-wrap{position:relative;overflow:hidden;background:#111;border:2px solid var(--rojo);border-radius:6px;cursor:move;user-select:none}
+.cropper-img{position:absolute;transform-origin:0 0;pointer-events:none}
+.cropper-overlay{position:absolute;inset:0;box-shadow:inset 0 0 0 2px rgba(255,255,255,.3)}
+.cropper-hint{font-size:12px;color:rgba(255,255,255,.5);text-align:center}
+.cropper-acciones{display:flex;gap:10px}
+.cropper-btn{font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 20px;border:none;border-radius:4px;cursor:pointer}
+.cropper-btn-ok{background:var(--rojo);color:white}
+.cropper-btn-cancel{background:rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+
 /* RESPONSIVE */
 @media(max-width:600px){
   .sidebar{width:100%;height:180px;border-right:none;border-bottom:1px solid var(--gris-borde)}
@@ -378,9 +392,15 @@ header{
         </select>
       </div>
       <div class="form-campo">
-        <label class="form-label">URL imagen principal</label>
-        <input class="form-input" id="f-imagen" placeholder="https://...">
-        <div class="form-hint">Puedes subir fotos desde la ficha</div>
+        <label class="form-label">Imagen principal</label>
+        <div id="f-imagen-preview" style="display:none;margin-bottom:6px">
+          <img id="f-imagen-preview-img" src="" style="width:100%;height:80px;object-fit:cover;border-radius:6px">
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button type="button" onclick="document.getElementById('input-imagen-principal').click()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:var(--texto);padding:7px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap">📷 Subir imagen</button>
+          <span id="f-imagen-nombre" style="font-size:11px;color:var(--texto-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Sin imagen seleccionada</span>
+        </div>
+        <input type="hidden" id="f-imagen">
       </div>
     </div>
     <div class="form-acciones">
@@ -398,6 +418,22 @@ header{
 <div id="toast"></div>
 
 <!-- INPUT OCULTOS PARA SUBIDA -->
+
+<!-- RECORTADOR DE IMAGEN -->
+<div id="modal-cropper">
+  <div class="cropper-titulo" id="cropper-titulo">Ajustar encuadre de la imagen</div>
+  <div class="cropper-wrap" id="cropper-wrap" style="width:480px;height:270px">
+    <img id="cropper-img" class="cropper-img" src="">
+    <div class="cropper-overlay"></div>
+  </div>
+  <div class="cropper-hint">Arrastra la imagen para elegir el encuadre · Rueda del ratón para zoom</div>
+  <div class="cropper-acciones">
+    <button class="cropper-btn cropper-btn-cancel" onclick="cancelarCropper()">Cancelar</button>
+    <button class="cropper-btn cropper-btn-ok" onclick="confirmarCropper()">✓ Usar este encuadre</button>
+  </div>
+</div>
+
+<input type="file" id="input-imagen-principal" accept="image/*" style="display:none">
 <input type="file" id="input-foto" accept="image/*" multiple style="display:none">
 <input type="file" id="input-doc" accept=".pdf,.doc,.docx" style="display:none">
 
@@ -636,32 +672,37 @@ function iniciarSubidaFoto(id){
   document.getElementById('input-foto').click();
 }
 
-document.getElementById('input-foto').addEventListener('change', async function(){
+document.getElementById('input-foto').addEventListener('change', function(){
   const files = Array.from(this.files);
   if(!files.length) return;
-  mostrarToast('📤 Subiendo fotos...',10000);
-  const b = edificios.find(x=>x.id===subiendoParaId);
-  const fotos = Array.isArray(b.fotos)?[...b.fotos]:[];
-
-  for(const file of files){
-    const ext = file.name.split('.').pop();
-    const path = `${subiendoParaId}/${Date.now()}.${ext}`;
-    try {
-      const r = await fetch(`${SB}/storage/v1/object/patrimonio-fotos/${path}`,{
-        method:'POST',
-        headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':file.type},
-        body:file
-      });
-      if(r.ok){
-        const url = `${SB}/storage/v1/object/public/patrimonio-fotos/${path}`;
-        fotos.push({url,path});
-      }
-    } catch(e){}
-  }
-
-  await actualizarCampo(subiendoParaId,{fotos});
-  mostrarToast('✅ Fotos subidas correctamente');
-  mostrarFicha(subiendoParaId);
+  // Procesar fotos una a una con cropper (4:3)
+  let idx = 0;
+  const procesarSiguiente = () => {
+    if(idx >= files.length) return;
+    const file = files[idx++];
+    abrirCropper(file, 480, 360, 'Ajustar foto ' + idx + ' de ' + files.length, async croppedFile => {
+      mostrarToast('📤 Subiendo foto ' + idx + '/' + files.length + '...', 10000);
+      const b = edificios.find(x=>x.id===subiendoParaId);
+      const fotos = Array.isArray(b.fotos)?[...b.fotos]:[];
+      const path = `${subiendoParaId}/${Date.now()}.jpg`;
+      try {
+        const r = await fetch(`${SB}/storage/v1/object/patrimonio-fotos/${path}`,{
+          method:'POST',
+          headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':'image/jpeg'},
+          body:croppedFile
+        });
+        if(r.ok){
+          const url = `${SB}/storage/v1/object/public/patrimonio-fotos/${path}`;
+          fotos.push({url,path});
+          await actualizarCampo(subiendoParaId,{fotos});
+          mostrarToast('✅ Foto añadida');
+          mostrarFicha(subiendoParaId);
+        }
+      } catch(e){ mostrarToast('❌ Error al subir foto'); }
+      procesarSiguiente();
+    });
+  };
+  procesarSiguiente();
   this.value='';
 });
 
@@ -762,6 +803,14 @@ function abrirFormEditar(){
   document.getElementById('f-plan-e').value = b.plan_emergencia||'pendiente';
   document.getElementById('f-planos').value = b.planos||'pendiente';
   document.getElementById('f-imagen').value = b.imagen_url||'';
+  if(b.imagen_url){
+    document.getElementById('f-imagen-preview-img').src = b.imagen_url;
+    document.getElementById('f-imagen-preview').style.display = 'block';
+    document.getElementById('f-imagen-nombre').textContent = 'Imagen actual';
+  } else {
+    document.getElementById('f-imagen-preview').style.display = 'none';
+    document.getElementById('f-imagen-nombre').textContent = 'Sin imagen seleccionada';
+  }
   document.getElementById('modal-form').classList.add('visible');
 }
 
@@ -774,6 +823,8 @@ function limpiarForm(){
     document.getElementById(id).value='';
   });
   document.getElementById('f-prioridad').value='A';
+  document.getElementById('f-imagen-preview').style.display='none';
+  document.getElementById('f-imagen-nombre').textContent='Sin imagen seleccionada';
   document.getElementById('f-plan-s').value='pendiente';
   document.getElementById('f-plan-e').value='pendiente';
   document.getElementById('f-planos').value='pendiente';
@@ -954,6 +1005,158 @@ function editarOLogin(){
 // ============================================
 // INICIO
 // ============================================
+
+
+// ============================================
+// RECORTADOR DE IMAGEN UNIVERSAL
+// ============================================
+let cropperState = {
+  imgEl: null, wrapEl: null,
+  x: 0, y: 0, scale: 1,
+  dragging: false, startX: 0, startY: 0,
+  onConfirm: null, // callback(canvas)
+  file: null, originalUrl: null
+};
+
+function abrirCropper(file, wrapW, wrapH, titulo, onConfirm){
+  cropperState.onConfirm = onConfirm;
+  cropperState.file = file;
+  cropperState.x = 0; cropperState.y = 0; cropperState.scale = 1;
+
+  const wrap = document.getElementById('cropper-wrap');
+  wrap.style.width = wrapW + 'px';
+  wrap.style.height = wrapH + 'px';
+  document.getElementById('cropper-titulo').textContent = titulo || 'Ajustar encuadre';
+
+  const url = URL.createObjectURL(file);
+  cropperState.originalUrl = url;
+  const img = document.getElementById('cropper-img');
+  img.onload = () => {
+    // Escala inicial: cubrir el área
+    const scaleX = wrapW / img.naturalWidth;
+    const scaleY = wrapH / img.naturalHeight;
+    cropperState.scale = Math.max(scaleX, scaleY);
+    // Centrar
+    cropperState.x = (wrapW - img.naturalWidth * cropperState.scale) / 2;
+    cropperState.y = (wrapH - img.naturalHeight * cropperState.scale) / 2;
+    aplicarTransform();
+  };
+  img.src = url;
+  document.getElementById('modal-cropper').classList.add('visible');
+}
+
+function aplicarTransform(){
+  const img = document.getElementById('cropper-img');
+  const wrap = document.getElementById('cropper-wrap');
+  const wW = wrap.offsetWidth, wH = wrap.offsetHeight;
+  const iW = img.naturalWidth * cropperState.scale;
+  const iH = img.naturalHeight * cropperState.scale;
+  // Limitar para que no queden bordes vacíos
+  cropperState.x = Math.min(0, Math.max(wW - iW, cropperState.x));
+  cropperState.y = Math.min(0, Math.max(wH - iH, cropperState.y));
+  img.style.transform = `translate(${cropperState.x}px, ${cropperState.y}px) scale(${cropperState.scale})`;
+}
+
+// Drag
+document.getElementById('cropper-wrap').addEventListener('mousedown', e => {
+  cropperState.dragging = true;
+  cropperState.startX = e.clientX - cropperState.x;
+  cropperState.startY = e.clientY - cropperState.y;
+  e.preventDefault();
+});
+document.addEventListener('mousemove', e => {
+  if(!cropperState.dragging) return;
+  cropperState.x = e.clientX - cropperState.startX;
+  cropperState.y = e.clientY - cropperState.startY;
+  aplicarTransform();
+});
+document.addEventListener('mouseup', () => cropperState.dragging = false);
+
+// Touch support
+document.getElementById('cropper-wrap').addEventListener('touchstart', e => {
+  cropperState.dragging = true;
+  cropperState.startX = e.touches[0].clientX - cropperState.x;
+  cropperState.startY = e.touches[0].clientY - cropperState.y;
+  e.preventDefault();
+},{passive:false});
+document.addEventListener('touchmove', e => {
+  if(!cropperState.dragging) return;
+  cropperState.x = e.touches[0].clientX - cropperState.startX;
+  cropperState.y = e.touches[0].clientY - cropperState.startY;
+  aplicarTransform();
+},{passive:false});
+document.addEventListener('touchend', () => cropperState.dragging = false);
+
+// Zoom con rueda
+document.getElementById('cropper-wrap').addEventListener('wheel', e => {
+  e.preventDefault();
+  const wrap = document.getElementById('cropper-wrap');
+  const img = document.getElementById('cropper-img');
+  const delta = e.deltaY > 0 ? -0.05 : 0.05;
+  const minScale = Math.max(wrap.offsetWidth / img.naturalWidth, wrap.offsetHeight / img.naturalHeight);
+  cropperState.scale = Math.max(minScale, Math.min(4, cropperState.scale + delta));
+  aplicarTransform();
+},{passive:false});
+
+function cancelarCropper(){
+  document.getElementById('modal-cropper').classList.remove('visible');
+  URL.revokeObjectURL(cropperState.originalUrl);
+  cropperState.onConfirm = null;
+}
+
+async function confirmarCropper(){
+  const img = document.getElementById('cropper-img');
+  const wrap = document.getElementById('cropper-wrap');
+  const wW = wrap.offsetWidth, wH = wrap.offsetHeight;
+  // Crear canvas con el encuadre seleccionado
+  const canvas = document.createElement('canvas');
+  canvas.width = wW * 2; canvas.height = wH * 2; // 2x para calidad
+  const ctx = canvas.getContext('2d');
+  const scale = cropperState.scale;
+  const sx = -cropperState.x / scale;
+  const sy = -cropperState.y / scale;
+  const sw = wW / scale;
+  const sh = wH / scale;
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+  // Convertir a blob
+  canvas.toBlob(blob => {
+    const croppedFile = new File([blob], cropperState.file.name, {type:'image/jpeg'});
+    document.getElementById('modal-cropper').classList.remove('visible');
+    URL.revokeObjectURL(cropperState.originalUrl);
+    if(cropperState.onConfirm) cropperState.onConfirm(croppedFile);
+  }, 'image/jpeg', 0.92);
+}
+
+// SUBIDA IMAGEN PRINCIPAL EDIFICIO
+let subiendoImagenParaId = null;
+
+document.getElementById('input-imagen-principal').addEventListener('change', function(){
+  const file = this.files[0];
+  if(!file) return;
+  // Abrir recortador 16:9 para imagen principal del edificio
+  abrirCropper(file, 480, 270, 'Ajustar imagen del edificio', async croppedFile => {
+    mostrarToast('📤 Subiendo imagen...', 10000);
+    const edificioId = editandoId || 'nuevo';
+    const path = `edificios/${edificioId}_${Date.now()}.jpg`;
+    try {
+      const r = await fetch(`${SB}/storage/v1/object/patrimonio-fotos/${path}`, {
+        method: 'POST',
+        headers: {'apikey': KEY, 'Authorization': 'Bearer ' + TOKEN, 'Content-Type': 'image/jpeg'},
+        body: croppedFile
+      });
+      if(r.ok){
+        const url = `${SB}/storage/v1/object/public/patrimonio-fotos/${path}`;
+        document.getElementById('f-imagen').value = url;
+        document.getElementById('f-imagen-nombre').textContent = file.name;
+        document.getElementById('f-imagen-preview-img').src = url;
+        document.getElementById('f-imagen-preview').style.display = 'block';
+        mostrarToast('✅ Imagen subida correctamente');
+      } else { mostrarToast('❌ Error al subir la imagen'); }
+    } catch(e){ mostrarToast('❌ Error de conexión'); }
+  });
+  this.value = '';
+});
+
 detectarSesion();
 cargarDatos();
 </script>

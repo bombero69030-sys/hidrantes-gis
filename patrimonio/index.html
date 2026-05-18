@@ -258,7 +258,7 @@ header{
 </div>
 
 <!-- BOTÓN EDITAR FLOTANTE -->
-<button class="btn-editar-ficha" id="btn-editar-flotante" onclick="abrirFormEditar()">
+<button class="btn-editar-ficha" id="btn-editar-flotante" onclick="editarOLogin()">
   ✏️ Editar ficha
 </button>
 
@@ -486,7 +486,7 @@ function renderizarLista(lista){
   const arr = lista || edificios;
   const el = document.getElementById('lista');
   el.innerHTML = arr.map(b=>`
-    <div class="edificio-card${seleccionado===b.id?' activo':''}" onclick="abrirFichas('${b.id}')">
+    <div class="edificio-card${seleccionado===b.id?' activo':''}" onclick="mostrarFicha('${b.id}')">
       ${b.imagen_url
         ? `<img class="edificio-img" src="${b.imagen_url}" alt="${b.nombre}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
         : ''}
@@ -576,6 +576,11 @@ function mostrarFicha(id){
           ${badgePrior}
           ${b.contacto?`<span class="fbadge" style="background:rgba(255,255,255,0.06);color:var(--texto-muted)">📞 ${b.contacto}</span>`:''}
         </div>
+        <div style="margin-top:12px">
+          <button onclick="abrirFichas('${b.id}')" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--texto);padding:7px 16px;border-radius:6px;font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:.05em;cursor:pointer;text-transform:uppercase">
+            📋 Ver ficha completa
+          </button>
+        </div>
       </div>
 
       ${galeriaHTML}
@@ -619,10 +624,8 @@ function mostrarFicha(id){
     </div>
   `;
 
-  // Mostrar botón editar flotante
-  if(USUARIO){
-    document.getElementById('btn-editar-flotante').style.display='flex';
-  }
+  // Mostrar botón flotante siempre que hay edificio seleccionado
+  document.getElementById('btn-editar-flotante').style.display='flex';
 }
 
 // ============================================
@@ -938,6 +941,14 @@ function mostrarToast(msg,dur=2500){
 
 function abrirFichas(id){
   window.location.href = '../fichas/index.html?id=' + id;
+}
+
+function editarOLogin(){
+  if(USUARIO){
+    abrirFormEditar();
+  } else {
+    abrirLogin();
+  }
 }
 
 // ============================================

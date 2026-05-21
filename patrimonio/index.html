@@ -545,7 +545,8 @@ async function cargarDatos(){
     edificios = SEED.map((s,i)=>({...s,id:'local-'+i}));
   }
   renderizarLista();
-  if(edificios.length>0) mostrarFicha(edificios[0].id);
+  // En móvil no seleccionar automáticamente — mostrar la lista primero
+  if(edificios.length>0 && !esMobil()) mostrarFicha(edificios[0].id);
 }
 
 async function sembrarDatos(){
@@ -984,20 +985,26 @@ function mostrarFichaMovil(id){
   if(!esMobil()) return;
   document.querySelector('.sidebar').classList.add('oculto-movil');
   document.querySelector('.main').classList.add('visible-movil');
-  // Añadir botón volver si no existe
-  if(!document.getElementById('btn-volver-lista')){
-    const btnVolver = document.createElement('button');
-    btnVolver.id = 'btn-volver-lista';
-    btnVolver.innerHTML = '← Lista de edificios';
-    btnVolver.style.cssText = 'display:block;width:100%;padding:12px 16px;background:var(--gris-borde);border:none;color:var(--texto);font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;text-align:left';
-    btnVolver.onclick = volverListaMovil;
-    document.querySelector('.main').prepend(btnVolver);
+  // Mostrar botón volver en header
+  let btnV = document.getElementById('btn-volver-movil-header');
+  if(!btnV){
+    btnV = document.createElement('button');
+    btnV.id = 'btn-volver-movil-header';
+    btnV.innerHTML = '← Lista';
+    btnV.style.cssText = 'background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:5px 12px;border-radius:6px;font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.04em;cursor:pointer;order:-1';
+    btnV.onclick = volverListaMovil;
+    document.querySelector('.header-right').prepend(btnV);
   }
+  btnV.style.display = 'inline-block';
 }
 
 function volverListaMovil(){
   document.querySelector('.sidebar').classList.remove('oculto-movil');
   document.querySelector('.main').classList.remove('visible-movil');
+  const btnV = document.getElementById('btn-volver-movil-header');
+  if(btnV) btnV.style.display = 'none';
+  seleccionado = null;
+  renderizarLista();
 }
 
 // ============================================

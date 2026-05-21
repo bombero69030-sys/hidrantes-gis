@@ -46,7 +46,7 @@ header{
 .btn-nuevo-header:hover{background:#F8F9FA}
 
 /* LAYOUT */
-.app{display:flex;flex:1;overflow:hidden;height:calc(100vh - 56px)}
+.app{display:flex;flex:1;overflow:hidden;height:calc(100vh - 56px);position:relative}
 
 /* SIDEBAR */
 .sidebar{width:300px;background:var(--gris-panel);border-right:1px solid var(--gris-borde);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
@@ -236,37 +236,44 @@ header{
   .usuario-badge{font-size:10px;padding:3px 8px}
   .btn-login-header,.btn-nuevo-header{font-size:11px;padding:5px 10px}
 
-  /* LAYOUT — stack vertical */
-  .app{flex-direction:column;height:calc(100vh - 80px)}
+  /* LAYOUT — pantalla completa */
+  .app{flex-direction:column;height:calc(100vh - 90px)}
 
-  /* SIDEBAR → lista horizontal scrollable */
+  /* SIDEBAR — lista vertical a pantalla completa */
   .sidebar{
     width:100%!important;
-    height:auto!important;
+    height:100%!important;
     border-right:none!important;
-    border-bottom:1px solid var(--gris-borde)!important;
-    flex-direction:row!important;
-    overflow-x:auto!important;
-    overflow-y:hidden!important;
+    overflow-y:auto!important;
     flex-shrink:0!important;
-    padding:6px!important;
-    gap:6px!important;
+    position:absolute!important;
+    top:0;left:0;right:0;bottom:0!important;
+    z-index:10!important;
+    transition:transform 0.3s ease!important;
   }
-  .sidebar-search{display:none}
-  .edificio-card{
-    min-width:140px!important;
-    max-width:160px!important;
-    margin-bottom:0!important;
-    flex-shrink:0!important;
+  .sidebar.oculto-movil{
+    transform:translateX(-100%)!important;
+    pointer-events:none!important;
   }
-  .edificio-img,.edificio-placeholder{height:70px!important}
-  .edificio-info{padding:6px 8px!important}
-  .edificio-nombre{font-size:11px!important}
+  .sidebar-search{display:flex;padding:10px}
+  .edificio-card{margin-bottom:8px}
+  .edificio-img,.edificio-placeholder{height:120px}
+  .edificio-nombre{font-size:14px}
 
-  /* CONTENIDO */
-  .main{flex:1;overflow-y:auto}
-  .ficha{padding:12px}
-  .ficha-nombre{font-size:20px}
+  /* CONTENIDO — pantalla completa cuando sidebar oculto */
+  .main{
+    width:100%!important;
+    position:absolute!important;
+    top:0;left:0;right:0;bottom:0!important;
+    overflow-y:auto!important;
+    transform:translateX(100%)!important;
+    transition:transform 0.3s ease!important;
+  }
+  .main.visible-movil{
+    transform:translateX(0)!important;
+  }
+  .ficha{padding:14px}
+  .ficha-nombre{font-size:22px}
   .ops-grid{grid-template-columns:1fr}
   .ops-card.full{grid-column:span 1}
   .estado-docs{grid-template-columns:1fr 1fr}
@@ -602,6 +609,7 @@ function mostrarFicha(id){
   if(!b) return;
   seleccionado = id;
   renderizarLista();
+  if(esMobil()) mostrarFichaMovil(id);
 
   const hidrantes = Array.isArray(b.hidrantes)?b.hidrantes:[];
   const riesgos = Array.isArray(b.riesgos)?b.riesgos:[];
@@ -964,6 +972,32 @@ async function actualizarCampo(id, datos){
       if(idx>=0) edificios[idx]={...edificios[idx],...updated};
     }
   } catch(e){}
+}
+
+
+// ============================================
+// NAVEGACIÓN MÓVIL
+// ============================================
+function esMobil(){ return window.innerWidth <= 700; }
+
+function mostrarFichaMovil(id){
+  if(!esMobil()) return;
+  document.querySelector('.sidebar').classList.add('oculto-movil');
+  document.querySelector('.main').classList.add('visible-movil');
+  // Añadir botón volver si no existe
+  if(!document.getElementById('btn-volver-lista')){
+    const btnVolver = document.createElement('button');
+    btnVolver.id = 'btn-volver-lista';
+    btnVolver.innerHTML = '← Lista de edificios';
+    btnVolver.style.cssText = 'display:block;width:100%;padding:12px 16px;background:var(--gris-borde);border:none;color:var(--texto);font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;text-align:left';
+    btnVolver.onclick = volverListaMovil;
+    document.querySelector('.main').prepend(btnVolver);
+  }
+}
+
+function volverListaMovil(){
+  document.querySelector('.sidebar').classList.remove('oculto-movil');
+  document.querySelector('.main').classList.remove('visible-movil');
 }
 
 // ============================================

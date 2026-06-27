@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>SITAC · Portal Bomberos Los Palacios</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --rojo:#C0392B;--rojo-dark:#7B241C;--rojo-glow:rgba(192,57,43,0.3);
+  --purpura:#6C3483;--azul:#1A5276;--verde:#1E8449;--naranja:#E67E22;
+  --gris-fondo:#0D0F12;--gris-panel:#161A1F;--gris-panel2:#1E232B;
+  --gris-borde:#2A2F38;--gris-borde2:#353C47;
+  --texto:#F0F2F5;--texto-muted:#8892A0;--texto-dim:#5A6475;
+  --font-display:'Barlow Condensed',sans-serif;
+  --font-body:'Barlow',sans-serif;
+  /* Colores tácticos */
+  --tac-inc:#E74C3C;--tac-agua:#2E86C1;--tac-nbq:#D4A017;
+  --tac-mando:#7D3C98;--tac-verde:#1E8449;--tac-gris:#6D7680;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font-body);background:var(--gris-fondo);color:var(--texto);display:flex;flex-direction:column}
+
+/* ── HEADER ── */
+header{
+  background:var(--rojo-dark);border-bottom:3px solid var(--rojo);
+  padding:0 16px;height:56px;display:flex;align-items:center;gap:10px;
+  flex-shrink:0;z-index:1000;position:relative;
+}
+.btn-back{
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);
+  color:white;padding:6px 14px;border-radius:6px;font-family:var(--font-display);
+  font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;
+  display:flex;align-items:center;gap:6px;transition:all 0.2s;letter-spacing:.03em;flex-shrink:0;
+}
+.btn-back:hover{background:rgba(255,255,255,0.2)}
+.header-titulo{font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:.06em;color:white;text-transform:uppercase}
+.header-titulo span{color:#F1948A}
+
+.header-search{display:flex;gap:6px;flex:1;max-width:380px;margin-left:8px}
+.header-search input{
+  flex:1;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);
+  border-radius:6px;color:white;padding:6px 12px;font-family:var(--font-body);
+  font-size:13px;outline:none;
+}
+.header-search input:focus{border-color:rgba(255,255,255,0.5)}
+.header-search input::placeholder{color:rgba(255,255,255,0.35)}
+.header-search button{
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);
+  color:white;padding:6px 12px;border-radius:6px;font-family:var(--font-display);
+  font-size:12px;font-weight:600;letter-spacing:.04em;cursor:pointer;white-space:nowrap;transition:all 0.2s;
+}
+.header-search button:hover{background:rgba(255,255,255,0.22)}
+
+.header-tools{margin-left:auto;display:flex;gap:6px;align-items:center}
+.hbtn{
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);
+  color:rgba(255,255,255,0.65);padding:5px 12px;border-radius:6px;
+  font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:.05em;
+  text-transform:uppercase;cursor:pointer;transition:all 0.2s;white-space:nowrap;
+}
+.hbtn:hover{background:rgba(255,255,255,0.15);color:white}
+.hbtn.active{background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.4);color:white}
+.hbtn.sv{border-color:rgba(30,132,73,0.5);color:#58D68D}
+.hbtn.sv:hover{background:rgba(30,132,73,0.15)}
+.hbtn.peligro{border-color:rgba(192,57,43,0.5);color:#EC7063}
+.hbtn.peligro:hover{background:rgba(192,57,43,0.15)}
+
+/* ── LAYOUT ── */
+.app{display:flex;flex:1;overflow:hidden;position:relative}
+
+/* ── MAPA ── */
+#map{flex:1;z-index:1}
+
+/* ── PANEL LATERAL ── */
+#panel{
+  width:240px;background:var(--gris-panel);border-left:1px solid var(--gris-borde);
+  display:flex;flex-direction:column;overflow:hidden;z-index:100;
+  flex-shrink:0;transition:transform 0.25s ease;
+}
+#panel.collapsed{transform:translateX(240px)}
+
+/* toggle */
+#panel-toggle{
+  position:absolute;right:240px;top:50%;transform:translateY(-50%);
+  z-index:200;background:var(--gris-panel);border:1px solid var(--gris-borde);
+  border-right:none;padding:10px 5px;cursor:pointer;
+  border-radius:6px 0 0 6px;color:var(--texto-muted);
+  font-size:11px;letter-spacing:.04em;
+  transition:right 0.25s;writing-mode:vertical-rl;
+}
+#panel-toggle.collapsed{right:0}
+
+/* tabs del panel */
+.panel-tabs{display:flex;border-bottom:1px solid var(--gris-borde);flex-shrink:0}
+.ptab{
+  flex:1;padding:9px 4px;text-align:center;
+  font-family:var(--font-display);font-size:11px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--texto-dim);cursor:pointer;
+  border-bottom:2px solid transparent;transition:all 0.2s;
+}
+.ptab:hover{color:var(--texto-muted)}
+.ptab.active{color:var(--rojo);border-bottom-color:var(--rojo)}
+
+.panel-body{flex:1;overflow-y:auto;padding:10px 8px}
+.panel-body::-webkit-scrollbar{width:3px}
+.panel-body::-webkit-scrollbar-thumb{background:var(--gris-borde2);border-radius:2px}
+
+/* ── SECCIONES DEL PANEL ── */
+.sec-titulo{
+  font-family:var(--font-display);font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--rojo);
+  margin:12px 0 6px;padding-bottom:5px;border-bottom:1px solid var(--gris-borde);
+}
+.sec-titulo:first-child{margin-top:4px}
+
+/* ── MODOS ── */
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.mode-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;padding:10px 6px;border-radius:6px;
+  border:1px solid var(--gris-borde);background:var(--gris-panel2);
+  cursor:pointer;font-family:var(--font-display);font-size:11px;font-weight:600;
+  letter-spacing:.04em;color:var(--texto-muted);transition:all 0.2s;text-align:center;
+  min-height:58px;
+}
+.mode-btn:hover{border-color:var(--gris-borde2);color:var(--texto)}
+.mode-btn.active{border-color:var(--rojo);background:rgba(192,57,43,0.12);color:var(--texto)}
+
+/* ── SÍMBOLOS ── */
+.sym-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:4px}
+.sym-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;padding:8px 4px;border-radius:6px;
+  border:1px solid var(--gris-borde);background:var(--gris-panel2);
+  cursor:pointer;font-family:var(--font-display);font-size:10px;font-weight:600;
+  letter-spacing:.03em;color:var(--texto-muted);line-height:1.2;
+  text-align:center;transition:all 0.15s;min-height:54px;
+}
+.sym-btn:hover{border-color:var(--gris-borde2);background:rgba(255,255,255,0.04)}
+.sym-btn.active{border-color:var(--rojo);background:rgba(192,57,43,0.1);color:var(--texto)}
+
+/* ── PARQUE SELECT ── */
+.parque-select{
+  width:100%;background:var(--gris-panel2);border:1px solid var(--gris-borde2);
+  border-radius:6px;color:var(--texto);padding:7px 10px;
+  font-family:var(--font-body);font-size:12px;margin-bottom:6px;
+}
+.parque-select:focus{outline:none;border-color:var(--rojo)}
+
+/* instrucciones */
+.instrucciones{
+  font-size:11px;color:var(--texto-dim);line-height:1.8;
+  padding:6px 0;
+}
+.instrucciones b{font-weight:600}
+
+/* ── STATUS BAR ── */
+#statusbar{
+  padding:5px 16px;font-family:var(--font-display);font-size:11px;
+  letter-spacing:.05em;text-transform:uppercase;
+  color:var(--texto-dim);background:var(--gris-panel);
+  border-top:1px solid var(--gris-borde);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  flex-shrink:0;
+}
+#statusbar b{color:var(--rojo);font-weight:700}
+
+/* ── LEAFLET OVERRIDES ── */
+.leaflet-control-attribution{font-size:9px!important;background:rgba(0,0,0,0.6)!important;color:#555!important}
+.leaflet-popup-content-wrapper{
+  background:var(--gris-panel);border:1px solid var(--gris-borde2);
+  border-radius:8px;color:var(--texto);box-shadow:0 8px 32px rgba(0,0,0,0.5);
+}
+.leaflet-popup-tip{background:var(--gris-panel)}
+.leaflet-popup-content{margin:12px 16px}
+.popup-title{font-family:var(--font-display);font-size:15px;font-weight:700;letter-spacing:.04em;margin-bottom:3px}
+.popup-sub{font-size:12px;color:var(--texto-muted);margin-bottom:8px}
+.popup-del{
+  font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.05em;
+  text-transform:uppercase;color:#EC7063;border:none;background:none;cursor:pointer;padding:0;
+}
+.popup-del:hover{text-decoration:underline}
+
+/* sector label */
+.sector-label{
+  background:rgba(108,52,131,0.85);color:#D7BDE2;padding:3px 10px;
+  border-radius:4px;font-family:var(--font-display);font-size:12px;
+  font-weight:700;letter-spacing:.06em;border:1px solid rgba(163,125,196,0.5);
+  white-space:nowrap;
+}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:36px;left:50%;transform:translateX(-50%);
+  background:var(--gris-panel);color:var(--texto);padding:8px 18px;border-radius:30px;
+  font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:.04em;
+  z-index:9999;opacity:0;transition:opacity 0.25s;pointer-events:none;
+  white-space:nowrap;border:1px solid var(--gris-borde2);box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+#toast.show{opacity:1}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  header{height:auto;padding:8px 12px;flex-wrap:wrap;gap:6px}
+  .header-titulo{font-size:16px}
+  .header-search{max-width:100%;order:3;width:100%;margin-left:0}
+  .header-tools{gap:4px}
+  .hbtn{font-size:10px;padding:5px 8px}
+  #panel{width:200px}
+  #panel-toggle{right:200px}
+  #panel-toggle.collapsed{right:0}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="btn-back" href="../index.html">← Portal</a>
+  <div class="header-titulo">🗺️ SITAC <span>BPS</span></div>
+  <div class="header-search">
+    <input id="addr" type="text" placeholder="Dirección, municipio..." autocomplete="off"/>
+    <button onclick="buscar()">🔍 Buscar</button>
+  </div>
+  <div class="header-tools">
+    <button class="hbtn active" id="btn-sat" onclick="setLayer('sat')">Satélite</button>
+    <button class="hbtn" id="btn-map" onclick="setLayer('map')">Callejero</button>
+    <button class="hbtn sv" onclick="abrirSV()">👁 Street View</button>
+    <button class="hbtn peligro" onclick="confirmarLimpiar()">🗑 Borrar todo</button>
+  </div>
+</header>
+
+<div class="app">
+  <div id="map"></div>
+
+  <!-- toggle panel -->
+  <div id="panel-toggle" onclick="togglePanel()">▶ Panel</div>
+
+  <!-- panel lateral -->
+  <div id="panel">
+    <div class="panel-tabs">
+      <div class="ptab active" onclick="showTab('modos')">Modos</div>
+      <div class="ptab" onclick="showTab('simbolos')">Siniestro</div>
+      <div class="ptab" onclick="showTab('medios')">Medios</div>
+    </div>
+    <div class="panel-body">
+
+      <!-- TAB: MODOS -->
+      <div id="tab-modos">
+        <div class="sec-titulo">Modo de trabajo</div>
+        <div class="mode-grid">
+          <div class="mode-btn active" id="mode-place" onclick="setMode('place')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#C0392B" stroke-width="1.8"/><line x1="12" y1="6" x2="12" y2="18" stroke="#C0392B" stroke-width="1.8"/><line x1="6" y1="12" x2="18" y2="12" stroke="#C0392B" stroke-width="1.8"/></svg>
+            Colocar símbolo
+          </div>
+          <div class="mode-btn" id="mode-sector" onclick="setMode('sector')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#6C3483" stroke-width="1.8" stroke-dasharray="4,3"/></svg>
+            Sector
+          </div>
+          <div class="mode-btn" id="mode-line" onclick="setMode('line')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><line x1="4" y1="20" x2="20" y2="4" stroke="#E74C3C" stroke-width="2"/><polygon points="20,4 15,6 18,9" fill="#E74C3C"/></svg>
+            Línea acción
+          </div>
+          <div class="mode-btn" id="mode-del" onclick="setMode('del')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><polyline points="4,6 20,6" stroke="#EC7063" stroke-width="1.8"/><path d="M9,6V4.5Q9,3 10.5,3H13.5Q15,3 15,4.5V6M9,6 V19H15V6" fill="none" stroke="#EC7063" stroke-width="1.5"/></svg>
+            Eliminar
+          </div>
+        </div>
+
+        <div class="sec-titulo" style="margin-top:16px">Parque propio</div>
+        <select class="parque-select" id="parque-sel" onchange="setParque(this.value)">
+          <option value="">— Seleccionar parque —</option>
+          <option>ALCA - Alcalá de Guadaira</option>
+          <option>ARAH - Arahal</option>
+          <option>AZNA - Aznalcollar</option>
+          <option>CANT - Cantillana</option>
+          <option>CARM - Carmona</option>
+          <option>CAZA - Cazalla de la Sierra</option>
+          <option>COEP - Jefatura COEP</option>
+          <option>ECIJ - Écija</option>
+          <option>ESTE - Estepa</option>
+          <option>FUEN - Fuentes de Andalucía</option>
+          <option>GERE - Gerena</option>
+          <option>LEBR - Lebrija</option>
+          <option>LORA - Lora del Río</option>
+          <option>MONT - Montellano</option>
+          <option>MORO - Morón de la Frontera</option>
+          <option>OSUN - Osuna</option>
+          <option selected>PALA - Los Palacios y Villafranca</option>
+          <option>PILA - Pilas</option>
+          <option>RINC - La Rinconada</option>
+          <option>SANL - Sanlúcar la Mayor</option>
+          <option>SAUC - El Saucejo</option>
+          <option>SANT - Santiponce</option>
+          <option>UTRE - Utrera</option>
+          <option>ALJA - Mancomunidad Aljarafe</option>
+          <option>ALCO - Mairena del Alcor</option>
+        </select>
+
+        <div class="sec-titulo">Instrucciones</div>
+        <div class="instrucciones">
+          <b style="color:var(--rojo)">Colocar:</b> Selecciona símbolo → toca el mapa<br>
+          <b style="color:var(--purpura)">Sector:</b> Toca esquinas → doble toque para cerrar<br>
+          <b style="color:var(--tac-inc)">Línea:</b> Toca puntos → doble toque para terminar<br>
+          <b style="color:#EC7063">Eliminar:</b> Toca cualquier elemento
+        </div>
+      </div>
+
+      <!-- TAB: SINIESTRO -->
+      <div id="tab-simbolos" style="display:none">
+        <div class="sec-titulo">Tipo de siniestro</div>
+        <div class="sym-grid">
+          <div class="sym-btn active" id="sb-INC" onclick="setSym('INC','#E74C3C','Incendio')">
+            <svg width="26" height="24" viewBox="0 0 26 24"><polygon points="13,2 25,22 1,22" fill="#E74C3C" stroke="#922B21" stroke-width="1.2"/></svg>
+            Incendio
+          </div>
+          <div class="sym-btn" id="sb-EXPL" onclick="setSym('EXPL','#E74C3C','Explosión')">
+            <svg width="26" height="24" viewBox="0 0 26 24"><polygon points="13,2 25,22 1,22" fill="#E74C3C" stroke="#922B21" stroke-width="1.2"/><text x="13" y="19" text-anchor="middle" font-size="9" fill="white" font-weight="700">!</text></svg>
+            Explosión
+          </div>
+          <div class="sym-btn" id="sb-INUN" onclick="setSym('INUN','#2E86C1','Inundación')">
+            <svg width="26" height="24" viewBox="0 0 26 24"><path d="M1,9 Q6,1 13,9 Q20,17 25,9" fill="none" stroke="#2E86C1" stroke-width="2.5"/><path d="M1,17 Q6,9 13,17 Q20,25 25,17" fill="none" stroke="#1A5276" stroke-width="2"/></svg>
+            Inundación
+          </div>
+          <div class="sym-btn" id="sb-NBQ" onclick="setSym('NBQ','#D4A017','Riesgo NBQ')">
+            <svg width="26" height="24" viewBox="0 0 26 24"><polygon points="13,2 25,22 1,22" fill="#D4A017" stroke="#9A7109" stroke-width="1.2"/><text x="13" y="19" text-anchor="middle" font-size="7" fill="#1A0A00" font-weight="700">NBQ</text></svg>
+            Riesgo NBQ
+          </div>
+          <div class="sym-btn" id="sb-AACC" onclick="setSym('AACC','#6D7680','Acc. tráfico')">
+            <svg width="30" height="20" viewBox="0 0 30 20"><polygon points="3,18 3,10 7,5 23,5 27,10 27,18" fill="none" stroke="#6D7680" stroke-width="1.5"/><circle cx="9" cy="18" r="2.5" fill="none" stroke="#6D7680" stroke-width="1.5"/><circle cx="21" cy="18" r="2.5" fill="none" stroke="#6D7680" stroke-width="1.5"/></svg>
+            Acc. tráfico
+          </div>
+          <div class="sym-btn" id="sb-MMPP" onclick="setSym('MMPP','#D4A017','Merc. peligrosas')">
+            <svg width="30" height="20" viewBox="0 0 30 20"><rect x="1" y="4" width="26" height="12" rx="2" fill="none" stroke="#D4A017" stroke-width="1.5"/><ellipse cx="3" cy="16" rx="2.5" ry="2.5" fill="none" stroke="#D4A017" stroke-width="1.2"/><ellipse cx="27" cy="16" rx="2.5" ry="2.5" fill="none" stroke="#D4A017" stroke-width="1.2"/><text x="14" y="13" text-anchor="middle" font-size="6" fill="#D4A017" font-weight="700">MMPP</text></svg>
+            Merc. peligrosas
+          </div>
+        </div>
+
+        <div class="sec-titulo">Peligros y puntos sensibles</div>
+        <div class="sym-grid">
+          <div class="sym-btn" id="sb-PEL-INC" onclick="setSym('PEL-INC','#E74C3C','Peligro fuego')">
+            <svg width="26" height="24" viewBox="0 0 26 24"><polygon points="13,2 25,22 1,22" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="13" y="19" text-anchor="middle" font-size="12" fill="#E74C3C" font-weight="700">!</text></svg>
+            Peligro fuego
+          </div>
+          <div class="sym-btn" id="sb-PEL-NBQ" onclick="setSym('PEL-NBQ','#D4A017','Peligro NBQ')">
+            <svg width="26" height="24" viewBox="0 0 26 24"><polygon points="13,2 25,22 1,22" fill="none" stroke="#D4A017" stroke-width="2"/><text x="13" y="19" text-anchor="middle" font-size="12" fill="#D4A017" font-weight="700">!</text></svg>
+            Peligro NBQ
+          </div>
+          <div class="sym-btn" id="sb-PSH" onclick="setSym('PSH','#1E8449','Pt. sensible')">
+            <svg width="26" height="24" viewBox="0 0 26 24"><polygon points="13,22 1,2 25,2" fill="none" stroke="#1E8449" stroke-width="2"/><text x="13" y="17" text-anchor="middle" font-size="11" fill="#1E8449" font-weight="700">S</text></svg>
+            Pt. sensible
+          </div>
+          <div class="sym-btn" id="sb-H2O" onclick="setSym('H2O','#2E86C1','Hidrante')">
+            <svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#2E86C1"/><text x="12" y="16" text-anchor="middle" font-size="8" fill="white" font-weight="700">H₂O</text></svg>
+            Hidrante
+          </div>
+          <div class="sym-btn" id="sb-H2O-LIM" onclick="setSym('H2O-LIM','#2E86C1','Hidrante limitado')">
+            <svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="#2E86C1" stroke-width="2"/><path d="M2,12 Q12,4 22,12" fill="#2E86C1"/><text x="12" y="21" text-anchor="middle" font-size="7" fill="#2E86C1" font-weight="700">H₂O</text></svg>
+            Hidrante limit.
+          </div>
+          <div class="sym-btn" id="sb-ASP" onclick="setSym('ASP','#2E86C1','Pto. aspiración')">
+            <svg width="24" height="24" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2" fill="#2E86C1"/><text x="12" y="16" text-anchor="middle" font-size="8" fill="white" font-weight="700">ASP</text></svg>
+            Pto. aspiración
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: MEDIOS -->
+      <div id="tab-medios" style="display:none">
+        <div class="sec-titulo">Vehículos de bomberos</div>
+        <div class="sym-grid">
+          <div class="sym-btn" id="sb-BUL" onclick="setSym('BUL','#E74C3C','Autobomba Urbana Ligera')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">BUL</text></svg>
+            BUL
+          </div>
+          <div class="sym-btn" id="sb-BRP" onclick="setSym('BRP','#E74C3C','Autobomba Rural Pesada')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">BRP</text></svg>
+            BRP
+          </div>
+          <div class="sym-btn" id="sb-BUP" onclick="setSym('BUP','#E74C3C','Autobomba Urbana Pesada')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">BUP</text></svg>
+            BUP
+          </div>
+          <div class="sym-btn" id="sb-BFP" onclick="setSym('BFP','#E74C3C','Autobomba Forestal Pesada')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">BFP</text></svg>
+            BFP
+          </div>
+          <div class="sym-btn" id="sb-BNP" onclick="setSym('BNP','#2E86C1','Nodriza')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#2E86C1" stroke-width="2" stroke-dasharray="4,2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#2E86C1" font-weight="700">NOD</text></svg>
+            Nodriza
+          </div>
+          <div class="sym-btn" id="sb-BRA" onclick="setSym('BRA','#E74C3C','Autobrazo')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">BRA</text></svg>
+            Autobrazo
+          </div>
+          <div class="sym-btn" id="sb-FSV" onclick="setSym('FSV','#E74C3C','Furgón Salvamentos')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">FSV</text></svg>
+            FSV
+          </div>
+          <div class="sym-btn" id="sb-RNBQ" onclick="setSym('RNBQ','#D4A017','Remolque NBQ')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#D4A017" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#D4A017" font-weight="700">RNBQ</text></svg>
+            Remolque NBQ
+          </div>
+        </div>
+
+        <div class="sec-titulo">Mando y dispositivos</div>
+        <div class="sym-grid">
+          <div class="sym-btn" id="sb-UMJ" onclick="setSym('UMJ','#7D3C98','Unidad Mando Jefatura')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#7D3C98" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#7D3C98" font-weight="700">UMJ</text></svg>
+            Mando UMJ
+          </div>
+          <div class="sym-btn" id="sb-PMA" onclick="setSym('PMA','#7D3C98','Puesto Mando Avanzado')">
+            <svg width="42" height="24" viewBox="0 0 42 24"><rect x="1" y="1" width="40" height="22" rx="2" fill="none" stroke="#7D3C98" stroke-width="2.5"/><text x="21" y="16" text-anchor="middle" font-size="10" fill="#7D3C98" font-weight="700">PMA</text></svg>
+            PMA
+          </div>
+          <div class="sym-btn" id="sb-CRM" onclick="setSym('CRM','#7D3C98','Centro Recepción Medios')">
+            <svg width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="none" stroke="#7D3C98" stroke-width="2"/><line x1="15" y1="3" x2="27" y2="15" stroke="#7D3C98" stroke-width="1.5"/><text x="15" y="19" text-anchor="middle" font-size="8" fill="#7D3C98" font-weight="700">CRM</text></svg>
+            CRM
+          </div>
+          <div class="sym-btn" id="sb-PAS" onclick="setSym('PAS','#1E8449','Puesto Asistencia Sanitaria')">
+            <svg width="42" height="24" viewBox="0 0 42 24"><rect x="1" y="1" width="40" height="22" rx="2" fill="none" stroke="#1E8449" stroke-width="2.5"/><text x="21" y="16" text-anchor="middle" font-size="10" fill="#1E8449" font-weight="700">PAS</text></svg>
+            PAS
+          </div>
+        </div>
+
+        <div class="sec-titulo">Otros servicios</div>
+        <div class="sym-grid">
+          <div class="sym-btn" id="sb-AMB" onclick="setSym('AMB','#1E8449','Ambulancia')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#1E8449" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#1E8449" font-weight="700">AMB</text></svg>
+            Ambulancia
+          </div>
+          <div class="sym-btn" id="sb-POL" onclick="setSym('POL','#6D7680','Policía')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#6D7680" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#6D7680" font-weight="700">POL</text></svg>
+            Policía
+          </div>
+          <div class="sym-btn" id="sb-GC" onclick="setSym('GC','#6D7680','Guardia Civil')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#6D7680" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#6D7680" font-weight="700">GC</text></svg>
+            Guardia Civil
+          </div>
+          <div class="sym-btn" id="sb-GRUA" onclick="setSym('GRUA','#6D7680','Grúa')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#6D7680" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#6D7680" font-weight="700">GRÚA</text></svg>
+            Grúa
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel-body -->
+  </div><!-- /panel -->
+</div><!-- /app -->
+
+<div id="statusbar">
+  Modo: <b id="status-mode">Colocar</b> &nbsp;·&nbsp; Símbolo: <b id="status-sym">Incendio</b> &nbsp;·&nbsp; Toca el mapa para colocar
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── ESTADO ──
+var map, satLayer, osmLayer;
+var mode = 'place';
+var currentSym = 'INC', currentColor = '#E74C3C', currentLabel = 'Incendio';
+var currentParque = 'PALA';
+var panelCollapsed = false;
+var placedItems = [];
+var sectorPoints = [], sectorPreview = null;
+var linePoints = [], linePreview = null;
+var itemCounter = 0;
+
+// ── INIT MAP ──
+function initMap(){
+  map = L.map('map',{
+    center:[37.1580,-5.9250],
+    zoom:15,
+    zoomControl:true,
+    doubleClickZoom:false,
+    attributionControl:true
+  });
+
+  satLayer = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {attribution:'© Esri World Imagery',maxZoom:19,maxNativeZoom:18}
+  );
+  osmLayer = L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {attribution:'© OpenStreetMap',maxZoom:19}
+  );
+
+  satLayer.addTo(map);
+
+  map.on('click', onMapClick);
+  map.on('dblclick', onMapDblClick);
+  map.on('mousemove', onMapMouseMove);
+}
+
+// ── CAPAS ──
+function setLayer(l){
+  if(l==='sat'){
+    satLayer.addTo(map); map.removeLayer(osmLayer);
+    document.getElementById('btn-sat').classList.add('active');
+    document.getElementById('btn-map').classList.remove('active');
+  } else {
+    osmLayer.addTo(map); map.removeLayer(satLayer);
+    document.getElementById('btn-map').classList.add('active');
+    document.getElementById('btn-sat').classList.remove('active');
+  }
+}
+
+// ── BÚSQUEDA ──
+function buscar(){
+  var q = document.getElementById('addr').value.trim();
+  if(!q) return;
+  fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(q+', Sevilla, España'),
+    {headers:{'Accept-Language':'es'}})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d&&d.length>0){
+        map.setView([parseFloat(d[0].lat),parseFloat(d[0].lon)],17);
+        toast('📍 '+d[0].display_name.split(',').slice(0,2).join(', '));
+      } else {
+        toast('No encontrado');
+      }
+    }).catch(function(){toast('Error de conexión');});
+}
+document.getElementById('addr').addEventListener('keydown',function(e){if(e.key==='Enter')buscar();});
+
+// ── STREET VIEW ──
+function abrirSV(){
+  var c = map.getCenter();
+  window.open('https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='+
+    c.lat.toFixed(6)+','+c.lng.toFixed(6)+'&heading=0&pitch=0&fov=90','_blank');
+}
+
+// ── MODO ──
+function setMode(m){
+  mode = m;
+  if(m!=='sector'){sectorPoints=[];if(sectorPreview){map.removeLayer(sectorPreview);sectorPreview=null;}}
+  if(m!=='line'){linePoints=[];if(linePreview){map.removeLayer(linePreview);linePreview=null;}}
+  ['place','sector','line','del'].forEach(function(x){
+    var b=document.getElementById('mode-'+x);
+    if(b) b.classList.toggle('active',x===m);
+  });
+  var msgs={
+    place:'Toca el mapa para colocar '+currentLabel,
+    sector:'Toca para definir vértices — doble toque para cerrar',
+    line:'Toca para trazar la línea — doble toque para terminar',
+    del:'Toca un elemento para eliminarlo'
+  };
+  setStatus(msgs[m]||'');
+  map.getContainer().style.cursor = m==='del' ? 'not-allowed' : 'crosshair';
+}
+
+// ── SÍMBOLO ──
+function setSym(sym,color,label){
+  currentSym=sym; currentColor=color; currentLabel=label;
+  document.querySelectorAll('.sym-btn').forEach(function(b){b.classList.remove('active');});
+  var b=document.getElementById('sb-'+sym);
+  if(b) b.classList.add('active');
+  if(mode!=='place') setMode('place');
+  else setStatus('Toca el mapa para colocar '+label);
+  // Cambiar a la pestaña correcta
+  var medios=['BUL','BRP','BUP','BFP','BNP','BRA','FSV','RNBQ','UMJ','PMA','CRM','PAS','AMB','POL','GC','GRUA'];
+  showTab(medios.indexOf(sym)>=0?'medios':'simbolos');
+}
+
+function setParque(val){
+  currentParque = val ? val.split(' - ')[0] : '';
+}
+
+// ── EVENTOS MAPA ──
+function onMapClick(e){
+  if(mode==='place') placeSymbol(e.latlng);
+  else if(mode==='sector') addSectorPoint(e.latlng);
+  else if(mode==='line') addLinePoint(e.latlng);
+}
+function onMapDblClick(e){
+  L.DomEvent.stop(e);
+  if(mode==='sector'&&sectorPoints.length>=3) closeSector();
+  if(mode==='line'&&linePoints.length>=2) closeLine();
+}
+function onMapMouseMove(e){
+  if(mode==='sector'&&sectorPoints.length>0){
+    var pts=sectorPoints.concat([e.latlng]);
+    if(sectorPreview) sectorPreview.setLatLngs(pts);
+    else sectorPreview=L.polygon(pts,{color:'#6C3483',fillOpacity:0.08,weight:1.5,dashArray:'5,4',interactive:false}).addTo(map);
+  }
+  if(mode==='line'&&linePoints.length>0){
+    var pts2=linePoints.concat([e.latlng]);
+    if(linePreview) linePreview.setLatLngs(pts2);
+    else linePreview=L.polyline(pts2,{color:currentColor,weight:2.5,opacity:0.6,interactive:false}).addTo(map);
+  }
+}
+
+// ── CONSTRUIR ICONO SVG ──
+function buildIcon(sym,color,parque){
+  var label = parque ? sym+' '+parque : sym;
+  var svg='';
+
+  if(sym==='INC'){
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="32" height="30"><polygon points="16,2 30,28 2,28" fill="'+color+'" stroke="#922B21" stroke-width="1.5"/></svg>';
+  } else if(sym==='EXPL'){
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="32" height="30"><polygon points="16,2 30,28 2,28" fill="'+color+'" stroke="#922B21" stroke-width="1.5"/><text x="16" y="24" text-anchor="middle" font-size="11" fill="white" font-weight="700" font-family="sans-serif">!</text></svg>';
+  } else if(sym==='INUN'){
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="34" height="28"><path d="M2,10 Q9,2 17,10 Q25,18 32,10" fill="none" stroke="#2E86C1" stroke-width="3"/><path d="M2,20 Q9,12 17,20 Q25,28 32,20" fill="none" stroke="#1A5276" stroke-width="2.5"/></svg>';
+  } else if(sym==='NBQ'||sym==='MMPP'){
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="32" height="30"><polygon points="16,2 30,28 2,28" fill="#D4A017" stroke="#9A7109" stroke-width="1.5"/><text x="16" y="24" text-anchor="middle" font-size="8" fill="#1A0A00" font-weight="700" font-family="sans-serif">NBQ</text></svg>';
+  } else if(sym==='H2O'){
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><circle cx="14" cy="14" r="12" fill="#2E86C1"/><text x="14" y="18" text-anchor="middle" font-size="9" fill="white" font-weight="700" font-family="sans-serif">H₂O</text></svg>';
+  } else if(sym==='H2O-LIM'){
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><circle cx="14" cy="14" r="12" fill="none" stroke="#2E86C1" stroke-width="2.5"/><path d="M2,14 Q14,4 26,14" fill="#2E86C1"/><text x="14" y="23" text-anchor="middle" font-size="8" fill="#2E86C1" font-weight="700" font-family="sans-serif">H₂O</text></svg>';
+  } else if(sym==='ASP'){
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><rect x="2" y="2" width="24" height="24" rx="3" fill="#2E86C1"/><text x="14" y="18" text-anchor="middle" font-size="9" fill="white" font-weight="700" font-family="sans-serif">ASP</text></svg>';
+  } else if(sym.startsWith('PEL')){
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="32" height="30"><polygon points="16,2 30,28 2,28" fill="none" stroke="'+color+'" stroke-width="2.5"/><text x="16" y="24" text-anchor="middle" font-size="14" fill="'+color+'" font-weight="700" font-family="sans-serif">!</text></svg>';
+  } else if(sym==='PSH'){
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="32" height="30"><polygon points="16,28 2,2 30,2" fill="none" stroke="'+color+'" stroke-width="2.5"/><text x="16" y="20" text-anchor="middle" font-size="12" fill="'+color+'" font-weight="700" font-family="sans-serif">S</text></svg>';
+  } else if(sym==='PMA'||sym==='PAS'){
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="44" height="26"><rect x="1" y="1" width="42" height="24" rx="2" fill="none" stroke="'+color+'" stroke-width="3"/><text x="22" y="17" text-anchor="middle" font-size="11" fill="'+color+'" font-weight="700" font-family="sans-serif">'+sym+'</text></svg>';
+  } else if(sym==='CRM'){
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"><circle cx="18" cy="18" r="15" fill="none" stroke="'+color+'" stroke-width="2.5"/><line x1="18" y1="3" x2="33" y2="18" stroke="'+color+'" stroke-width="1.5"/><text x="18" y="22" text-anchor="middle" font-size="9" fill="'+color+'" font-weight="700" font-family="sans-serif">CRM</text></svg>';
+  } else if(sym==='AACC'){
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="38" height="24"><polygon points="4,22 4,12 9,6 29,6 34,12 34,22" fill="none" stroke="'+color+'" stroke-width="1.8"/><circle cx="12" cy="22" r="3.5" fill="none" stroke="'+color+'" stroke-width="1.5"/><circle cx="26" cy="22" r="3.5" fill="none" stroke="'+color+'" stroke-width="1.5"/></svg>';
+  } else {
+    var w = label.length>6?52:44;
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="24"><rect x="1" y="2" width="'+(w-2)+'" height="20" rx="2" fill="none" stroke="'+color+'" stroke-width="2.2"/><text x="'+(w/2)+'" y="16" text-anchor="middle" font-size="9" fill="'+color+'" font-weight="700" font-family="sans-serif">'+label+'</text></svg>';
+  }
+
+  return L.divIcon({html:svg,className:'',iconAnchor:[16,16],popupAnchor:[0,-20]});
+}
+
+// ── COLOCAR SÍMBOLO ──
+function placeSymbol(latlng){
+  var parque = currentParque;
+  var icon = buildIcon(currentSym,currentColor,parque);
+  var id = ++itemCounter;
+  var marker = L.marker(latlng,{icon:icon,draggable:true}).addTo(map);
+  var displayLabel = parque ? currentLabel+' ('+parque+')' : currentLabel;
+  var symLabel = parque ? currentSym+' '+parque : currentSym;
+
+  marker.bindPopup(
+    '<div class="popup-title" style="color:'+currentColor+'">'+symLabel+'</div>'+
+    '<div class="popup-sub">'+currentLabel+'</div>'+
+    '<button class="popup-del" onclick="deleteItem('+id+')">🗑 Eliminar</button>'
+  );
+  marker.on('click',function(e){
+    if(mode==='del'){deleteItem(id);L.DomEvent.stop(e);return;}
+    marker.openPopup();
+  });
+  placedItems.push({type:'marker',layer:marker,id:id});
+  toast('✓ '+displayLabel+' colocado');
+}
+
+// ── SECTOR ──
+function addSectorPoint(latlng){
+  sectorPoints.push(latlng);
+  if(sectorPoints.length===1) toast('Sigue tocando para añadir vértices — doble toque para cerrar');
+}
+function closeSector(){
+  if(sectorPreview){map.removeLayer(sectorPreview);sectorPreview=null;}
+  var id=++itemCounter;
+  var poly=L.polygon(sectorPoints,{
+    color:'#6C3483',fillColor:'#6C3483',fillOpacity:0.1,weight:2,dashArray:'6,4'
+  }).addTo(map);
+  var name=prompt('Nombre del sector (ej: Sector Norte):','Sector '+id)||('Sector '+id);
+  var center=poly.getBounds().getCenter();
+  var labelMarker=L.marker(center,{
+    icon:L.divIcon({html:'<div class="sector-label">'+name+'</div>',className:'',iconAnchor:[0,10]}),
+    interactive:false
+  }).addTo(map);
+  poly.bindPopup('<div class="popup-title" style="color:#7D3C98">'+name+'</div><button class="popup-del" onclick="deleteItem('+id+')">🗑 Eliminar sector</button>');
+  poly.on('click',function(e){
+    if(mode==='del'){deleteItem(id);L.DomEvent.stop(e);return;}
+    poly.openPopup();
+  });
+  placedItems.push({type:'polygon',layer:poly,id:id,extra:labelMarker});
+  sectorPoints=[];
+  toast('✓ Sector "'+name+'" creado');
+}
+
+// ── LÍNEA ──
+function addLinePoint(latlng){
+  linePoints.push(latlng);
+  if(linePoints.length===1) toast('Sigue tocando para continuar — doble toque para terminar');
+}
+function closeLine(){
+  if(linePreview){map.removeLayer(linePreview);linePreview=null;}
+  var id=++itemCounter;
+  var poly=L.polyline(linePoints,{color:currentColor,weight:3,opacity:0.9}).addTo(map);
+  var n=linePoints.length;
+  if(n>=2){
+    var last=linePoints[n-1],prev=linePoints[n-2];
+    var angle=Math.atan2(last.lat-prev.lat,last.lng-prev.lng)*180/Math.PI;
+    L.marker(last,{
+      icon:L.divIcon({
+        html:'<div style="width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:16px solid '+currentColor+';transform:rotate('+(-angle-90)+'deg);transform-origin:8px 0;"></div>',
+        className:'',iconAnchor:[8,0]
+      }),interactive:false
+    }).addTo(map);
+  }
+  poly.on('click',function(e){if(mode==='del'){deleteItem(id);L.DomEvent.stop(e);}});
+  placedItems.push({type:'polyline',layer:poly,id:id});
+  linePoints=[];
+  toast('✓ Línea de acción trazada');
+}
+
+// ── ELIMINAR ──
+function deleteItem(id){
+  for(var i=0;i<placedItems.length;i++){
+    if(placedItems[i].id===id){
+      map.removeLayer(placedItems[i].layer);
+      if(placedItems[i].extra) map.removeLayer(placedItems[i].extra);
+      placedItems.splice(i,1);
+      map.closePopup();
+      toast('🗑 Elemento eliminado');
+      return;
+    }
+  }
+}
+
+// ── BORRAR TODO ──
+function confirmarLimpiar(){
+  if(placedItems.length===0){toast('El SITAC ya está vacío');return;}
+  if(!confirm('¿Borrar todos los elementos del SITAC?\n('+placedItems.length+' elementos)')) return;
+  placedItems.forEach(function(item){
+    map.removeLayer(item.layer);
+    if(item.extra) map.removeLayer(item.extra);
+  });
+  placedItems=[];
+  if(sectorPreview){map.removeLayer(sectorPreview);sectorPreview=null;}
+  if(linePreview){map.removeLayer(linePreview);linePreview=null;}
+  sectorPoints=[];linePoints=[];
+  toast('SITAC borrado');
+}
+
+// ── PANEL ──
+function togglePanel(){
+  panelCollapsed=!panelCollapsed;
+  document.getElementById('panel').classList.toggle('collapsed',panelCollapsed);
+  var tog=document.getElementById('panel-toggle');
+  tog.classList.toggle('collapsed',panelCollapsed);
+  tog.textContent=panelCollapsed?'◀ Panel':'▶ Panel';
+  setTimeout(function(){map.invalidateSize();},260);
+}
+
+// ── TABS ──
+function showTab(name){
+  ['modos','simbolos','medios'].forEach(function(t){
+    document.getElementById('tab-'+t).style.display=t===name?'':'none';
+  });
+  document.querySelectorAll('.ptab').forEach(function(el,i){
+    el.classList.toggle('active',['modos','simbolos','medios'][i]===name);
+  });
+}
+
+// ── STATUS ──
+function setStatus(msg){
+  var modeNames={place:'Colocar',sector:'Sector',line:'Línea',del:'Eliminar'};
+  document.getElementById('statusbar').innerHTML=
+    'Modo: <b id="status-mode">'+(modeNames[mode]||mode)+'</b> &nbsp;·&nbsp; '+
+    'Símbolo: <b id="status-sym">'+currentLabel+'</b> &nbsp;·&nbsp; '+msg;
+}
+
+// ── TOAST ──
+function toast(msg){
+  var el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(window._tT);
+  window._tT=setTimeout(function(){el.classList.remove('show');},2500);
+}
+
+// ── ARRANQUE ──
+window.addEventListener('load',function(){
+  initMap();
+  setMode('place');
+  // Seleccionar parque PALA por defecto
+  document.getElementById('parque-sel').value='PALA - Los Palacios y Villafranca';
+  setParque('PALA - Los Palacios y Villafranca');
+});
+</script>
+</body>
+</html>

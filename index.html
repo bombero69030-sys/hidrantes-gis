@@ -9,7 +9,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --rojo:#C0392B;--rojo-dark:#7B241C;--rojo-glow:rgba(192,57,43,0.4);
-  --naranja:#E67E22;--verde:#1E8449;--azul:#1A5276;
+  --naranja:#E67E22;--verde:#1E8449;--azul:#1A5276;--azul-tac:#1B4F72;
   --gris-fondo:#0D0F12;--gris-panel:#161A1F;--gris-borde:#2A2F38;
   --texto:#F0F2F5;--texto-muted:#8892A0;
   --font-display:'Barlow Condensed',sans-serif;
@@ -107,13 +107,13 @@ header{
   color:var(--texto-muted);
 }
 
-/* GRID DE MÓDULOS */
+/* GRID DE MÓDULOS — 4 módulos: 2+2 */
 .modulos{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:repeat(4,1fr);
   gap:14px;
   width:100%;
-  max-width:860px;
+  max-width:1060px;
 }
 
 /* TARJETA DE MÓDULO */
@@ -144,7 +144,7 @@ header{
 .modulo:hover::before{opacity:1}
 .modulo:active{transform:scale(0.97)}
 
-/* Colores por módulo */
+/* ── Colores por módulo ── */
 .mod-hidrantes{--color:var(--rojo)}
 .mod-hidrantes::before{background:radial-gradient(ellipse at top,rgba(192,57,43,0.12),transparent 70%)}
 .mod-hidrantes .modulo-icono-bg{background:rgba(192,57,43,0.12);border-color:rgba(192,57,43,0.3)}
@@ -163,6 +163,13 @@ header{
 .mod-patrimonio .modulo-num{color:#8E44AD}
 .mod-patrimonio:hover{box-shadow:0 8px 30px rgba(142,68,173,0.2)}
 
+.mod-sitac{--color:#2E86C1}
+.mod-sitac::before{background:radial-gradient(ellipse at top,rgba(46,134,193,0.12),transparent 70%)}
+.mod-sitac .modulo-icono-bg{background:rgba(46,134,193,0.12);border-color:rgba(46,134,193,0.3)}
+.mod-sitac .modulo-num{color:#2E86C1}
+.mod-sitac:hover{box-shadow:0 8px 30px rgba(46,134,193,0.2)}
+
+/* ── Elementos internos ── */
 .modulo-icono-bg{
   width:64px;height:64px;border-radius:16px;
   border:1px solid;
@@ -213,6 +220,7 @@ header{
 .chip.ok{background:rgba(30,132,73,0.2);color:#58D68D}
 .chip.warn{background:rgba(230,126,34,0.2);color:#F0A500}
 .chip.alert{background:rgba(192,57,43,0.2);color:#EC7063}
+.chip.info{background:rgba(46,134,193,0.2);color:#5DADE2}
 
 /* FLECHA */
 .modulo-flecha{
@@ -240,12 +248,16 @@ footer{
 
 /* ANIMACIÓN ENTRADA */
 .modulo{animation:entrar 0.4s ease both}
-.modulo:nth-child(1){animation-delay:0.1s}
-.modulo:nth-child(2){animation-delay:0.2s}
-.modulo:nth-child(3){animation-delay:0.3s}
+.modulo:nth-child(1){animation-delay:0.05s}
+.modulo:nth-child(2){animation-delay:0.12s}
+.modulo:nth-child(3){animation-delay:0.19s}
+.modulo:nth-child(4){animation-delay:0.26s}
 @keyframes entrar{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-/* RESPONSIVE TABLET/MÓVIL */
+/* RESPONSIVE */
+@media(max-width:900px){
+  .modulos{grid-template-columns:1fr 1fr;max-width:600px;gap:12px}
+}
 @media(max-width:700px){
   html,body{overflow:auto;height:auto}
   .modulos{grid-template-columns:1fr;max-width:100%;gap:10px}
@@ -266,10 +278,6 @@ footer{
   .main{padding:14px 12px;gap:14px;justify-content:flex-start;padding-top:20px}
   footer{padding:8px 14px;flex-wrap:wrap;gap:4px}
   #portal-btn-login{font-size:11px;padding:5px 10px}
-}
-@media(min-width:701px) and (max-width:1000px){
-  .modulos{grid-template-columns:1fr 1fr;max-width:600px}
-  .mod-patrimonio{grid-column:span 2}
 }
 </style>
 </head>
@@ -340,6 +348,21 @@ footer{
       <span class="modulo-flecha">→</span>
     </a>
 
+    <!-- SITAC -->
+    <a class="modulo mod-sitac" href="sitac/index.html">
+      <div class="modulo-icono-bg">🗺️</div>
+      <div class="modulo-nombre">SITAC</div>
+      <div class="modulo-num" style="font-size:18px;padding-top:4px">BPS</div>
+      <div class="modulo-num-label">Bomberos Prov. Sevilla</div>
+      <div class="modulo-chips">
+        <span class="chip info">● Símbolos tácticos</span>
+        <span class="chip">📡 Satélite / OSM</span>
+        <span class="chip">🔺 Sectores</span>
+      </div>
+      <div class="modulo-desc">Situación táctica de la intervención. Símbolos normalizados, sectores geográficos y medios desplegados.</div>
+      <span class="modulo-flecha">→</span>
+    </a>
+
   </div>
 </div>
 
@@ -351,7 +374,7 @@ footer{
 </footer>
 
 <script>
-// Reloj en tiempo real
+// Reloj
 function actualizarHora(){
   const ahora = new Date();
   const h = String(ahora.getHours()).padStart(2,'0');
@@ -361,35 +384,38 @@ function actualizarHora(){
 actualizarHora();
 setInterval(actualizarHora, 10000);
 
-// Cargar contadores desde Supabase
+// Contadores Supabase
 const SB_URL = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
 
 async function cargarContadores(){
   try {
-    const [rH, rS] = await Promise.all([
+    const [rH, rS, rP] = await Promise.all([
       fetch(`${SB_URL}/rest/v1/hidrantes?select=id`,{headers:{'apikey':SB_KEY,'Prefer':'count=exact','Range':'0-0'}}),
-      fetch(`${SB_URL}/rest/v1/sotanos?select=id`,{headers:{'apikey':SB_KEY,'Prefer':'count=exact','Range':'0-0'}})
+      fetch(`${SB_URL}/rest/v1/sotanos?select=id`,{headers:{'apikey':SB_KEY,'Prefer':'count=exact','Range':'0-0'}}),
+      fetch(`${SB_URL}/rest/v1/patrimonio?select=id`,{headers:{'apikey':SB_KEY,'Prefer':'count=exact','Range':'0-0'}})
     ]);
     const nH = rH.headers.get('Content-Range')?.split('/')[1];
     const nS = rS.headers.get('Content-Range')?.split('/')[1];
+    const nP = rP.headers.get('Content-Range')?.split('/')[1];
     if(nH) document.getElementById('num-hidrantes').textContent = nH;
     if(nS) document.getElementById('num-sotanos').textContent = nS;
-  } catch(e){ /* sin conexión, muestra valores por defecto */ }
+    if(nP) document.getElementById('num-patrimonio').textContent = nP;
+  } catch(e){ /* sin conexión — valores por defecto */ }
 }
 cargarContadores();
 </script>
 
 <!-- MODAL LOGIN PORTAL -->
 <div id="portal-modal-login" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
-  <div style="background:#161A1F;border:1px solid #353C47;border-radius:12px;padding:28px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.6)">
+  <div style="background:#161A1F;border:1px solid #353C47;border-radius:12px;padding:28px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative">
+    <button onclick="document.getElementById('portal-modal-login').style.display='none'" style="position:absolute;top:12px;right:16px;background:none;border:none;color:#8892A0;font-size:22px;cursor:pointer">×</button>
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;letter-spacing:.04em;margin-bottom:6px">🔐 Acceso Admin</div>
     <div style="font-size:13px;color:#8892A0;margin-bottom:20px;line-height:1.4">Introduce tu email y contraseña de administrador.</div>
-    <input id="portal-email" type="email" placeholder="tu@email.com" style="width:100%;background:#1E232B;border:1px solid #353C47;border-radius:6px;color:#F0F2F5;padding:10px 12px;font-size:14px;margin-bottom:10px;font-family:inherit">
-    <input id="portal-password" type="password" placeholder="Contraseña" style="width:100%;background:#1E232B;border:1px solid #353C47;border-radius:6px;color:#F0F2F5;padding:10px 12px;font-size:14px;margin-bottom:12px;font-family:inherit">
+    <input id="portal-email" type="email" placeholder="tu@email.com" style="width:100%;background:#1E232B;border:1px solid #353C47;border-radius:6px;color:#F0F2F5;padding:10px 12px;font-size:14px;margin-bottom:10px;font-family:inherit;outline:none">
+    <input id="portal-password" type="password" placeholder="Contraseña" style="width:100%;background:#1E232B;border:1px solid #353C47;border-radius:6px;color:#F0F2F5;padding:10px 12px;font-size:14px;margin-bottom:12px;font-family:inherit;outline:none">
     <button onclick="enviarLoginPortal()" style="width:100%;background:#C0392B;border:none;color:white;padding:11px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.05em;cursor:pointer">Acceder</button>
     <div id="portal-login-msg" style="font-size:12px;color:#8892A0;text-align:center;margin-top:10px;min-height:18px"></div>
-    <button onclick="document.getElementById('portal-modal-login').style.display='none'" style="position:absolute;top:12px;right:16px;background:none;border:none;color:#8892A0;font-size:22px;cursor:pointer">×</button>
   </div>
 </div>
 
@@ -398,31 +424,26 @@ const SB_URL_P = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
 const SB_KEY_P = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
 
 function abrirLoginPortal(){
-  const modal = document.getElementById('portal-modal-login');
-  modal.style.display='flex';
+  document.getElementById('portal-modal-login').style.display='flex';
 }
 
 async function enviarLoginPortal(){
   const email = document.getElementById('portal-email').value.trim();
   const password = document.getElementById('portal-password').value;
-  if(!email || !password){ 
-    document.getElementById('portal-login-msg').textContent='Rellena email y contraseña';
-    return;
-  }
   const msg = document.getElementById('portal-login-msg');
+  if(!email||!password){msg.textContent='Rellena email y contraseña';return;}
   msg.style.color='#8892A0';
-  msg.textContent = 'Accediendo...';
+  msg.textContent='Accediendo...';
   try {
     const r = await fetch(`${SB_URL_P}/auth/v1/token?grant_type=password`,{
       method:'POST',
       headers:{'Content-Type':'application/json','apikey':SB_KEY_P},
-      body:JSON.stringify({email, password})
+      body:JSON.stringify({email,password})
     });
     const data = await r.json();
     if(r.ok && data.access_token){
-      // Guardar sesión
-      sessionStorage.setItem('sb_token', data.access_token);
-      sessionStorage.setItem('sb_user', email);
+      sessionStorage.setItem('sb_token',data.access_token);
+      sessionStorage.setItem('sb_user',email);
       document.getElementById('portal-usuario').textContent='● '+email;
       document.getElementById('portal-usuario').style.display='inline-block';
       document.getElementById('portal-btn-login').style.display='none';
@@ -432,14 +453,14 @@ async function enviarLoginPortal(){
       msg.style.color='#EC7063';
       msg.textContent='Email o contraseña incorrectos';
     }
-  } catch(e){ msg.textContent='Error de conexión'; }
+  } catch(e){msg.textContent='Error de conexión';}
 }
 
-// Detectar sesión activa desde sessionStorage
+// Detectar sesión activa
 (function detectarSesionPortal(){
   const token = sessionStorage.getItem('sb_token');
   const user = sessionStorage.getItem('sb_user');
-  if(token && user){
+  if(token&&user){
     document.getElementById('portal-usuario').textContent='● '+user;
     document.getElementById('portal-usuario').style.display='inline-block';
     document.getElementById('portal-btn-login').style.display='none';

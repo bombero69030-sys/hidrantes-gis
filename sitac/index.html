@@ -119,7 +119,7 @@ header{
 .sec-titulo:first-child{margin-top:4px}
 
 /* ── MODOS ── */
-.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
 .mode-btn{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:5px;padding:10px 6px;border-radius:6px;
@@ -261,9 +261,17 @@ header{
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#6C3483" stroke-width="1.8" stroke-dasharray="4,3"/></svg>
             Sector
           </div>
-          <div class="mode-btn" id="mode-line" onclick="setMode('line')">
+          <div class="mode-btn" id="mode-line-inc" onclick="setModeLine('inc')">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><line x1="4" y1="20" x2="20" y2="4" stroke="#E74C3C" stroke-width="2"/><polygon points="20,4 15,6 18,9" fill="#E74C3C"/></svg>
-            Línea acción
+            Línea incendio
+          </div>
+          <div class="mode-btn" id="mode-line-bus" onclick="setModeLine('bus')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><line x1="4" y1="20" x2="20" y2="4" stroke="#1E8449" stroke-width="2"/><polygon points="20,4 15,6 18,9" fill="#1E8449"/></svg>
+            Línea búsqueda
+          </div>
+          <div class="mode-btn" id="mode-line-aba" onclick="setModeLine('aba')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><line x1="4" y1="20" x2="20" y2="4" stroke="#2E86C1" stroke-width="2"/><polygon points="20,4 15,6 18,9" fill="#2E86C1"/></svg>
+            Línea abastec.
           </div>
           <div class="mode-btn" id="mode-del" onclick="setMode('del')">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><polyline points="4,6 20,6" stroke="#EC7063" stroke-width="1.8"/><path d="M9,6V4.5Q9,3 10.5,3H13.5Q15,3 15,4.5V6M9,6 V19H15V6" fill="none" stroke="#EC7063" stroke-width="1.5"/></svg>
@@ -305,7 +313,10 @@ header{
         <div class="instrucciones">
           <b style="color:var(--rojo)">Colocar:</b> Selecciona símbolo → toca el mapa<br>
           <b style="color:var(--purpura)">Sector:</b> Toca esquinas → doble toque para cerrar<br>
-          <b style="color:var(--tac-inc)">Línea:</b> Toca puntos → doble toque para terminar<br>
+          <b style="color:#E74C3C">L. incendio:</b> Roja — ataque al fuego<br>
+          <b style="color:#1E8449">L. búsqueda:</b> Verde — búsqueda de personas<br>
+          <b style="color:#2E86C1">L. abastec.:</b> Azul — abastecimiento de agua<br>
+          <span style="color:var(--texto-dim);font-size:10px">Toca puntos → doble toque para terminar</span><br>
           <b style="color:#EC7063">Eliminar:</b> Toca cualquier elemento
         </div>
       </div>
@@ -535,22 +546,51 @@ function abrirSV(){
 }
 
 // ── MODO ──
+var lineColor = '#E74C3C';
+var lineLabel = 'Línea incendio';
+
 function setMode(m){
   mode = m;
   if(m!=='sector'){sectorPoints=[];if(sectorPreview){map.removeLayer(sectorPreview);sectorPreview=null;}}
   if(m!=='line'){linePoints=[];if(linePreview){map.removeLayer(linePreview);linePreview=null;}}
-  ['place','sector','line','del'].forEach(function(x){
+  // Desactivar todos los botones de modo
+  ['place','sector','del'].forEach(function(x){
     var b=document.getElementById('mode-'+x);
     if(b) b.classList.toggle('active',x===m);
+  });
+  ['inc','bus','aba'].forEach(function(x){
+    var b=document.getElementById('mode-line-'+x);
+    if(b) b.classList.remove('active');
   });
   var msgs={
     place:'Toca el mapa para colocar '+currentLabel,
     sector:'Toca para definir vértices — doble toque para cerrar',
-    line:'Toca para trazar la línea — doble toque para terminar',
     del:'Toca un elemento para eliminarlo'
   };
   setStatus(msgs[m]||'');
   map.getContainer().style.cursor = m==='del' ? 'not-allowed' : 'crosshair';
+}
+
+function setModeLine(tipo){
+  var colores={inc:'#E74C3C',bus:'#1E8449',aba:'#2E86C1'};
+  var labels={inc:'Línea incendio',bus:'Línea búsqueda',aba:'Línea abastecimiento'};
+  lineColor = colores[tipo];
+  lineLabel = labels[tipo];
+  // Limpiar trazado anterior en curso
+  linePoints=[];
+  if(linePreview){map.removeLayer(linePreview);linePreview=null;}
+  mode='line';
+  // Desactivar todos los botones de modo
+  ['place','sector','del'].forEach(function(x){
+    var b=document.getElementById('mode-'+x);
+    if(b) b.classList.remove('active');
+  });
+  ['inc','bus','aba'].forEach(function(x){
+    var b=document.getElementById('mode-line-'+x);
+    if(b) b.classList.toggle('active',x===tipo);
+  });
+  setStatus('Toca para trazar '+lineLabel+' — doble toque para terminar');
+  map.getContainer().style.cursor='crosshair';
 }
 
 // ── SÍMBOLO ──
@@ -590,7 +630,7 @@ function onMapMouseMove(e){
   if(mode==='line'&&linePoints.length>0){
     var pts2=linePoints.concat([e.latlng]);
     if(linePreview) linePreview.setLatLngs(pts2);
-    else linePreview=L.polyline(pts2,{color:currentColor,weight:2.5,opacity:0.6,interactive:false}).addTo(map);
+    else linePreview=L.polyline(pts2,{color:lineColor,weight:2.5,opacity:0.6,interactive:false}).addTo(map);
   }
 }
 
@@ -688,14 +728,14 @@ function addLinePoint(latlng){
 function closeLine(){
   if(linePreview){map.removeLayer(linePreview);linePreview=null;}
   var id=++itemCounter;
-  var poly=L.polyline(linePoints,{color:currentColor,weight:3,opacity:0.9}).addTo(map);
+  var poly=L.polyline(linePoints,{color:lineColor,weight:3,opacity:0.9}).addTo(map);
   var n=linePoints.length;
   if(n>=2){
     var last=linePoints[n-1],prev=linePoints[n-2];
     var angle=Math.atan2(last.lat-prev.lat,last.lng-prev.lng)*180/Math.PI;
     L.marker(last,{
       icon:L.divIcon({
-        html:'<div style="width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:16px solid '+currentColor+';transform:rotate('+(-angle-90)+'deg);transform-origin:8px 0;"></div>',
+        html:'<div style="width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:16px solid '+lineColor+';transform:rotate('+(-angle-90)+'deg);transform-origin:8px 0;"></div>',
         className:'',iconAnchor:[8,0]
       }),interactive:false
     }).addTo(map);
@@ -703,7 +743,7 @@ function closeLine(){
   poly.on('click',function(e){if(mode==='del'){deleteItem(id);L.DomEvent.stop(e);}});
   placedItems.push({type:'polyline',layer:poly,id:id});
   linePoints=[];
-  toast('✓ Línea de acción trazada');
+  toast('✓ '+lineLabel+' trazada');
 }
 
 // ── ELIMINAR ──
@@ -757,7 +797,7 @@ function showTab(name){
 
 // ── STATUS ──
 function setStatus(msg){
-  var modeNames={place:'Colocar',sector:'Sector',line:'Línea',del:'Eliminar'};
+  var modeNames={place:'Colocar',sector:'Sector',line:lineLabel,del:'Eliminar'};
   document.getElementById('statusbar').innerHTML=
     'Modo: <b id="status-mode">'+(modeNames[mode]||mode)+'</b> &nbsp;·&nbsp; '+
     'Símbolo: <b id="status-sym">'+currentLabel+'</b> &nbsp;·&nbsp; '+msg;

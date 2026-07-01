@@ -1006,24 +1006,38 @@ function closeLine(){
   var id=++itemCounter;
   var poly=L.polyline(linePoints,{color:lineColor,weight:3,opacity:0.9}).addTo(map);
   var n=linePoints.length;
+  var arrowMarker=null;
   if(n>=2){
     var last=linePoints[n-1],prev=linePoints[n-2];
     var pLast=map.latLngToContainerPoint(last);
     var pPrev=map.latLngToContainerPoint(prev);
-    var angle=Math.atan2(pLast.y-pPrev.y, pLast.x-pPrev.x)*180/Math.PI;
-    var rot=angle+90;
-    var arrowEl='<div style="width:0;height:0;'+
-      'border-left:9px solid transparent;border-right:9px solid transparent;'+
-      'border-top:18px solid '+lineColor+';'+
-      'transform:rotate('+rot+'deg);transform-origin:9px 9px;'+
-      'margin-top:-9px;margin-left:-9px;"></div>';
-    L.marker(last,{
-      icon:L.divIcon({html:arrowEl,className:'',iconAnchor:[0,0]}),
+    // Ángulo en coordenadas de pantalla (Y invertido)
+    var angle=Math.atan2(pLast.y-pPrev.y, pLast.x-pPrev.x);
+    var sa=Math.sin(angle), ca=Math.cos(angle);
+    var sz=20; // tamaño del triángulo
+    // Triángulo apuntando a la derecha por defecto: punta en (sz,0), base en (0,-sz/2) y (0,sz/2)
+    // Así la punta está en el origen (0,0) antes de rotar
+    function rot(px,py){ return [px*ca-py*sa, px*sa+py*ca]; }
+    var tip=rot(0,0);       // punta → ancla al punto final de la línea
+    var b1=rot(-sz,-sz/2);  // base izq
+    var b2=rot(-sz, sz/2);  // base der
+    // Offset para que quepan en el SVG (desplazar todo sz unidades)
+    var pad=2, ox=sz+pad, oy=sz+pad;
+    var svgW=(sz+pad)*2, svgH=(sz+pad)*2;
+    var pts=(tip[0]+ox)+','+(tip[1]+oy)+' '+
+            (b1[0]+ox)+','+(b1[1]+oy)+' '+
+            (b2[0]+ox)+','+(b2[1]+oy);
+    var arrowSvg='<svg xmlns="http://www.w3.org/2000/svg" width="'+svgW+'" height="'+svgH+'">'+
+      '<polygon points="'+pts+'" fill="'+lineColor+'"/>'+
+      '</svg>';
+    // iconAnchor en la posición de la punta dentro del SVG = (ox, oy)
+    arrowMarker=L.marker(last,{
+      icon:L.divIcon({html:arrowSvg,className:'',iconAnchor:[ox,oy]}),
       interactive:false
     }).addTo(map);
   }
   poly.on('click',function(e){if(mode==='del'){deleteItem(id);L.DomEvent.stop(e);}});
-  placedItems.push({type:'polyline',layer:poly,id:id});
+  placedItems.push({type:'polyline',layer:poly,id:id,extra:arrowMarker});
   linePoints=[];
   toast('✓ '+lineLabel+' trazada');
 }

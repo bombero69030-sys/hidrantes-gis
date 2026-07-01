@@ -809,16 +809,33 @@ function setSelectorMision(m){ selectorMedio.mision=m; actualizarSelectorVisual(
 function setSelectorEstado(e){ selectorMedio.estado=e; actualizarSelectorVisual(); }
 function cerrarSelector(){ document.getElementById('selector-mision').classList.remove('visible'); }
 
+// Colores fijos para medios que no cambian con la misión
+var COLOR_FIJO = {
+  'UMJ':'#7D3C98','PMA':'#7D3C98','CRM':'#7D3C98','PAS':'#1E8449',
+  'AMB':'#1E8449','POLI':'#111111','GC':'#111111','GRUA':'#6D7680',
+  'RNBQ':'#D4A017'
+};
+
+function colorParaMedio(sym, mision){
+  // Si el símbolo tiene color fijo, lo usa siempre
+  if(COLOR_FIJO[sym]) return COLOR_FIJO[sym];
+  // El resto (bomberos operativos) usa el color de misión
+  return misionColor(mision);
+}
+
 function confirmarSelectorYColocar(){
   if(!selectorMedio.sym){ cerrarSelector(); return; }
   currentSym = selectorMedio.sym;
-  currentColor = misionColor(selectorMedio.mision);
+  currentColor = colorParaMedio(selectorMedio.sym, selectorMedio.mision);
   currentLabel = selectorMedio.label;
   currentMision = selectorMedio.mision;
   currentEstado = selectorMedio.estado;
   cerrarSelector();
   setMode('place');
-  setStatus('Toca el mapa para colocar '+selectorMedio.label+' ('+misionNombre(selectorMedio.mision)+', '+estadoNombre(selectorMedio.estado)+')');
+  // Solo mostrar misión en el status si el color cambia con ella
+  var tieneMision = !COLOR_FIJO[selectorMedio.sym];
+  var info = tieneMision ? ' ('+misionNombre(selectorMedio.mision)+', '+estadoNombre(selectorMedio.estado)+')' : ' ('+estadoNombre(selectorMedio.estado)+')';
+  setStatus('Toca el mapa para colocar '+selectorMedio.label+info);
 }
 
 function misionColor(m){ return {ext:'#E74C3C',res:'#1E8449',aba:'#2E86C1'}[m]||'#E74C3C'; }
@@ -922,7 +939,7 @@ function placeSymbol(latlng){
 
   function buildPopupContent(m, e){
     var c = m ? misionColor(m) : color;
-    var esMedio = MEDIOS_LIST.indexOf(sym)>=0;
+    var esMedio = MEDIOS_LIST.indexOf(sym)>=0 && !COLOR_FIJO[sym];
     var selHTML = '';
     if(esMedio){
       selHTML += '<div style="margin:8px 0 4px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#5A6475">Misión</div>';
@@ -961,7 +978,7 @@ function cambiarMision(id, nuevaMision){
   var item = placedItems.find(function(x){return x.id===id;});
   if(!item) return;
   item.mision = nuevaMision;
-  item.color = misionColor(nuevaMision);
+  item.color = colorParaMedio(item.sym, nuevaMision);
   item.layer.setIcon(buildIcon(item.sym, item.color, item.parque, item.estado));
   item.layer.setPopupContent(item.buildPopup(item.mision, item.estado));
 }

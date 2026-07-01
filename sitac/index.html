@@ -186,7 +186,29 @@ header{
 }
 .popup-del:hover{text-decoration:underline}
 
-/* sector label */
+/* ── SELECTOR MISIÓN/ESTADO ── */
+#selector-mision{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  background:var(--gris-panel);border:1px solid var(--gris-borde2);
+  border-radius:10px;padding:12px 14px;z-index:500;
+  display:none;flex-direction:column;gap:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);min-width:260px;
+}
+#selector-mision.visible{display:flex}
+.sel-titulo{font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--texto-dim)}
+.sel-row{display:flex;gap:6px}
+.sel-btn{
+  flex:1;padding:7px 6px;border-radius:6px;border:1px solid var(--gris-borde2);
+  background:var(--gris-panel2);font-family:var(--font-display);font-size:11px;
+  font-weight:700;letter-spacing:.04em;color:var(--texto-muted);cursor:pointer;
+  text-align:center;transition:all 0.15s;
+}
+.sel-btn:hover{border-color:var(--gris-borde2);background:rgba(255,255,255,0.06)}
+.sel-btn.sel-ext{border-color:#E74C3C;background:rgba(231,76,60,0.15);color:#EC7063}
+.sel-btn.sel-res{border-color:#1E8449;background:rgba(30,132,73,0.15);color:#58D68D}
+.sel-btn.sel-aba{border-color:#2E86C1;background:rgba(46,134,193,0.15);color:#5DADE2}
+.sel-btn.sel-lugar{border-color:var(--texto-muted);color:var(--texto)}
+.sel-btn.sel-llegar{border-color:var(--texto-muted);color:var(--texto)}
 .sector-label{
   background:rgba(108,52,131,0.85);color:#D7BDE2;padding:3px 10px;
   border-radius:4px;font-family:var(--font-display);font-size:12px;
@@ -396,35 +418,39 @@ header{
       <div id="tab-medios" style="display:none">
         <div class="sec-titulo">Vehículos de bomberos</div>
         <div class="sym-grid">
-          <div class="sym-btn" id="sb-BUL" onclick="setSym('BUL','#E74C3C','Autobomba Urbana Ligera')">
+          <div class="sym-btn" id="sb-BUL" onclick="seleccionarMedio('BUL','Autobomba Urbana Ligera')">
             <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">BUL</text></svg>
             BUL
           </div>
-          <div class="sym-btn" id="sb-BRP" onclick="setSym('BRP','#E74C3C','Autobomba Rural Pesada')">
+          <div class="sym-btn" id="sb-BRP" onclick="seleccionarMedio('BRP','Autobomba Rural Pesada')">
             <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">BRP</text></svg>
             BRP
           </div>
-          <div class="sym-btn" id="sb-BUP" onclick="setSym('BUP','#E74C3C','Autobomba Urbana Pesada')">
+          <div class="sym-btn" id="sb-BUP" onclick="seleccionarMedio('BUP','Autobomba Urbana Pesada')">
             <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">BUP</text></svg>
             BUP
           </div>
-          <div class="sym-btn" id="sb-BFP" onclick="setSym('BFP','#E74C3C','Autobomba Forestal Pesada')">
+          <div class="sym-btn" id="sb-BFP" onclick="seleccionarMedio('BFP','Autobomba Forestal Pesada')">
             <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">BFP</text></svg>
             BFP
           </div>
-          <div class="sym-btn" id="sb-BNP" onclick="setSym('BNP','#2E86C1','Nodriza')">
+          <div class="sym-btn" id="sb-BNP" onclick="seleccionarMedio('BNP','Nodriza')">
             <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#2E86C1" stroke-width="2" stroke-dasharray="4,2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#2E86C1" font-weight="700">NOD</text></svg>
             Nodriza
           </div>
-          <div class="sym-btn" id="sb-BRA" onclick="setSym('BRA','#E74C3C','Autobrazo')">
-            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">BRA</text></svg>
-            Autobrazo
+          <div class="sym-btn" id="sb-ABE" onclick="seleccionarMedio('ABE','Autobrazo Extensible')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">ABE</text></svg>
+            ABE
           </div>
-          <div class="sym-btn" id="sb-FSV" onclick="setSym('FSV','#E74C3C','Furgón Salvamentos')">
+          <div class="sym-btn" id="sb-AEA" onclick="seleccionarMedio('AEA','Autoescala Automática')">
+            <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">AEA</text></svg>
+            AEA
+          </div>
+          <div class="sym-btn" id="sb-FSV" onclick="seleccionarMedio('FSV','Furgón Salvamentos')">
             <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#E74C3C" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="700">FSV</text></svg>
             FSV
           </div>
-          <div class="sym-btn" id="sb-RNBQ" onclick="setSym('RNBQ','#D4A017','Remolque NBQ')">
+          <div class="sym-btn" id="sb-RNBQ" onclick="seleccionarMedio('RNBQ','Remolque NBQ')">
             <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#D4A017" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#D4A017" font-weight="700">RNBQ</text></svg>
             Remolque NBQ
           </div>
@@ -432,19 +458,19 @@ header{
 
         <div class="sec-titulo">Mando y dispositivos</div>
         <div class="sym-grid">
-          <div class="sym-btn" id="sb-UMJ" onclick="setSym('UMJ','#7D3C98','Unidad Mando Jefatura')">
+          <div class="sym-btn" id="sb-UMJ" onclick="seleccionarMedio('UMJ','Unidad Mando Jefatura')">
             <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#7D3C98" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#7D3C98" font-weight="700">UMJ</text></svg>
             Mando UMJ
           </div>
-          <div class="sym-btn" id="sb-PMA" onclick="setSym('PMA','#7D3C98','Puesto Mando Avanzado')">
+          <div class="sym-btn" id="sb-PMA" onclick="seleccionarMedio('PMA','Puesto Mando Avanzado')">
             <svg width="42" height="24" viewBox="0 0 42 24"><rect x="1" y="1" width="40" height="22" rx="2" fill="none" stroke="#7D3C98" stroke-width="2.5"/><text x="21" y="16" text-anchor="middle" font-size="10" fill="#7D3C98" font-weight="700">PMA</text></svg>
             PMA
           </div>
-          <div class="sym-btn" id="sb-CRM" onclick="setSym('CRM','#7D3C98','Centro Recepción Medios')">
+          <div class="sym-btn" id="sb-CRM" onclick="seleccionarMedio('CRM','Centro Recepción Medios')">
             <svg width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="none" stroke="#7D3C98" stroke-width="2"/><line x1="15" y1="3" x2="27" y2="15" stroke="#7D3C98" stroke-width="1.5"/><text x="15" y="19" text-anchor="middle" font-size="8" fill="#7D3C98" font-weight="700">CRM</text></svg>
             CRM
           </div>
-          <div class="sym-btn" id="sb-PAS" onclick="setSym('PAS','#1E8449','Puesto Asistencia Sanitaria')">
+          <div class="sym-btn" id="sb-PAS" onclick="seleccionarMedio('PAS','Puesto Asistencia Sanitaria')">
             <svg width="42" height="24" viewBox="0 0 42 24"><rect x="1" y="1" width="40" height="22" rx="2" fill="none" stroke="#1E8449" stroke-width="2.5"/><text x="21" y="16" text-anchor="middle" font-size="10" fill="#1E8449" font-weight="700">PAS</text></svg>
             PAS
           </div>
@@ -452,19 +478,19 @@ header{
 
         <div class="sec-titulo">Otros servicios</div>
         <div class="sym-grid">
-          <div class="sym-btn" id="sb-AMB" onclick="setSym('AMB','#1E8449','Ambulancia')">
+          <div class="sym-btn" id="sb-AMB" onclick="seleccionarMedio('AMB','Ambulancia')">
             <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#1E8449" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#1E8449" font-weight="700">AMB</text></svg>
             Ambulancia
           </div>
-          <div class="sym-btn" id="sb-POL" onclick="setSym('POL','#6D7680','Policía')">
+          <div class="sym-btn" id="sb-POL" onclick="seleccionarMedio('POL','Policía')">
             <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#6D7680" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#6D7680" font-weight="700">POL</text></svg>
             Policía
           </div>
-          <div class="sym-btn" id="sb-GC" onclick="setSym('GC','#6D7680','Guardia Civil')">
+          <div class="sym-btn" id="sb-GC" onclick="seleccionarMedio('GC','Guardia Civil')">
             <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#6D7680" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#6D7680" font-weight="700">GC</text></svg>
             Guardia Civil
           </div>
-          <div class="sym-btn" id="sb-GRUA" onclick="setSym('GRUA','#6D7680','Grúa')">
+          <div class="sym-btn" id="sb-GRUA" onclick="seleccionarMedio('GRUA','Grúa')">
             <svg width="36" height="20" viewBox="0 0 36 20"><rect x="1" y="1" width="34" height="18" rx="2" fill="none" stroke="#6D7680" stroke-width="2"/><text x="18" y="14" text-anchor="middle" font-size="9" fill="#6D7680" font-weight="700">GRÚA</text></svg>
             Grúa
           </div>
@@ -474,6 +500,25 @@ header{
     </div><!-- /panel-body -->
   </div><!-- /panel -->
 </div><!-- /app -->
+
+<!-- SELECTOR MISIÓN / ESTADO -->
+<div id="selector-mision">
+  <div class="sel-titulo">Misión</div>
+  <div class="sel-row">
+    <button class="sel-btn sel-ext" onclick="setSelectorMision('ext')">🔴 Extinción</button>
+    <button class="sel-btn sel-res" onclick="setSelectorMision('res')">🟢 Rescate</button>
+    <button class="sel-btn sel-aba" onclick="setSelectorMision('aba')">🔵 Abastec.</button>
+  </div>
+  <div class="sel-titulo">Estado</div>
+  <div class="sel-row">
+    <button class="sel-btn sel-lugar" onclick="setSelectorEstado('lugar')">▬ En lugar</button>
+    <button class="sel-btn sel-llegar" onclick="setSelectorEstado('llegar')">┅ Por llegar</button>
+  </div>
+  <div class="sel-row" style="margin-top:2px">
+    <button class="sel-btn" style="flex:1;color:#EC7063" onclick="cerrarSelector()">Cancelar</button>
+    <button class="sel-btn sel-ext" style="flex:2" onclick="confirmarSelectorYColocar()">✓ Listo — toca el mapa</button>
+  </div>
+</div>
 
 <div id="statusbar">
   Modo: <b id="status-mode">Colocar</b> &nbsp;·&nbsp; Símbolo: <b id="status-sym">Incendio</b> &nbsp;·&nbsp; Toca el mapa para colocar
@@ -489,6 +534,7 @@ var ajustandoImagen = false, ajusteEsquina = null;
 var imgEsquinaNO = null, imgEsquinaSE = null;
 var mode = 'place';
 var currentSym = 'INC', currentColor = '#E74C3C', currentLabel = 'Incendio';
+var currentMision = '', currentEstado = 'lugar';
 var currentParque = 'PALA';
 var panelCollapsed = false;
 var placedItems = [];
@@ -728,16 +774,67 @@ function setModeLine(tipo){
 }
 
 // ── SÍMBOLO ──
+// ── LISTA DE MEDIOS (vehículos que usan selector de misión/estado) ──
+var MEDIOS_LIST = ['BUL','BRP','BUP','BFP','BNP','ABE','AEA','FSV','RNBQ',
+                   'UMJ','PMA','CRM','PAS','AMB','POL','GC','GRUA'];
+
+var selectorMedio = {sym:'', label:'', mision:'ext', estado:'lugar'};
+
+function seleccionarMedio(sym, label){
+  selectorMedio.sym = sym;
+  selectorMedio.label = label;
+  selectorMedio.mision = 'ext';
+  selectorMedio.estado = 'lugar';
+  document.querySelectorAll('.sym-btn').forEach(function(b){b.classList.remove('active');});
+  var b = document.getElementById('sb-'+sym);
+  if(b) b.classList.add('active');
+  showTab('medios');
+  actualizarSelectorVisual();
+  document.getElementById('selector-mision').classList.add('visible');
+  setStatus('Selecciona misión y estado para '+label);
+}
+
+function actualizarSelectorVisual(){
+  ['ext','res','aba'].forEach(function(m){
+    var el = document.querySelector('.sel-btn.sel-'+m);
+    if(el) el.style.opacity = selectorMedio.mision===m ? '1' : '0.4';
+  });
+  ['lugar','llegar'].forEach(function(e){
+    var el = document.querySelector('.sel-btn.sel-'+e);
+    if(el) el.style.opacity = selectorMedio.estado===e ? '1' : '0.4';
+  });
+}
+
+function setSelectorMision(m){ selectorMedio.mision=m; actualizarSelectorVisual(); }
+function setSelectorEstado(e){ selectorMedio.estado=e; actualizarSelectorVisual(); }
+function cerrarSelector(){ document.getElementById('selector-mision').classList.remove('visible'); }
+
+function confirmarSelectorYColocar(){
+  if(!selectorMedio.sym){ cerrarSelector(); return; }
+  currentSym = selectorMedio.sym;
+  currentColor = misionColor(selectorMedio.mision);
+  currentLabel = selectorMedio.label;
+  currentMision = selectorMedio.mision;
+  currentEstado = selectorMedio.estado;
+  cerrarSelector();
+  setMode('place');
+  setStatus('Toca el mapa para colocar '+selectorMedio.label+' ('+misionNombre(selectorMedio.mision)+', '+estadoNombre(selectorMedio.estado)+')');
+}
+
+function misionColor(m){ return {ext:'#E74C3C',res:'#1E8449',aba:'#2E86C1'}[m]||'#E74C3C'; }
+function misionNombre(m){ return {ext:'Extinción',res:'Rescate',aba:'Abastecimiento'}[m]||''; }
+function estadoNombre(e){ return {lugar:'En lugar',llegar:'Por llegar'}[e]||''; }
+
 function setSym(sym,color,label){
   currentSym=sym; currentColor=color; currentLabel=label;
+  currentMision=''; currentEstado='lugar';
   document.querySelectorAll('.sym-btn').forEach(function(b){b.classList.remove('active');});
   var b=document.getElementById('sb-'+sym);
   if(b) b.classList.add('active');
+  cerrarSelector();
   if(mode!=='place') setMode('place');
   else setStatus('Toca el mapa para colocar '+label);
-  // Cambiar a la pestaña correcta
-  var medios=['BUL','BRP','BUP','BFP','BNP','BRA','FSV','RNBQ','UMJ','PMA','CRM','PAS','AMB','POL','GC','GRUA'];
-  showTab(medios.indexOf(sym)>=0?'medios':'simbolos');
+  showTab(MEDIOS_LIST.indexOf(sym)>=0?'medios':'simbolos');
 }
 
 function setParque(val){
@@ -769,7 +866,9 @@ function onMapMouseMove(e){
 }
 
 // ── CONSTRUIR ICONO SVG ──
-function buildIcon(sym,color,parque){
+function buildIcon(sym,color,parque,estado){
+  var dash = estado==='llegar' ? '5,3' : null;
+  var sw = dash ? 'stroke-dasharray="'+dash+'"' : '';
   var label = parque ? sym+' '+parque : sym;
   var svg='';
 
@@ -792,14 +891,14 @@ function buildIcon(sym,color,parque){
   } else if(sym==='PSH'){
     svg='<svg xmlns="http://www.w3.org/2000/svg" width="32" height="30"><polygon points="16,28 2,2 30,2" fill="none" stroke="'+color+'" stroke-width="2.5"/><text x="16" y="20" text-anchor="middle" font-size="12" fill="'+color+'" font-weight="700" font-family="sans-serif">S</text></svg>';
   } else if(sym==='PMA'||sym==='PAS'){
-    svg='<svg xmlns="http://www.w3.org/2000/svg" width="44" height="26"><rect x="1" y="1" width="42" height="24" rx="2" fill="none" stroke="'+color+'" stroke-width="3"/><text x="22" y="17" text-anchor="middle" font-size="11" fill="'+color+'" font-weight="700" font-family="sans-serif">'+sym+'</text></svg>';
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="44" height="26"><rect x="1" y="1" width="42" height="24" rx="2" fill="none" stroke="'+color+'" stroke-width="3" '+sw+'/><text x="22" y="17" text-anchor="middle" font-size="11" fill="'+color+'" font-weight="700" font-family="sans-serif">'+sym+'</text></svg>';
   } else if(sym==='CRM'){
-    svg='<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"><circle cx="18" cy="18" r="15" fill="none" stroke="'+color+'" stroke-width="2.5"/><line x1="18" y1="3" x2="33" y2="18" stroke="'+color+'" stroke-width="1.5"/><text x="18" y="22" text-anchor="middle" font-size="9" fill="'+color+'" font-weight="700" font-family="sans-serif">CRM</text></svg>';
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"><circle cx="18" cy="18" r="15" fill="none" stroke="'+color+'" stroke-width="2.5" '+sw+'/><line x1="18" y1="3" x2="33" y2="18" stroke="'+color+'" stroke-width="1.5"/><text x="18" y="22" text-anchor="middle" font-size="9" fill="'+color+'" font-weight="700" font-family="sans-serif">CRM</text></svg>';
   } else if(sym==='AACC'){
     svg='<svg xmlns="http://www.w3.org/2000/svg" width="38" height="24"><polygon points="4,22 4,12 9,6 29,6 34,12 34,22" fill="none" stroke="'+color+'" stroke-width="1.8"/><circle cx="12" cy="22" r="3.5" fill="none" stroke="'+color+'" stroke-width="1.5"/><circle cx="26" cy="22" r="3.5" fill="none" stroke="'+color+'" stroke-width="1.5"/></svg>';
   } else {
     var w = label.length>6?52:44;
-    svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="24"><rect x="1" y="2" width="'+(w-2)+'" height="20" rx="2" fill="none" stroke="'+color+'" stroke-width="2.2"/><text x="'+(w/2)+'" y="16" text-anchor="middle" font-size="9" fill="'+color+'" font-weight="700" font-family="sans-serif">'+label+'</text></svg>';
+    svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="26"><rect x="1" y="2" width="'+(w-2)+'" height="22" rx="2" fill="none" stroke="'+color+'" stroke-width="2.5" '+sw+'/><text x="'+(w/2)+'" y="16" text-anchor="middle" font-size="9" fill="'+color+'" font-weight="700" font-family="sans-serif">'+label+'</text></svg>';
   }
 
   return L.divIcon({html:svg,className:'',iconAnchor:[16,16],popupAnchor:[0,-20]});
@@ -808,23 +907,66 @@ function buildIcon(sym,color,parque){
 // ── COLOCAR SÍMBOLO ──
 function placeSymbol(latlng){
   var parque = currentParque;
-  var icon = buildIcon(currentSym,currentColor,parque);
+  var mision = currentMision||'';
+  var estado = currentEstado||'lugar';
+  var color = currentColor;
+  var icon = buildIcon(currentSym, color, parque, estado);
   var id = ++itemCounter;
+  var sym = currentSym, label = currentLabel;
   var marker = L.marker(latlng,{icon:icon,draggable:true}).addTo(map);
-  var displayLabel = parque ? currentLabel+' ('+parque+')' : currentLabel;
-  var symLabel = parque ? currentSym+' '+parque : currentSym;
+  var symLabel = parque ? sym+' '+parque : sym;
 
-  marker.bindPopup(
-    '<div class="popup-title" style="color:'+currentColor+'">'+symLabel+'</div>'+
-    '<div class="popup-sub">'+currentLabel+'</div>'+
-    '<button class="popup-del" onclick="deleteItem('+id+')">🗑 Eliminar</button>'
-  );
+  function buildPopupContent(m, e){
+    var c = m ? misionColor(m) : color;
+    var esMedio = MEDIOS_LIST.indexOf(sym)>=0;
+    var selHTML = '';
+    if(esMedio){
+      selHTML += '<div style="margin:8px 0 4px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#5A6475">Misión</div>';
+      selHTML += '<div style="display:flex;gap:4px;margin-bottom:6px">';
+      selHTML += '<button onclick="cambiarMision('+id+',\'ext\')" style="flex:1;padding:4px;border-radius:4px;border:1px solid #E74C3C;background:'+(m==='ext'?'rgba(231,76,60,0.25)':'transparent')+';color:#EC7063;font-size:10px;cursor:pointer;font-weight:700">🔴 Extinción</button>';
+      selHTML += '<button onclick="cambiarMision('+id+',\'res\')" style="flex:1;padding:4px;border-radius:4px;border:1px solid #1E8449;background:'+(m==='res'?'rgba(30,132,73,0.25)':'transparent')+';color:#58D68D;font-size:10px;cursor:pointer;font-weight:700">🟢 Rescate</button>';
+      selHTML += '<button onclick="cambiarMision('+id+',\'aba\')" style="flex:1;padding:4px;border-radius:4px;border:1px solid #2E86C1;background:'+(m==='aba'?'rgba(46,134,193,0.25)':'transparent')+';color:#5DADE2;font-size:10px;cursor:pointer;font-weight:700">🔵 Abastec.</button>';
+      selHTML += '</div>';
+      selHTML += '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#5A6475;margin-bottom:4px">Estado</div>';
+      selHTML += '<div style="display:flex;gap:4px;margin-bottom:8px">';
+      selHTML += '<button onclick="cambiarEstado('+id+',\'lugar\')" style="flex:1;padding:4px;border-radius:4px;border:1px solid #8892A0;background:'+(e==='lugar'?'rgba(255,255,255,0.1)':'transparent')+';color:#F0F2F5;font-size:10px;cursor:pointer;font-weight:700">▬ En lugar</button>';
+      selHTML += '<button onclick="cambiarEstado('+id+',\'llegar\')" style="flex:1;padding:4px;border-radius:4px;border:1px solid #8892A0;background:'+(e==='llegar'?'rgba(255,255,255,0.1)':'transparent')+';color:#F0F2F5;font-size:10px;cursor:pointer;font-weight:700">┅ Por llegar</button>';
+      selHTML += '</div>';
+    }
+
+    return '<div class="popup-title" style="color:'+c+'">'+symLabel+'</div>'+
+      '<div class="popup-sub">'+label+(m?' · '+misionNombre(m):'')+(e&&e!=='lugar'?' · '+estadoNombre(e):'')+'</div>'+
+      selHTML+
+      '<button class="popup-del" onclick="deleteItem('+id+')">🗑 Eliminar</button>';
+  }
+
+  marker.bindPopup(buildPopupContent(mision, estado));
   marker.on('click',function(e){
     if(mode==='del'){deleteItem(id);L.DomEvent.stop(e);return;}
     marker.openPopup();
   });
-  placedItems.push({type:'marker',layer:marker,id:id});
-  toast('✓ '+displayLabel+' colocado');
+
+  var itemData = {type:'marker',layer:marker,id:id,sym:sym,label:label,
+    parque:parque,mision:mision,estado:estado,color:color,symLabel:symLabel,
+    buildPopup:buildPopupContent};
+  placedItems.push(itemData);
+  toast('✓ '+symLabel+(mision?' — '+misionNombre(mision):'')+(estado==='llegar'?' (por llegar)':''));
+}
+
+function cambiarMision(id, nuevaMision){
+  var item = placedItems.find(function(x){return x.id===id;});
+  if(!item) return;
+  item.mision = nuevaMision;
+  item.color = misionColor(nuevaMision);
+  item.layer.setIcon(buildIcon(item.sym, item.color, item.parque, item.estado));
+  item.layer.setPopupContent(item.buildPopup(item.mision, item.estado));
+}
+function cambiarEstado(id, nuevoEstado){
+  var item = placedItems.find(function(x){return x.id===id;});
+  if(!item) return;
+  item.estado = nuevoEstado;
+  item.layer.setIcon(buildIcon(item.sym, item.color, item.parque, item.estado));
+  item.layer.setPopupContent(item.buildPopup(item.mision, item.estado));
 }
 
 // ── SECTOR ──
@@ -866,12 +1008,18 @@ function closeLine(){
   var n=linePoints.length;
   if(n>=2){
     var last=linePoints[n-1],prev=linePoints[n-2];
-    var angle=Math.atan2(last.lat-prev.lat,last.lng-prev.lng)*180/Math.PI;
+    var pLast=map.latLngToContainerPoint(last);
+    var pPrev=map.latLngToContainerPoint(prev);
+    var angle=Math.atan2(pLast.y-pPrev.y, pLast.x-pPrev.x)*180/Math.PI;
+    var rot=angle+90;
+    var arrowEl='<div style="width:0;height:0;'+
+      'border-left:9px solid transparent;border-right:9px solid transparent;'+
+      'border-top:18px solid '+lineColor+';'+
+      'transform:rotate('+rot+'deg);transform-origin:9px 9px;'+
+      'margin-top:-9px;margin-left:-9px;"></div>';
     L.marker(last,{
-      icon:L.divIcon({
-        html:'<div style="width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:16px solid '+lineColor+';transform:rotate('+(-angle-90)+'deg);transform-origin:8px 0;"></div>',
-        className:'',iconAnchor:[8,0]
-      }),interactive:false
+      icon:L.divIcon({html:arrowEl,className:'',iconAnchor:[0,0]}),
+      interactive:false
     }).addTo(map);
   }
   poly.on('click',function(e){if(mode==='del'){deleteItem(id);L.DomEvent.stop(e);}});
@@ -896,17 +1044,38 @@ function deleteItem(id){
 
 // ── BORRAR TODO ──
 function confirmarLimpiar(){
-  if(placedItems.length===0){toast('El SITAC ya está vacío');return;}
-  if(!confirm('¿Borrar todos los elementos del SITAC?\n('+placedItems.length+' elementos)')) return;
-  placedItems.forEach(function(item){
-    map.removeLayer(item.layer);
-    if(item.extra) map.removeLayer(item.extra);
+  var total = placedItems.length + (imagenOverlay?1:0);
+  if(total===0 && !sectorPreview && !linePreview){toast('El SITAC ya está vacío');return;}
+  if(!confirm('¿Borrar TODOS los elementos del SITAC?\n(símbolos, líneas, sectores e imagen de fondo)')) return;
+
+  // Limpiar todos los items (marcadores, polígonos, líneas)
+  // incluyendo flechas de líneas que se guardaron como capas separadas
+  map.eachLayer(function(layer){
+    if(layer !== satLayer && layer !== claroLayer && layer !== osmLayer && layer !== imagenOverlay){
+      // Solo eliminar capas tácticas (no las de base ni el overlay de imagen)
+      if(layer instanceof L.Marker || layer instanceof L.Polyline || layer instanceof L.Polygon){
+        try{ map.removeLayer(layer); }catch(e){}
+      }
+    }
   });
   placedItems=[];
+
+  // Limpiar previews en curso
   if(sectorPreview){map.removeLayer(sectorPreview);sectorPreview=null;}
   if(linePreview){map.removeLayer(linePreview);linePreview=null;}
   sectorPoints=[];linePoints=[];
-  toast('SITAC borrado');
+
+  // Limpiar imagen de fondo y asas
+  quitarAsasImagen();
+  if(imagenOverlay){map.removeLayer(imagenOverlay);imagenOverlay=null;}
+  mostrarBarraAjusteImagen(false);
+  ajustandoImagen=false;
+
+  // Resetear estado
+  currentMision=''; currentEstado='lugar';
+  cerrarSelector();
+
+  toast('SITAC borrado completamente');
 }
 
 // ── PANEL ──

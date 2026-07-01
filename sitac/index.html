@@ -1004,26 +1004,23 @@ function addLinePoint(latlng){
 function closeLine(){
   if(linePreview){map.removeLayer(linePreview);linePreview=null;}
   var id=++itemCounter;
-  var poly=L.polyline(linePoints,{color:lineColor,weight:3,opacity:0.9}).addTo(map);
+  var poly=L.polyline(linePoints,{color:lineColor,weight:4,opacity:1}).addTo(map);
   var n=linePoints.length;
   var arrowMarker=null;
   if(n>=2){
     var last=linePoints[n-1],prev=linePoints[n-2];
     var pLast=map.latLngToContainerPoint(last);
     var pPrev=map.latLngToContainerPoint(prev);
-    // Ángulo en grados desde prev hacia last
     var deg=Math.atan2(pLast.y-pPrev.y, pLast.x-pPrev.x)*180/Math.PI;
-    // SVG fijo: triángulo apuntando a la DERECHA, centrado en (12,12)
-    // Punta en (20,12), base en (4,4) y (4,20) → tamaño 16x16
-    // Rotamos con CSS transform-origin en el centro (12,12)
-    // iconAnchor en el centro del SVG → la rotación deja la punta en el punto final
-    var arrowSvg='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" '+
-      'style="transform:rotate('+deg+'deg);transform-origin:12px 12px;display:block;">'+
-      '<polygon points="20,12 4,4 4,20" fill="'+lineColor+'"/>'+
+    // Triángulo grande apuntando a la derecha, con borde blanco para contraste
+    // SVG 40x40, centro en (20,20), punta en (34,20), base en (6,8) y (6,32)
+    var arrowSvg='<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" '+
+      'style="transform:rotate('+deg+'deg);transform-origin:20px 20px;display:block;filter:drop-shadow(0 0 2px rgba(0,0,0,0.8));">'+
+      '<polygon points="34,20 6,8 6,32" fill="'+lineColor+'" stroke="white" stroke-width="2" stroke-linejoin="round"/>'+
       '</svg>';
     arrowMarker=L.marker(last,{
-      icon:L.divIcon({html:arrowSvg,className:'',iconAnchor:[12,12]}),
-      interactive:false
+      icon:L.divIcon({html:arrowSvg,className:'',iconAnchor:[20,20]}),
+      interactive:false,zIndexOffset:500
     }).addTo(map);
   }
   poly.on('click',function(e){if(mode==='del'){deleteItem(id);L.DomEvent.stop(e);}});

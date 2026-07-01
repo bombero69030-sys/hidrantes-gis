@@ -211,6 +211,8 @@ header{
   .header-search{max-width:100%;order:3;width:100%;margin-left:0}
   .header-tools{gap:4px}
   .hbtn{font-size:10px;padding:5px 8px}
+  #btn-img{font-size:0}
+  #btn-img::before{content:'🖼';font-size:14px}
   #panel{width:200px}
   #panel-toggle{right:200px}
   #panel-toggle.collapsed{right:0}
@@ -228,11 +230,21 @@ header{
   </div>
   <div class="header-tools">
     <button class="hbtn active" id="btn-sat" onclick="setLayer('sat')">Satélite</button>
+    <button class="hbtn" id="btn-claro" onclick="setLayer('claro')">Táctico</button>
     <button class="hbtn" id="btn-map" onclick="setLayer('map')">Callejero</button>
+    <button class="hbtn" id="btn-img" onclick="abrirSelectorImagen()">🖼 Cargar imagen</button>
     <button class="hbtn sv" onclick="abrirSV()">👁 Street View</button>
     <button class="hbtn peligro" onclick="confirmarLimpiar()">🗑 Borrar todo</button>
   </div>
 </header>
+
+<input type="file" id="input-imagen-fondo" accept="image/*" style="display:none">
+
+<div id="ajuste-img-bar" style="display:none;background:var(--gris-panel);border-bottom:1px solid var(--gris-borde);padding:8px 16px;align-items:center;gap:10px;font-family:var(--font-display);font-size:12px;letter-spacing:.03em;color:var(--texto-muted);z-index:999">
+  🖼 Ajustando imagen — arrastra las esquinas amarillas para encajarla sobre el mapa real
+  <button class="hbtn" style="margin-left:auto;background:rgba(30,132,73,0.18);border-color:rgba(30,132,73,0.5);color:#58D68D" onclick="confirmarAjusteImagen()">✓ Confirmar encaje</button>
+  <button class="hbtn peligro" onclick="cancelarImagenFondo()">Cancelar</button>
+</div>
 
 <div class="app">
   <div id="map"></div>
@@ -471,7 +483,10 @@ header{
 
 <script>
 // ── ESTADO ──
-var map, satLayer, osmLayer;
+var map, satLayer, claroLayer, osmLayer;
+var imagenOverlay = null, imagenFile = null;
+var ajustandoImagen = false, ajusteEsquina = null;
+var imgEsquinaNO = null, imgEsquinaSE = null;
 var mode = 'place';
 var currentSym = 'INC', currentColor = '#E74C3C', currentLabel = 'Incendio';
 var currentParque = 'PALA';
@@ -491,10 +506,25 @@ function initMap(){
     attributionControl:true
   });
 
-  satLayer = L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    {attribution:'© Esri World Imagery',maxZoom:19,maxNativeZoom:18}
+  // Satélite — PNOA (IGN España), ortofoto oficial de alta resolución
+  satLayer = L.tileLayer.wms(
+    'https://www.ign.es/wms-inspire/pnoa-ma',
+    {
+      layers:'OI.OrthoimageCoverage',
+      format:'image/jpeg',
+      transparent:false,
+      attribution:'© PNOA — Instituto Geográfico Nacional',
+      maxZoom:19
+    }
   );
+
+  // Táctico — CARTO Voyager: callejero con color sutil y edificios remarcados con relleno gris
+  claroLayer = L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    {attribution:'© OpenStreetMap, © CARTO',maxZoom:19,subdomains:'abcd'}
+  );
+
+  // Callejero estándar — OpenStreetMap
   osmLayer = L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {attribution:'© OpenStreetMap',maxZoom:19}
@@ -509,15 +539,119 @@ function initMap(){
 
 // ── CAPAS ──
 function setLayer(l){
-  if(l==='sat'){
-    satLayer.addTo(map); map.removeLayer(osmLayer);
-    document.getElementById('btn-sat').classList.add('active');
-    document.getElementById('btn-map').classList.remove('active');
-  } else {
-    osmLayer.addTo(map); map.removeLayer(satLayer);
-    document.getElementById('btn-map').classList.add('active');
-    document.getElementById('btn-sat').classList.remove('active');
+  [satLayer,claroLayer,osmLayer].forEach(function(ly){ if(map.hasLayer(ly)) map.removeLayer(ly); });
+  ['btn-sat','btn-claro','btn-map'].forEach(function(id){
+    document.getElementById(id).classList.remove('active');
+  });
+  if(l==='sat'){ satLayer.addTo(map); document.getElementById('btn-sat').classList.add('active'); }
+  else if(l==='claro'){ claroLayer.addTo(map); document.getElementById('btn-claro').classList.add('active'); }
+  else if(l==='img'){ /* la imagen se queda como overlay encima de la capa base actual ya activa */ }
+  else { osmLayer.addTo(map); document.getElementById('btn-map').classList.add('active'); }
+}
+
+// ── IMAGEN DE FONDO PERSONALIZADA ──
+function abrirSelectorImagen(){
+  if(imagenOverlay && !ajustandoImagen){
+    var accion = confirm('Ya hay una imagen cargada.\n\nAceptar = Reajustar posición\nCancelar = Quitar y cargar otra');
+    if(accion){ reajustarImagen(); return; }
+    quitarImagenFondo();
   }
+  document.getElementById('input-imagen-fondo').click();
+}
+
+document.getElementById('input-imagen-fondo').addEventListener('change', function(){
+  var file = this.files[0];
+  if(!file) return;
+  imagenFile = file;
+  var url = URL.createObjectURL(file);
+  var img = new Image();
+  img.onload = function(){
+    // Posición inicial: centrada en la vista actual, tamaño proporcional al mapa visible
+    var b = map.getBounds();
+    var center = b.getCenter();
+    var latSpan = (b.getNorth()-b.getSouth())*0.6;
+    var lngSpan = latSpan * (img.naturalWidth/img.naturalHeight) / Math.cos(center.lat*Math.PI/180);
+    imgEsquinaNO = L.latLng(center.lat+latSpan/2, center.lng-lngSpan/2);
+    imgEsquinaSE = L.latLng(center.lat-latSpan/2, center.lng+lngSpan/2);
+
+    if(imagenOverlay) map.removeLayer(imagenOverlay);
+    imagenOverlay = L.imageOverlay(url, L.latLngBounds(imgEsquinaNO, imgEsquinaSE), {opacity:1}).addTo(map);
+
+    setLayer('img');
+    iniciarAjusteImagen();
+  };
+  img.src = url;
+  this.value = '';
+});
+
+function iniciarAjusteImagen(){
+  ajustandoImagen = true;
+  mode = 'ajustar-img';
+  dibujarAsasImagen();
+  toast('Arrastra las esquinas amarillas para encajar la imagen sobre el mapa');
+  setStatus('Ajusta la imagen sobre el mapa real y pulsa "Confirmar encaje"');
+  mostrarBarraAjusteImagen(true);
+}
+
+var asaNO = null, asaSE = null;
+function dibujarAsasImagen(){
+  quitarAsasImagen();
+  var iconAsa = function(){
+    return L.divIcon({
+      html:'<div style="width:18px;height:18px;border-radius:50%;background:#FFD700;border:3px solid #1A1A1A;box-shadow:0 0 0 2px #FFD700;cursor:grab"></div>',
+      className:'',iconSize:[18,18],iconAnchor:[9,9]
+    });
+  };
+  asaNO = L.marker(imgEsquinaNO,{icon:iconAsa(),draggable:true,zIndexOffset:1000}).addTo(map);
+  asaSE = L.marker(imgEsquinaSE,{icon:iconAsa(),draggable:true,zIndexOffset:1000}).addTo(map);
+  asaNO.on('drag', actualizarImagenOverlay);
+  asaSE.on('drag', actualizarImagenOverlay);
+}
+function quitarAsasImagen(){
+  if(asaNO){map.removeLayer(asaNO);asaNO=null;}
+  if(asaSE){map.removeLayer(asaSE);asaSE=null;}
+}
+function actualizarImagenOverlay(){
+  imgEsquinaNO = asaNO.getLatLng();
+  imgEsquinaSE = asaSE.getLatLng();
+  imagenOverlay.setBounds(L.latLngBounds(imgEsquinaNO, imgEsquinaSE));
+}
+
+function mostrarBarraAjusteImagen(mostrar){
+  var bar = document.getElementById('ajuste-img-bar');
+  bar.style.display = mostrar ? 'flex' : 'none';
+}
+
+function confirmarAjusteImagen(){
+  ajustandoImagen = false;
+  quitarAsasImagen();
+  mostrarBarraAjusteImagen(false);
+  setMode('place');
+  toast('✓ Imagen encajada sobre el mapa');
+}
+
+function cancelarImagenFondo(){
+  ajustandoImagen = false;
+  quitarAsasImagen();
+  mostrarBarraAjusteImagen(false);
+  if(imagenOverlay){ map.removeLayer(imagenOverlay); imagenOverlay=null; }
+  setLayer('sat');
+  setMode('place');
+}
+
+function reajustarImagen(){
+  if(!imagenOverlay) return;
+  iniciarAjusteImagen();
+}
+
+function quitarImagenFondo(){
+  if(!confirm('¿Quitar la imagen de fondo cargada?')) return;
+  if(imagenOverlay){ map.removeLayer(imagenOverlay); imagenOverlay=null; }
+  imagenFile = null;
+  quitarAsasImagen();
+  mostrarBarraAjusteImagen(false);
+  setLayer('sat');
+  toast('Imagen de fondo eliminada');
 }
 
 // ── BÚSQUEDA ──

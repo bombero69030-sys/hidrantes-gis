@@ -1011,28 +1011,18 @@ function closeLine(){
     var last=linePoints[n-1],prev=linePoints[n-2];
     var pLast=map.latLngToContainerPoint(last);
     var pPrev=map.latLngToContainerPoint(prev);
-    // Ángulo en coordenadas de pantalla (Y invertido)
-    var angle=Math.atan2(pLast.y-pPrev.y, pLast.x-pPrev.x);
-    var sa=Math.sin(angle), ca=Math.cos(angle);
-    var sz=20; // tamaño del triángulo
-    // Triángulo apuntando a la derecha por defecto: punta en (sz,0), base en (0,-sz/2) y (0,sz/2)
-    // Así la punta está en el origen (0,0) antes de rotar
-    function rot(px,py){ return [px*ca-py*sa, px*sa+py*ca]; }
-    var tip=rot(0,0);       // punta → ancla al punto final de la línea
-    var b1=rot(-sz,-sz/2);  // base izq
-    var b2=rot(-sz, sz/2);  // base der
-    // Offset para que quepan en el SVG (desplazar todo sz unidades)
-    var pad=2, ox=sz+pad, oy=sz+pad;
-    var svgW=(sz+pad)*2, svgH=(sz+pad)*2;
-    var pts=(tip[0]+ox)+','+(tip[1]+oy)+' '+
-            (b1[0]+ox)+','+(b1[1]+oy)+' '+
-            (b2[0]+ox)+','+(b2[1]+oy);
-    var arrowSvg='<svg xmlns="http://www.w3.org/2000/svg" width="'+svgW+'" height="'+svgH+'">'+
-      '<polygon points="'+pts+'" fill="'+lineColor+'"/>'+
+    // Ángulo en grados desde prev hacia last
+    var deg=Math.atan2(pLast.y-pPrev.y, pLast.x-pPrev.x)*180/Math.PI;
+    // SVG fijo: triángulo apuntando a la DERECHA, centrado en (12,12)
+    // Punta en (20,12), base en (4,4) y (4,20) → tamaño 16x16
+    // Rotamos con CSS transform-origin en el centro (12,12)
+    // iconAnchor en el centro del SVG → la rotación deja la punta en el punto final
+    var arrowSvg='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" '+
+      'style="transform:rotate('+deg+'deg);transform-origin:12px 12px;display:block;">'+
+      '<polygon points="20,12 4,4 4,20" fill="'+lineColor+'"/>'+
       '</svg>';
-    // iconAnchor en la posición de la punta dentro del SVG = (ox, oy)
     arrowMarker=L.marker(last,{
-      icon:L.divIcon({html:arrowSvg,className:'',iconAnchor:[ox,oy]}),
+      icon:L.divIcon({html:arrowSvg,className:'',iconAnchor:[12,12]}),
       interactive:false
     }).addTo(map);
   }

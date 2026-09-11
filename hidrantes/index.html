@@ -962,6 +962,7 @@ function miPosicion(){
   navigator.geolocation.getCurrentPosition(
     pos => {
       const {latitude: lat, longitude: lon, accuracy} = pos.coords;
+      limpiarRuta();
       // Eliminar marcador anterior
       if(marcadorPosicion) mapa.removeLayer(marcadorPosicion);
       if(circuloPosicion) mapa.removeLayer(circuloPosicion);
@@ -990,24 +991,69 @@ function miPosicion(){
   );
 }
 
+// ============================================
+// HIDRANTE MÁS CERCANO — RUTA REAL (OSRM) CON RESPALDO EN LÍNEA RECTA
+// ============================================
+let capaRuta = null;
+const OSRM_URL = 'https://router.project-osrm.org/route/v1/driving/';
+const OSRM_TIMEOUT = 4000;
+const N_CANDIDATOS = 4;
+
+function limpiarRuta(){
+  if(capaRuta){ mapa.removeLayer(capaRuta); capaRuta = null; }
+  if(marcadorCercano){ mapa.removeLayer(marcadorCercano); marcadorCercano = null; }
+}
+
+function setBtnCercano(texto, deshabilitado){
+  ['btn-cercano','btn-cercano-m'].forEach(id=>{
+    const b = document.getElementById(id);
+    if(b){ b.textContent = texto; b.disabled = deshabilitado; }
+  });
+}
+
+// Pide la ruta por calles a OSRM. Devuelve {dist, dur, coords} o null si falla.
+async function rutaOSRM(lat, lon, h){
+  const ctrl = new AbortController();
+  const t = setTimeout(()=>ctrl.abort(), OSRM_TIMEOUT);
+  try {
+    const url = `${OSRM_URL}${lon},${lat};${h.lon},${h.lat}?overview=full&geometries=geojson`;
+    const r = await fetch(url, {signal: ctrl.signal});
+    if(!r.ok) return null;
+    const data = await r.json();
+    if(data.code !== 'Ok' || !data.routes || !data.routes.length) return null;
+    const ruta = data.routes[0];
+    return {
+      dist: ruta.distance,
+      dur: ruta.duration,
+      coords: ruta.geometry.coordinates.map(([x,y])=>[y,x])
+    };
+  } catch(e){ return null; }
+  finally { clearTimeout(t); }
+}
+
+function fmtDist(m){ return m < 1000 ? `${Math.round(m)} m` : `${(m/1000).toFixed(2)} km`; }
+function fmtDur(s){ const min = Math.round(s/60); return min < 1 ? '< 1 min' : `${min} min`; }
+
 function hidranteCercano(){
   if(!navigator.geolocation){
     mostrarToast('❌ Tu navegador no soporta geolocalización');
     return;
   }
-  if(todosHidrantes.length === 0){
-    mostrarToast('⚠️ No hay hidrantes cargados');
+  // Solo hidrantes con coordenadas y que no estén inoperativos
+  const utilizables = todosHidrantes.filter(h =>
+    h.lat != null && h.lon != null && h.estado !== 'inoperativo'
+  );
+  if(utilizables.length === 0){
+    mostrarToast('⚠️ No hay hidrantes utilizables cargados');
     return;
   }
-  const btn = document.getElementById('btn-cercano');
-  btn.textContent = '⟳ Buscando...';
-  btn.disabled = true;
+  setBtnCercano('⟳ Buscando...', true);
 
   navigator.geolocation.getCurrentPosition(
-    pos => {
+    async pos => {
       const {latitude: lat, longitude: lon, accuracy} = pos.coords;
 
-      // Actualizar marcador de posición
+      // Marcador de posición
       if(marcadorPosicion) mapa.removeLayer(marcadorPosicion);
       if(circuloPosicion) mapa.removeLayer(circuloPosicion);
       const iconoPosicion = L.divIcon({
@@ -1017,62 +1063,82 @@ function hidranteCercano(){
       marcadorPosicion = L.marker([lat,lon],{icon:iconoPosicion,zIndexOffset:1000}).addTo(mapa);
       circuloPosicion = L.circle([lat,lon],{radius:accuracy,color:'#1A73E8',fillColor:'#1A73E8',fillOpacity:0.1,weight:1}).addTo(mapa);
 
-      // Calcular distancias usando fórmula de Haversine
-      let cercano = null;
-      let minDist = Infinity;
-      todosHidrantes.forEach(h => {
-        const d = haversine(lat, lon, h.lat, h.lon);
-        if(d < minDist){ minDist = d; cercano = h; }
+      // 1) Preselección en línea recta
+      const candidatos = utilizables
+        .map(h => ({h, recta: haversine(lat, lon, h.lat, h.lon)}))
+        .sort((a,b) => a.recta - b.recta)
+        .slice(0, N_CANDIDATOS);
+
+      setBtnCercano('⟳ Calculando ruta...', true);
+
+      // 2) Ruta real a cada candidato (en paralelo)
+      const rutas = await Promise.all(candidatos.map(c => rutaOSRM(lat, lon, c.h)));
+      let elegido = null;
+      candidatos.forEach((c,i)=>{
+        if(rutas[i] && (!elegido || rutas[i].dist < elegido.ruta.dist)){
+          elegido = {h: c.h, ruta: rutas[i], recta: c.recta};
+        }
       });
+      const porCalles = !!elegido;
+      if(!elegido) elegido = {h: candidatos[0].h, ruta: null, recta: candidatos[0].recta};
+      const cercano = elegido.h;
 
-      if(!cercano){ mostrarToast('No se encontró ningún hidrante'); return; }
-
-      // Eliminar marcador cercano anterior
-      if(marcadorCercano) mapa.removeLayer(marcadorCercano);
-
-      // Marcador especial para el más cercano
+      // 3) Dibujar
+      limpiarRuta();
       const iconoCercano = L.divIcon({
         html:`<div style="width:38px;height:38px;border-radius:50%;background:#E74C3C;border:4px solid white;box-shadow:0 0 0 4px #E74C3C,0 4px 12px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:16px;animation:pulse 1s infinite">🚒</div>`,
         iconSize:[38,38],iconAnchor:[19,19],className:''
       });
       marcadorCercano = L.marker([cercano.lat,cercano.lon],{icon:iconoCercano,zIndexOffset:2000}).addTo(mapa);
 
-      const distStr = minDist < 1000 ? `${Math.round(minDist)} m` : `${(minDist/1000).toFixed(2)} km`;
+      if(porCalles){
+        capaRuta = L.layerGroup([
+          L.polyline(elegido.ruta.coords,{color:'#FFFFFF',weight:8,opacity:0.9}),
+          L.polyline(elegido.ruta.coords,{color:'#E74C3C',weight:5,opacity:0.95})
+        ]).addTo(mapa);
+      } else {
+        capaRuta = L.polyline([[lat,lon],[cercano.lat,cercano.lon]],{
+          color:'#E74C3C', weight:3, dashArray:'6,8', opacity:0.9
+        }).addTo(mapa);
+      }
 
-      // Línea entre posición e hidrante
-      const linea = L.polyline([[lat,lon],[cercano.lat,cercano.lon]],{
-        color:'#E74C3C', weight:2, dashArray:'6,6', opacity:0.8
-      }).addTo(mapa);
-      setTimeout(()=>mapa.removeLayer(linea), 8000);
+      const distStr = porCalles ? fmtDist(elegido.ruta.dist) : fmtDist(elegido.recta);
+      const lineaDist = porCalles
+        ? `<b>🛣️ Por calles:</b> <span style="color:#E74C3C;font-size:15px;font-weight:700">${distStr}</span> · ${fmtDur(elegido.ruta.dur)}<br>
+           <span style="color:#888;font-size:11px">En línea recta: ${fmtDist(elegido.recta)}</span><br>`
+        : `<b>📏 Línea recta:</b> <span style="color:#E74C3C;font-size:15px;font-weight:700">${distStr}</span><br>
+           <span style="color:#B9770E;font-size:11px">⚠️ Ruta por calles no disponible</span><br>`;
 
       marcadorCercano.bindPopup(`
-        <div style="font-family:sans-serif;min-width:180px">
+        <div style="font-family:sans-serif;min-width:200px">
           <b style="color:#922B21">🚒 Hidrante más cercano</b><br>
           <hr style="margin:6px 0;border-color:#eee">
-          <b>📏 Distancia:</b> <span style="color:#E74C3C;font-size:15px;font-weight:700">${distStr}</span><br>
+          ${lineaDist}
           <b>Ref:</b> ${cercano.ref||cercano.osm_id||'—'}<br>
           <b>Tipo:</b> ${etqTipo(cercano.tipo)}<br>
           <b>Estado:</b> ${etqEstado(cercano.estado)}<br>
           ${cercano.direccion?`<b>Dirección:</b> ${cercano.direccion}<br>`:''}
           ${cercano.diametro?`<b>Diámetro:</b> ${cercano.diametro} mm<br>`:''}
           ${cercano.presion!=null?`<b>Presión:</b> ${cercano.presion} bar<br>`:''}
+          <button onclick="limpiarRuta();mapa.closePopup()" style="margin-top:8px;width:100%;background:#F2F3F4;border:1px solid #ccc;border-radius:5px;padding:5px;cursor:pointer;font-size:12px">✕ Quitar ruta</button>
         </div>
       `).openPopup();
 
-      // Ajustar vista para ver ambos puntos
-      const bounds = L.latLngBounds([[lat,lon],[cercano.lat,cercano.lon]]);
+      // Encuadrar ruta completa
+      const bounds = porCalles
+        ? L.latLngBounds(elegido.ruta.coords)
+        : L.latLngBounds([[lat,lon],[cercano.lat,cercano.lon]]);
       mapa.flyToBounds(bounds, {padding:[80,80], animate:true, duration:1.2});
 
-      btn.textContent = '🚒 Más cercano';
-      btn.disabled = false;
-      mostrarToast(`🚒 Hidrante más cercano a ${distStr}`, 4000);
+      setBtnCercano('🚒 Más cercano', false);
+      mostrarToast(porCalles
+        ? `🚒 Hidrante a ${distStr} por calles (${fmtDur(elegido.ruta.dur)})`
+        : `🚒 Hidrante a ${distStr} en línea recta (sin ruta)`, 4000);
 
-      // Mostrar detalle en sidebar
       mostrarDetalle(cercano.id);
     },
     err => {
-      btn.textContent = '🚒 Más cercano';
-      btn.disabled = false;
+      setBtnCercano('🚒 Más cercano', false);
       const msgs = {1:'Permiso denegado — activa la ubicación', 2:'No se pudo obtener posición', 3:'Tiempo agotado'};
       mostrarToast('❌ ' + (msgs[err.code]||'Error GPS'), 4000);
     },

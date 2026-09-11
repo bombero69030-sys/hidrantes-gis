@@ -962,8 +962,8 @@ async function guardarEdificio(){
     tipo: document.getElementById('f-tipo').value.trim()||null,
     prioridad: document.getElementById('f-prioridad').value,
     direccion: document.getElementById('f-direccion').value.trim()||null,
-    lat: parseFloat(document.getElementById('f-lat').value)||null,
-    lon: parseFloat(document.getElementById('f-lon').value)||null,
+    lat: coordOK(document.getElementById('f-lat').value,document.getElementById('f-lon').value)?parseFloat(document.getElementById('f-lat').value):null,
+    lon: coordOK(document.getElementById('f-lat').value,document.getElementById('f-lon').value)?parseFloat(document.getElementById('f-lon').value):null,
     km: document.getElementById('f-km').value.trim()||'—',
     minutos: document.getElementById('f-min').value.trim()||'—',
     contacto: document.getElementById('f-contacto').value.trim()||null,
@@ -1192,19 +1192,35 @@ async function rutaOSRM(desde,hasta){
   }catch(e){return null;}finally{clearTimeout(t);}
 }
 
+// Coordenadas válidas = dentro de la provincia de Sevilla (evita que un dato mal
+// introducido reviente el mapa: Leaflet intenta cargar teselas infinitas)
+function coordOK(lat,lon){
+  lat=+lat;lon=+lon;
+  return isFinite(lat)&&isFinite(lon)&&lat>36&&lat<38.5&&lon>-7&&lon<-4;
+}
+function coordsInvalidas(b){
+  const pares=[['edificio',b.lat,b.lon],['entrada',b.entrada_lat,b.entrada_lon],['vehículo',b.vehiculo_lat,b.vehiculo_lon]];
+  return pares.filter(([n,la,lo])=>(la!=null&&la!=='')||(lo!=null&&lo!=='')).filter(([n,la,lo])=>!coordOK(la,lo)).map(([n,la,lo])=>`${n}: ${la}, ${lo}`);
+}
 // Punto al que se llega en vehículo: posicionamiento > entrada > edificio
 function puntoLlegada(b){
-  if(b.vehiculo_lat&&b.vehiculo_lon) return {lat:+b.vehiculo_lat,lon:+b.vehiculo_lon};
-  if(b.entrada_lat&&b.entrada_lon) return {lat:+b.entrada_lat,lon:+b.entrada_lon};
-  if(b.lat&&b.lon) return {lat:+b.lat,lon:+b.lon};
+  if(coordOK(b.vehiculo_lat,b.vehiculo_lon)) return {lat:+b.vehiculo_lat,lon:+b.vehiculo_lon};
+  if(coordOK(b.entrada_lat,b.entrada_lon)) return {lat:+b.entrada_lat,lon:+b.entrada_lon};
+  if(coordOK(b.lat,b.lon)) return {lat:+b.lat,lon:+b.lon};
   return null;
 }
 function puntoTendido(b){
-  if(b.entrada_lat&&b.entrada_lon) return {lat:+b.entrada_lat,lon:+b.entrada_lon};
+  if(coordOK(b.entrada_lat,b.entrada_lon)) return {lat:+b.entrada_lat,lon:+b.entrada_lon};
   return puntoLlegada(b);
 }
 
-async function cargarExtrasFicha(b){
+const PARAMS=new URLSearchParams(location.search);
+function cargarExtrasFicha(b){
+  if(PARAMS.has('sinextras')) return;
+  // Esperar a que el navegador haya pintado la ficha antes de crear el mapa
+  requestAnimationFrame(()=>{ _cargarExtrasFicha(b).catch(e=>console.error('Extras ficha:',e)); });
+}
+async function _cargarExtrasFicha(b){
   const token=++fichaCargaToken;
   const setHTML=(id,html)=>{const e=document.getElementById(id);if(e&&token===fichaCargaToken)e.innerHTML=html;};
 
@@ -1212,20 +1228,22 @@ async function cargarExtrasFicha(b){
   if(fichaMapa){fichaMapa.remove();fichaMapa=null;}
   const cont=document.getElementById('ficha-mapa');
   const llegada=puntoLlegada(b);
-  if(!cont||!llegada){
-    if(cont) cont.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--texto-dim);font-size:12px">Sin coordenadas — edita la ficha para situar el edificio</div>';
-  } else {
-    fichaMapa=L.map('ficha-mapa',{zoomControl:true,attributionControl:false});
+  const malas=coordsInvalidas(b);
+  if(!cont||!llegada||PARAMS.has('sinmapa')){
+    if(cont) cont.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:16px;text-align:center;color:'+(malas.length?'#EC7063':'var(--texto-dim)')+';font-size:12px">'+(PARAMS.has('sinmapa')?'Mapa desactivado (modo diagnóstico)':malas.length?'⚠️ Coordenadas no válidas ('+malas.join(' · ')+'). Edita la ficha y vuelve a situar el edificio en el mapa.':'Sin coordenadas — edita la ficha para situar el edificio')+'</div>';
+  } else try {
+    fichaMapa=L.map('ficha-mapa',{zoomControl:true,attributionControl:false,fadeAnimation:false,zoomAnimation:false,markerZoomAnimation:false,minZoom:10,maxZoom:19});
+    fichaMapa.setView([llegada.lat,llegada.lon],17);
     const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(fichaMapa);
     const sat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19});
     L.control.layers({'Callejero':osm,'Satélite':sat},null,{position:'topright'}).addTo(fichaMapa);
     const capas=[];
-    if(b.lat&&b.lon){capas.push(L.marker([b.lat,b.lon],{icon:ICONO_PIN('🏛️','#7B241C'),zIndexOffset:900}).addTo(fichaMapa).bindPopup(`<b>${b.nombre}</b><br>${b.direccion||''}`));}
-    if(b.entrada_lat&&b.entrada_lon){capas.push(L.marker([b.entrada_lat,b.entrada_lon],{icon:ICONO_PIN('🚪','#1E8449'),zIndexOffset:950}).addTo(fichaMapa).bindPopup(`<b>Punto de entrada</b><br>${b.entrada||''}`));}
-    if(b.vehiculo_lat&&b.vehiculo_lon){capas.push(L.marker([b.vehiculo_lat,b.vehiculo_lon],{icon:ICONO_PIN('🚒','#E67E22'),zIndexOffset:1000}).addTo(fichaMapa).bindPopup(`<b>Posicionamiento del vehículo</b><br>${b.acceso||''}`));}
-    fichaMapa.fitBounds(L.featureGroup(capas).getBounds().pad(0.6),{maxZoom:18});
+    if(coordOK(b.lat,b.lon)){capas.push(L.marker([b.lat,b.lon],{icon:ICONO_PIN('🏛️','#7B241C'),zIndexOffset:900}).addTo(fichaMapa).bindPopup(`<b>${b.nombre}</b><br>${b.direccion||''}`));}
+    if(coordOK(b.entrada_lat,b.entrada_lon)){capas.push(L.marker([b.entrada_lat,b.entrada_lon],{icon:ICONO_PIN('🚪','#1E8449'),zIndexOffset:950}).addTo(fichaMapa).bindPopup(`<b>Punto de entrada</b><br>${b.entrada||''}`));}
+    if(coordOK(b.vehiculo_lat,b.vehiculo_lon)){capas.push(L.marker([b.vehiculo_lat,b.vehiculo_lon],{icon:ICONO_PIN('🚒','#E67E22'),zIndexOffset:1000}).addTo(fichaMapa).bindPopup(`<b>Posicionamiento del vehículo</b><br>${b.acceso||''}`));}
+    if(capas.length>1) fichaMapa.fitBounds(L.featureGroup(capas).getBounds().pad(0.6),{maxZoom:18,animate:false});
     setTimeout(()=>fichaMapa&&fichaMapa.invalidateSize(),150);
-  }
+  } catch(e){ console.error('Mapa ficha:',e); if(fichaMapa){try{fichaMapa.remove();}catch(_){}} fichaMapa=null; }
 
   // ---- Ruta desde el parque ----
   if(llegada){
@@ -1242,8 +1260,10 @@ async function cargarExtrasFicha(b){
     }
     if(ruta){
       if(fichaMapa){
-        L.polyline(ruta.coords,{color:'#fff',weight:7,opacity:.9}).addTo(fichaMapa);
-        L.polyline(ruta.coords,{color:'#C0392B',weight:4,opacity:.95}).addTo(fichaMapa);
+        try{
+          L.polyline(ruta.coords,{color:'#fff',weight:7,opacity:.9}).addTo(fichaMapa);
+          L.polyline(ruta.coords,{color:'#C0392B',weight:4,opacity:.95}).addTo(fichaMapa);
+        }catch(e){console.error('Ruta:',e);}
         L.marker([PARQUE.lat,PARQUE.lon],{icon:ICONO_PIN('🏠','#1A5276')}).addTo(fichaMapa).bindPopup(PARQUE.nombre);
       }
       setHTML('ops-dist',`<b style="font-size:15px">${fmtDur(ruta.dur)}</b> · ${fmtDist(ruta.dist)} <span style="color:var(--texto-dim);font-size:11px">por calles</span>${USUARIO&&MODO==='planificacion'?` <button onclick="recalcularRuta('${b.id}')" style="margin-left:6px;background:none;border:1px solid var(--gris-borde2);color:var(--texto-muted);border-radius:4px;font-size:10px;padding:1px 6px;cursor:pointer">↻</button>`:''}`);
@@ -1302,14 +1322,14 @@ function pintarFormPins(){
   const pts=[];
   Object.entries(FORM_PINS).forEach(([k,[e,c,idLat,idLon]])=>{
     const la=parseFloat(document.getElementById(idLat).value),lo=parseFloat(document.getElementById(idLon).value);
-    if(!isNaN(la)&&!isNaN(lo)){formMarcas[k]=L.marker([la,lo],{icon:ICONO_PIN(e,c),draggable:true}).addTo(formMapa);formMarcas[k].on('dragend',ev=>{const p=ev.target.getLatLng();document.getElementById(idLat).value=p.lat.toFixed(6);document.getElementById(idLon).value=p.lng.toFixed(6);});pts.push([la,lo]);}
+    if(coordOK(la,lo)){formMarcas[k]=L.marker([la,lo],{icon:ICONO_PIN(e,c),draggable:true}).addTo(formMapa);formMarcas[k].on('dragend',ev=>{const p=ev.target.getLatLng();document.getElementById(idLat).value=p.lat.toFixed(6);document.getElementById(idLon).value=p.lng.toFixed(6);});pts.push([la,lo]);}
   });
   return pts;
 }
 function initFormMapa(){
   setTimeout(()=>{
     if(!formMapa){
-      formMapa=L.map('form-mapa',{attributionControl:false}).setView([37.158,-5.925],15);
+      formMapa=L.map('form-mapa',{attributionControl:false,fadeAnimation:false,zoomAnimation:false,minZoom:10,maxZoom:19}).setView([37.158,-5.925],15);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(formMapa);
       formMapa.on('click',e=>{
         const [,,idLat,idLon]=FORM_PINS[formPinModo];

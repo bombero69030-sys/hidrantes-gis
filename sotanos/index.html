@@ -235,6 +235,23 @@ header{background:rgba(13,15,18,0.95);border-bottom:1px solid var(--gris-borde);
   .paso-dot span{display:none}
 }
 
+/* FASE 2 · estados y fotos por sección */
+.chip-estado-borrador{background:rgba(230,126,34,0.2);color:#F0A500}
+.chip-estado-validada{background:rgba(30,132,73,0.25);color:#58D68D}
+.chip-vencida{background:rgba(192,57,43,0.25);color:#EC7063}
+.gal-filtros{display:flex;flex-wrap:wrap;gap:4px;padding:8px 10px 4px}
+.gal-filtros span{font-size:10px;padding:3px 8px;border-radius:12px;background:var(--gris-panel2);border:1px solid var(--gris-borde);color:var(--texto-muted);cursor:pointer}
+.gal-filtros span.on{border-color:var(--naranja);color:var(--naranja)}
+.gal-etq{position:absolute;left:0;bottom:0;right:0;background:rgba(0,0,0,.55);color:white;font-size:9px;padding:2px 5px;letter-spacing:.04em;text-transform:uppercase}
+#modal-etiqueta{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9100;display:none;align-items:center;justify-content:center}
+#modal-etiqueta.visible{display:flex}
+.etq-box{background:var(--gris-panel);border:1px solid var(--gris-borde2);border-radius:12px;padding:20px;width:340px;max-width:92vw}
+.etq-box h3{font-family:var(--font-display);font-size:16px;letter-spacing:.04em;margin-bottom:10px}
+.etq-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.etq-grid button{background:var(--gris-panel2);border:1px solid var(--gris-borde2);color:var(--texto);padding:10px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+.etq-grid button:hover{border-color:var(--naranja);color:var(--naranja)}
+.pd-btn-validar{background:rgba(30,132,73,0.25);color:#58D68D;display:none}
+.pd-btn-validar:hover{background:rgba(30,132,73,0.4)}
 @media(max-width:600px){
   .sidebar{width:100%;height:200px;border-right:none;border-bottom:1px solid var(--gris-borde)}
   .app-body{flex-direction:column}
@@ -422,7 +439,20 @@ header{background:rgba(13,15,18,0.95);border-bottom:1px solid var(--gris-borde);
             </div>
             <div class="form-campo">
               <label class="form-label">Fecha inspección</label>
-              <input class="form-input" id="f-fecha" placeholder="DD/MM/AAAA">
+              <input class="form-input" id="f-fecha" placeholder="DD/MM/AAAA" onchange="proponerRevision()">
+            </div>
+            <div class="form-campo">
+              <label class="form-label">Estado de la ficha</label>
+              <select class="form-select" id="f-estado-ficha">
+                <option value="borrador">Borrador — faltan datos</option>
+                <option value="completa">Completa</option>
+                <option value="validada">Validada (jefe de turno)</option>
+              </select>
+            </div>
+            <div class="form-campo">
+              <label class="form-label">Próxima revisión</label>
+              <input class="form-input" id="f-prox-revision" type="date">
+              <div class="form-hint">Por defecto, 2 años tras la inspección</div>
             </div>
           </div>
         </div>
@@ -486,6 +516,13 @@ header{background:rgba(13,15,18,0.95);border-bottom:1px solid var(--gris-borde);
 
 <div id="toast"></div>
 <input type="file" id="input-foto" accept="image/*" multiple style="display:none">
+<div id="modal-etiqueta">
+  <div class="etq-box">
+    <h3>📷 ¿Qué muestra la foto?</h3>
+    <div class="etq-grid" id="etq-grid"></div>
+    <button class="btn-cancelar" style="width:100%;margin-top:10px" onclick="document.getElementById('modal-etiqueta').classList.remove('visible')">Cancelar</button>
+  </div>
+</div>
 <input type="file" id="input-doc" accept=".pdf,.doc,.docx" style="display:none">
 
 <script>
@@ -512,7 +549,9 @@ L.control.layers({
 setTimeout(()=>mapa.invalidateSize(),400);
 window.addEventListener('resize',()=>mapa.invalidateSize());
 
+function coordOK(lat,lon){lat=+lat;lon=+lon;return isFinite(lat)&&isFinite(lon)&&lat>36&&lat<38.5&&lon>-7&&lon<-4;}
 function crearMarcador(s){
+  if(!coordOK(s.lat,s.lon)) return null;
   const icon = L.divIcon({
     html:`<div class="marcador-sotano ${s.humedad_gases?'m-gas':'m-normal'}" title="${s.direccion}">${s.humedad_gases?'⚠️':'🅿️'}</div>`,
     iconSize:[32,32],iconAnchor:[16,16],className:''
@@ -537,7 +576,7 @@ async function cargarDatos(){
 function renderizarTodo(){
   Object.values(marcadores).forEach(m=>mapa.removeLayer(m));
   marcadores = {};
-  sotanos.forEach(s=>{ if(s.lat&&s.lon) marcadores[s.id]=crearMarcador(s); });
+  sotanos.forEach(s=>{ const m=crearMarcador(s); if(m) marcadores[s.id]=m; });
   renderizarLista(sotanos);
   actualizarBarra(sotanos);
   if(sotanos.length>0) mostrarDetalle(sotanos[0].id);
@@ -554,7 +593,8 @@ function renderizarLista(lista){
         ${(Array.isArray(s.riesgos)&&s.riesgos.length)?`<span class="sc-chip chip-alert">⚠ ${s.riesgos.length} riesgo${s.riesgos.length!==1?'s':''}</span>`:''}
         ${s.contacto?`<span class="sc-chip chip-gris">📞 ${s.contacto}</span>`:''}
       </div>
-      <div class="sc-fecha">Inspector: ${s.inspector||'—'} · ${s.fecha_inspeccion||'—'}</div>
+      <div class="sc-chips" style="margin-top:2px">${s.estado_ficha==='borrador'?'<span class="sc-chip chip-estado-borrador">Borrador</span>':s.estado_ficha==='validada'?'<span class="sc-chip chip-estado-validada">✓ Validada</span>':''}${revisionVencida(s)?'<span class="sc-chip chip-vencida">⚠ Revisión vencida</span>':''}</div>
+      <div class="sc-fecha">Inspector: ${s.inspector||'—'} · ${s.fecha_inspeccion||'—'}${s.proxima_revision?' · rev. '+fmtISO(s.proxima_revision):''}</div>
     </div>
   `).join('');
 }
@@ -587,7 +627,7 @@ function mostrarDetalle(id){
   Object.entries(marcadores).forEach(([mid,m])=>{
     m.getElement()?.querySelector('.marcador-sotano')?.classList.toggle('activo',mid===id);
   });
-  if(s.lat&&s.lon&&!mapa.getBounds().contains([s.lat,s.lon])){
+  if(coordOK(s.lat,s.lon)&&!mapa.getBounds().contains([s.lat,s.lon])){
     mapa.flyTo([s.lat,s.lon],16,{animate:true,duration:0.8});
   }
 
@@ -601,11 +641,14 @@ function mostrarDetalle(id){
   const riesgos = Array.isArray(s.riesgos)?s.riesgos:[];
   const plantas = Array.isArray(s.plantas)?s.plantas:[];
 
+  const etqPresentes=[...new Set(fotos.map(f=>f.etiqueta||'otra'))];
   const galeriaHTML = `
-    <div class="galeria">
+    ${fotos.length>1&&etqPresentes.length>1?`<div class="gal-filtros"><span class="on" onclick="filtrarGaleria(this,'')">Todas (${fotos.length})</span>${etqPresentes.map(e=>`<span onclick="filtrarGaleria(this,'${e}')">${ETQ_MAP[e]||e} (${fotos.filter(f=>(f.etiqueta||'otra')===e).length})</span>`).join('')}</div>`:''}
+    <div class="galeria" id="galeria-sot">
       ${fotos.map(f=>`
-        <div class="galeria-foto">
+        <div class="galeria-foto" data-etq="${f.etiqueta||'otra'}">
           <img src="${f.url}" loading="lazy" onclick="abrirLightbox('${f.url}')">
+          ${f.etiqueta?`<div class="gal-etq">${ETQ_MAP[f.etiqueta]||f.etiqueta}</div>`:''}
           <button class="btn-del-foto${USUARIO?' admin':''}" onclick="eliminarFoto('${id}','${f.url}')">×</button>
         </div>
       `).join('')}
@@ -641,6 +684,8 @@ function mostrarDetalle(id){
       <div class="pd-fila"><span class="pd-clave">Contacto</span><span class="pd-valor">${s.contacto?`${s.contacto}${s.contacto_rol?' <span style="color:var(--texto-dim)">('+s.contacto_rol+')</span>':''}${s.contacto_tel?`<br><a href="tel:${s.contacto_tel}" style="color:#5DADE2;text-decoration:none">📞 ${s.contacto_tel}</a>`:''}`:'No registrado'}</span></div>
       <div class="pd-fila"><span class="pd-clave">Coordenadas</span><span class="pd-valor">${s.lat?s.lat.toFixed(5)+', '+s.lon.toFixed(5):'—'}</span></div>
       <div class="pd-fila"><span class="pd-clave">Inspector</span><span class="pd-valor">${s.inspector||'—'} · ${s.fecha_inspeccion||'—'}</span></div>
+      <div class="pd-fila"><span class="pd-clave">Estado</span><span class="pd-valor"><span class="cond-badge ${s.estado_ficha==='validada'?'chip-estado-validada':s.estado_ficha==='borrador'?'chip-estado-borrador':'chip-gris'}">${s.estado_ficha==='validada'?'✓ Validada'+(s.validado_por?' · '+s.validado_por:''):s.estado_ficha==='borrador'?'Borrador':'Completa'}</span></span></div>
+      <div class="pd-fila"><span class="pd-clave">Próxima revisión</span><span class="pd-valor" style="${revisionVencida(s)?'color:#EC7063;font-weight:700':''}">${revisionVencida(s)?'⚠ ':''}${fmtISO(s.proxima_revision)}</span></div>
     </div>
     <div class="pd-seccion">
       <div class="pd-sec-titulo">Accesos (${accesosArr.length})</div>
@@ -669,6 +714,7 @@ function mostrarDetalle(id){
     <div class="pd-acciones">
       <button class="pd-btn pd-btn-osm" onclick="verOSM('${id}')">🗺 OSM</button>
       <button class="pd-btn pd-btn-editar" id="pd-editar" onclick="abrirFormEditar('${id}')">✏️ Editar</button>
+      ${s.estado_ficha!=='validada'?`<button class="pd-btn pd-btn-validar" id="pd-validar" onclick="validarSotano('${id}')">✓ Validar</button>`:''}
       <button class="pd-btn pd-btn-borrar" id="pd-borrar" onclick="borrarSotano('${id}')">🗑 Borrar</button>
     </div>
   `;
@@ -676,6 +722,7 @@ function mostrarDetalle(id){
   if(USUARIO){
     document.getElementById('pd-editar').style.display='block';
     document.getElementById('pd-borrar').style.display='block';
+    const v=document.getElementById('pd-validar');if(v)v.style.display='block';
   }
   renderizarLista(sotanos.filter(s=>{
     const q=document.getElementById('busqueda').value.toLowerCase();
@@ -691,6 +738,12 @@ function cerrarDetalle(){
 function verOSM(id){
   const s=sotanos.find(x=>x.id===id);
   if(s&&s.lat) window.open(`https://www.openstreetmap.org/?mlat=${s.lat}&mlon=${s.lon}&zoom=18`,'_blank');
+}
+
+async function validarSotano(id){
+  if(!confirm('¿Marcar esta ficha como validada? Se registrará tu usuario y la fecha.')) return;
+  await patchSotano(id,{estado_ficha:'validada',validado_por:USUARIO,validado_en:new Date().toISOString()});
+  mostrarDetalle(id);renderizarLista(sotanos);mostrarToast('✅ Ficha validada');
 }
 
 async function borrarSotano(id){
@@ -709,7 +762,17 @@ async function borrarSotano(id){
 // ============================================
 // FOTOS
 // ============================================
-function iniciarFoto(id){subiendoParaId=id;document.getElementById('input-foto').click();}
+let etiquetaFoto='otra';
+function iniciarFoto(id){
+  subiendoParaId=id;
+  document.getElementById('etq-grid').innerHTML=ETIQUETAS_FOTO.map(([k,l])=>`<button type="button" onclick="elegirEtiqueta('${k}')">${l}</button>`).join('');
+  document.getElementById('modal-etiqueta').classList.add('visible');
+}
+function elegirEtiqueta(k){etiquetaFoto=k;document.getElementById('modal-etiqueta').classList.remove('visible');document.getElementById('input-foto').click();}
+function filtrarGaleria(el,etq){
+  el.parentElement.querySelectorAll('span').forEach(x=>x.classList.remove('on'));el.classList.add('on');
+  document.querySelectorAll('#galeria-sot .galeria-foto').forEach(f=>{f.style.display=(!etq||f.dataset.etq===etq)?'':'none';});
+}
 
 document.getElementById('input-foto').addEventListener('change',async function(){
   const files=Array.from(this.files);if(!files.length)return;
@@ -723,7 +786,7 @@ document.getElementById('input-foto').addEventListener('change',async function()
       const r=await fetch(`${SB}/storage/v1/object/sotanos-fotos/${path}`,{
         method:'POST',headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':file.type},body:file
       });
-      if(r.ok) fotos.push({url:`${SB}/storage/v1/object/public/sotanos-fotos/${path}`,path});
+      if(r.ok) fotos.push({url:`${SB}/storage/v1/object/public/sotanos-fotos/${path}`,path,etiqueta:etiquetaFoto});
     }catch(e){}
   }
   await patchSotano(subiendoParaId,{fotos});
@@ -799,6 +862,18 @@ let marcadoresAcceso = [];
 let pinAccesoIdx = null;
 let _borradorT = null;
 
+const ETIQUETAS_FOTO=[['fachada','Fachada / portal'],['rampa','Rampa / acceso vehículos'],['acceso','Puerta / escalera'],['cuadro','Cuadro eléctrico'],['pci','Extintores / BIEs / detección'],['p1','Planta −1'],['p2','Planta −2'],['p3','Planta −3'],['riesgo','Riesgo específico'],['otra','Otra']];
+const ETQ_MAP=Object.fromEntries(ETIQUETAS_FOTO);
+function parseFechaES(t){const m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec((t||'').trim());return m?new Date(+m[3],+m[2]-1,+m[1]):null;}
+function isoFecha(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function fmtISO(iso){if(!iso)return '—';const [y,m,d]=iso.split('-');return `${d}/${m}/${y}`;}
+function revisionVencida(s){return s.proxima_revision&&s.proxima_revision<isoFecha(new Date());}
+function proponerRevision(){
+  const el=document.getElementById('f-prox-revision');
+  if(el.value) return;
+  const f=parseFechaES(document.getElementById('f-fecha').value)||new Date();
+  f.setFullYear(f.getFullYear()+2);el.value=isoFecha(f);
+}
 function hoyDDMMAAAA(){const d=new Date();return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();}
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
 function haversine(lat1,lon1,lat2,lon2){const R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
@@ -1013,7 +1088,9 @@ function recogerForm(){
     contacto_rol:v('f-contacto-rol')||null,
     observaciones:v('f-obs').trim()||null,
     inspector:v('f-inspector').trim()||'B-31',
-    fecha_inspeccion:v('f-fecha').trim()||null
+    fecha_inspeccion:v('f-fecha').trim()||null,
+    estado_ficha:v('f-estado-ficha'),
+    proxima_revision:v('f-prox-revision')||null
   };
 }
 function rellenarForm(s){
@@ -1041,6 +1118,7 @@ function rellenarForm(s){
   set('f-riesgos-otro',(rs.find(k=>k.startsWith('otro:'))||'').slice(5));
   set('f-contacto',s.contacto);set('f-contacto-tel',s.contacto_tel);set('f-contacto-rol',s.contacto_rol||'');
   set('f-obs',s.observaciones);set('f-inspector',s.inspector||'B-31');set('f-fecha',s.fecha_inspeccion);
+  set('f-estado-ficha',s.estado_ficha||'completa');set('f-prox-revision',s.proxima_revision||'');if(!s.proxima_revision)proponerRevision();
 }
 function limpiarForm(){
   accesosForm=[];pinAccesoIdx=null;
@@ -1125,7 +1203,7 @@ function irPaso(n){
 function validarPaso(n){
   if(n===1){
     if(!document.getElementById('f-direccion').value.trim()){mostrarToast('⚠️ La dirección es obligatoria');return false;}
-    if(!document.getElementById('f-lat').value){mostrarToast('⚠️ Sitúa el edificio en el mapa');return false;}
+    if(!coordOK(document.getElementById('f-lat').value,document.getElementById('f-lon').value)){mostrarToast('⚠️ Sitúa el edificio en el mapa');return false;}
   }
   if(n===2&&!accesosForm.length){mostrarToast('⚠️ Registra al menos un acceso');return false;}
   return true;
@@ -1148,6 +1226,7 @@ function renderRevision(){
   const rampas=d.accesos.filter(a=>a.tipo==='rampa');
   if(rampas.length&&rampas.some(a=>!a.galibo_alto)) avisos.push(['warn','Hay rampas sin gálibo registrado']);
   if(!d.contacto_tel) avisos.push(['warn','Sin teléfono de contacto']);
+  if(d.estado_ficha==='validada'&&!USUARIO) avisos.push(['warn','Solo un usuario con sesión puede validar']);
   const nd=PCI_ITEMS.filter(([k])=>d.pci[k]==='nd').length;
   if(nd>=4) avisos.push(['warn',`${nd} instalaciones de PCI sin comprobar`]);
   document.getElementById('revision-avisos').innerHTML=avisos.map(([t,m])=>`<div class="rev-aviso ${t}">${t==='err'?'⛔':'⚠️'} ${m}</div>`).join('')||'<div class="rev-aviso" style="background:rgba(30,132,73,0.15);border:1px solid rgba(30,132,73,0.4);color:#58D68D">✓ Ficha completa</div>';
@@ -1158,7 +1237,7 @@ function renderRevision(){
     <div class="rev-bloque"><b>PCI</b>${si.length?si.join(', '):'Ninguna confirmada'}<br>Ventilación: ${esc(d.pci.ventilacion_tipo)} · Iluminación: ${esc(d.iluminacion)}${d.humedad_gases?' · <span style="color:#EC7063">⚠ gases</span>':''}</div>
     <div class="rev-bloque"><b>Riesgos</b>${d.riesgos.length?d.riesgos.map(etqRiesgo).join(', '):'Ninguno marcado'}</div>
     <div class="rev-bloque"><b>Contacto</b>${d.contacto?esc(d.contacto)+(d.contacto_rol?' ('+esc(d.contacto_rol)+')':'')+(d.contacto_tel?' · '+esc(d.contacto_tel):''):'No registrado'}</div>
-    <div class="rev-bloque"><b>Inspección</b>${esc(d.inspector)} · ${esc(d.fecha_inspeccion)||'—'}</div>`;
+    <div class="rev-bloque"><b>Inspección</b>${esc(d.inspector)} · ${esc(d.fecha_inspeccion)||'—'}<br>Estado: ${d.estado_ficha} · Próxima revisión: ${fmtISO(d.proxima_revision)}</div>`;
 }
 
 // ---------- Guardar ----------
@@ -1178,7 +1257,7 @@ async function guardarSotano(){
       const idx=sotanos.findIndex(x=>x.id===editandoId);
       sotanos[idx]={...sotanos[idx],...u};
       if(marcadores[editandoId]){mapa.removeLayer(marcadores[editandoId]);delete marcadores[editandoId];}
-      if(u.lat&&u.lon) marcadores[u.id]=crearMarcador(sotanos[idx]);
+      { const m=crearMarcador(sotanos[idx]); if(m) marcadores[u.id]=m; }
       borrarBorrador();cerrarForm();
       mostrarToast('✅ Sótano actualizado');
       mostrarDetalle(editandoId);
@@ -1187,7 +1266,7 @@ async function guardarSotano(){
       if(!r.ok)throw new Error(await r.text());
       const [nuevo]=await r.json();
       sotanos.push(nuevo);
-      if(nuevo.lat&&nuevo.lon) marcadores[nuevo.id]=crearMarcador(nuevo);
+      { const m=crearMarcador(nuevo); if(m) marcadores[nuevo.id]=m; }
       borrarBorrador();cerrarForm();
       seleccionado=nuevo.id;
       mostrarToast('✅ Sótano añadido');

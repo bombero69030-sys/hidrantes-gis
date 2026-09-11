@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fichas de Rescate · Patrimonio · Bomberos Los Palacios</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{--rojo:#8B1A1A;--rojo-dark:#5C0F0F;--naranja:#C05000;--verde:#166534;--gris-oscuro:#1A1A1A;--gris-medio:#2D2D2D;--gris-panel:#F5F2EE;--gris-borde:#DDD8D0;--texto:#1A1A1A;--texto-muted:#6B6560;--blanco:#FFFEF9;--crema:#F9F6F0;--font-display:'Oswald',sans-serif;--font-body:'Source Serif 4',serif}
@@ -289,6 +290,74 @@ body{font-family:var(--font-body);background:var(--crema);color:var(--texto);hei
   .stats-strip{grid-template-columns:1fr 1fr}
   .sel-grid{grid-template-columns:1fr}
 }
+/* ===== FASE 3 · TEMA OSCURO UNIFICADO CON EL PORTAL ===== */
+:root{--rojo:#C0392B;--rojo-dark:#7B241C;--naranja:#E67E22;--verde:#1E8449;--gris-oscuro:#0D0F12;--gris-medio:#161A1F;--gris-panel:#1E232B;--gris-borde:#2A2F38;--texto:#F0F2F5;--texto-muted:#8892A0;--blanco:#161A1F;--crema:#0D0F12;--font-display:'Barlow Condensed',sans-serif;--font-body:'Barlow',sans-serif}
+.riesgo-fuego{background:rgba(192,57,43,0.25);color:#F5B7B1}
+.riesgo-agua{background:rgba(26,82,118,0.4);color:#85C1E9}
+.riesgo-estruc{background:rgba(230,126,34,0.25);color:#F8C471}
+.riesgo-mani{background:rgba(108,52,131,0.35);color:#D2B4DE}
+.riesgo-inam{background:rgba(30,132,73,0.25);color:#82E0AA;border:1px solid rgba(30,132,73,0.5)}
+.alerta-box{background:rgba(192,57,43,0.12);color:#F5B7B1}
+.cabecera{border-bottom:3px solid var(--rojo)}
+.sel-card:hover{box-shadow:0 6px 20px rgba(192,57,43,.25)}
+.bien-card:hover{box-shadow:0 4px 12px rgba(192,57,43,.25)}
+.sel-card-img-ph,.ficha-hero-ph{background:linear-gradient(135deg,#2A1A1A,#161A1F)}
+.zona-titulo{background:var(--gris-panel);border-left:3px solid var(--rojo)}
+.bf-input,.bf-select,.bf-textarea,.login-input{background:var(--gris-panel);border-color:var(--gris-borde);color:var(--texto)}
+.bf-input::placeholder,.login-input::placeholder{color:#5A6475}
+.bien-form,.login-box{background:var(--gris-medio);border:1px solid var(--gris-borde);color:var(--texto)}
+.bf-btn-guardar:disabled{background:#555}
+.stat-val{color:var(--texto)}
+/* ORDEN DE RESCATE */
+.orden-wrap{padding:20px}
+.orden-cab{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.orden-titulo{font-family:var(--font-display);font-size:22px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--texto)}
+.orden-sub{font-size:12px;color:var(--texto-muted)}
+.orden-kpis{display:flex;gap:8px;flex-wrap:wrap}
+.kpi{background:var(--gris-panel);border:1px solid var(--gris-borde);border-radius:6px;padding:6px 12px;text-align:center;min-width:64px}
+.kpi b{display:block;font-family:var(--font-display);font-size:20px;line-height:1}
+.kpi span{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-muted)}
+.orden-tabla{width:100%;border-collapse:collapse;font-size:12px}
+.orden-tabla th{font-family:var(--font-display);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-muted);text-align:left;padding:6px 8px;border-bottom:2px solid var(--gris-borde)}
+.orden-tabla td{padding:8px;border-bottom:1px solid var(--gris-borde);vertical-align:top}
+.orden-tabla tr{cursor:pointer}
+.orden-tabla tr:hover td{background:rgba(255,255,255,0.03)}
+.orden-num{font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--texto-muted);width:34px}
+.orden-cod{font-family:var(--font-display);font-weight:800;font-size:12px;padding:2px 8px;border-radius:3px;display:inline-block;min-width:32px;text-align:center}
+.cod-R1{background:#C0392B;color:#fff}.cod-R2{background:#E67E22;color:#fff}.cod-R3{background:#B7950B;color:#fff}.cod-RI{background:#5A6475;color:#fff}
+.orden-nombre{font-weight:600;font-size:13px}
+.orden-ubi{color:var(--texto-muted);font-size:11px}
+.orden-nota{font-size:11px;color:#F5B7B1;line-height:1.35}
+.orden-sep td{background:var(--gris-panel);font-family:var(--font-display);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:5px 8px;color:var(--texto-muted);border-bottom:none;cursor:default}
+/* CROQUIS */
+.croquis-wrap{position:relative;background:var(--gris-panel);border:1px solid var(--gris-borde);border-radius:6px;overflow:hidden;margin-bottom:16px}
+.croquis-wrap img{width:100%;display:block;background:#fff}
+.croquis-pin{position:absolute;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;border:2px solid #fff;color:#fff;font-family:var(--font-display);font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.6);cursor:pointer}
+.croquis-pin.activo{transform:translate(-50%,-50%) scale(1.35);z-index:2}
+.croquis-vacio{padding:18px;text-align:center;color:var(--texto-muted);font-size:12px;border:2px dashed var(--gris-borde);border-radius:6px;margin-bottom:16px}
+.croquis-acciones{display:flex;gap:6px;position:absolute;top:6px;right:6px}
+.croquis-btn{font-family:var(--font-display);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;background:rgba(0,0,0,.65);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:3px;cursor:pointer}
+.croquis-mini{position:relative;width:100%;max-width:360px;border:1px solid var(--gris-borde);border-radius:4px;overflow:hidden;margin-top:8px}
+.croquis-mini img{width:100%;display:block;background:#fff}
+.bf-croquis{position:relative;border:1px solid var(--gris-borde);border-radius:4px;overflow:hidden;cursor:crosshair;margin-top:4px}
+.bf-croquis img{width:100%;display:block;background:#fff}
+/* IMPRESIÓN: fondo claro */
+@media print{
+  :root{--gris-oscuro:#1A1A1A;--gris-medio:#2D2D2D;--gris-panel:#F5F2EE;--gris-borde:#DDD8D0;--texto:#1A1A1A;--texto-muted:#6B6560;--blanco:#FFFEF9;--crema:#FFFFFF}
+  body{background:#fff;height:auto;overflow:visible}
+  .cabecera,.panel,.cab-der,.badge-upload,.no-print{display:none!important}
+  .layout,.pantalla-fichas{display:block;height:auto}
+  .main,#app-container{overflow:visible!important;height:auto!important}
+  .orden-tabla td,.orden-tabla th{border-color:#ccc}
+  .orden-sep td{background:#eee}
+  .cod-R1,.cod-R2,.cod-R3,.cod-RI,.badge-rescate,.stats-strip,.riesgo-chip,.croquis-pin{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .riesgo-fuego{background:#FEE2E2;color:#7F1D1D}.riesgo-agua{background:#DBEAFE;color:#1E3A5F}.riesgo-estruc{background:#FEF3C7;color:#78350F}.riesgo-mani{background:#F3E8FF;color:#4A1D96}.riesgo-inam{background:#F0FDF4;color:#14532D}
+  .orden-nota{color:#7F1D1D}
+  .kpi{border:1px solid #ccc}
+  .orden-tabla tr{page-break-inside:avoid}
+  .stat-val{color:#fff}
+}
+
 </style>
 </head>
 <body>
@@ -306,6 +375,7 @@ body{font-family:var(--font-body);background:var(--crema);color:var(--texto);hei
     <div class="cab-sep"></div>
     <button class="cab-btn active" id="btn-ficha" onclick="setVista('ficha')" style="display:none">Ficha individual</button>
     <button class="cab-btn" id="btn-edificio" onclick="setVista('edificio')" style="display:none">Vista edificio</button>
+    <button class="cab-btn" id="btn-orden" onclick="setVista('orden')" style="display:none">🚒 Orden de rescate</button>
     <button class="cab-btn" id="btn-volver" onclick="volverSelector()" style="display:none">↩ Edificios</button>
     <button class="cab-btn" onclick="window.print()" style="display:none" id="btn-imprimir">🖨 Imprimir</button>
     <div class="cab-sep"></div>
@@ -345,11 +415,15 @@ body{font-family:var(--font-body);background:var(--crema);color:var(--texto);hei
       </div>
       <div class="bf-campo">
         <label class="bf-label">Zona</label>
-        <input class="bf-input" id="bf-zona" placeholder="Altar Mayor / Camarín">
+        <input class="bf-input" id="bf-zona" list="zonas-std" placeholder="Altar Mayor / Camarín"><datalist id="zonas-std"></datalist>
       </div>
       <div class="bf-campo">
         <label class="bf-label">Ubicación exacta</label>
         <input class="bf-input" id="bf-ubicacion" placeholder="Hornacina central del retablo...">
+      </div>
+      <div class="bf-campo full">
+        <label class="bf-label">Situar en croquis</label>
+        <div id="bf-croquis-cont"></div>
       </div>
       <div class="bf-campo">
         <label class="bf-label">Prioridad rescate</label>
@@ -437,6 +511,7 @@ body{font-family:var(--font-body);background:var(--crema);color:var(--texto);hei
 </div>
 
 <input type="file" id="input-foto" accept="image/*" style="display:none">
+<input type="file" id="input-croquis" accept="image/*" style="display:none">
 <div id="toast"></div>
 
 <script>
@@ -577,18 +652,19 @@ async function abrirEdificio(id, nombre){
   document.getElementById('cab-titulo').textContent = 'Fichas de Rescate · Patrimonio';
   document.getElementById('cab-sub').textContent = nombre + ' · Los Palacios y Villafranca';
   // Mostrar botones
-  ['btn-ficha','btn-edificio','btn-volver','btn-imprimir'].forEach(b=>{
+  ['btn-ficha','btn-edificio','btn-orden','btn-volver','btn-imprimir'].forEach(b=>{
     document.getElementById(b).style.display='inline-block';
   });
   // Cambiar pantallas
   mostrarFichasHTML();
+  await cargarCroquis(id);
   // Cargar bienes
   await cargarBienes(id);
 }
 
 function volverSelector(){
   mostrarSelectorHTML();
-  ['btn-ficha','btn-edificio','btn-volver','btn-imprimir'].forEach(b=>{
+  ['btn-ficha','btn-edificio','btn-orden','btn-volver','btn-imprimir'].forEach(b=>{
     document.getElementById(b).style.display='none';
   });
   edificioActual = null;
@@ -686,7 +762,9 @@ function setVista(v){
   vista = v;
   document.getElementById('btn-ficha').classList.toggle('active', v==='ficha');
   document.getElementById('btn-edificio').classList.toggle('active', v==='edificio');
+  document.getElementById('btn-orden').classList.toggle('active', v==='orden');
   if(v==='ficha') mostrarFicha(seleccionado);
+  else if(v==='orden') mostrarOrden();
   else mostrarEdificio();
 }
 
@@ -734,7 +812,9 @@ function mostrarFicha(id){
       </div>
       <div class="seccion">
         <div class="sec-header">Ubicación en el edificio</div>
-        <div class="zona-mapa"><div><div class="cl">Localización exacta</div><div class="zona-valor">${b.ubicacion||'—'}</div></div></div>
+        <div class="zona-mapa" style="flex-direction:column;align-items:stretch"><div><div class="cl">Localización exacta</div><div class="zona-valor">${b.ubicacion||'—'}</div></div>
+          ${edificioCroquis&&b.croquis_x!=null?`<div class="croquis-mini"><img src="${edificioCroquis}" alt=""><div class="croquis-pin activo" style="left:${b.croquis_x}%;top:${b.croquis_y}%;background:${colorCod(b.rescate_codigo)}">${numeroOrden(b.id)}</div></div>`:''}
+        </div>
       </div>
       <div class="seccion">
         <div class="sec-header">Datos del bien</div>
@@ -780,6 +860,7 @@ function mostrarEdificio(){
         <span>Fichas de rescate — ${bienesActuales.length} bienes catalogados · Haz clic en un bien para ver su ficha</span>
         ${USUARIO?`<button class="bf-nuevo-btn" onclick="abrirFormNuevoBien()">+ Añadir bien</button>`:''}
       </div>
+      ${renderCroquisHTML(null,true)}
       ${zonas.map(zona=>`
         <div class="zona-grupo">
           <div class="zona-titulo">${zona}</div>
@@ -874,6 +955,7 @@ function editarBien(id){
   ['fuego','agua','estruc','mani','inam'].forEach(r=>{
     document.getElementById('bf-r-'+r).checked = riesgos.includes(r);
   });
+  croquisPinX=b.croquis_x??null;croquisPinY=b.croquis_y??null;rellenarZonas();renderCroquisForm();
   document.getElementById('bf-btn-borrar').style.display='inline-block';
   document.getElementById('modal-bien').classList.add('visible');
 }
@@ -886,6 +968,7 @@ function abrirFormNuevoBien(){
   document.getElementById('bf-rescate').value='R1';
   document.getElementById('bf-orden').value='';
   ['fuego','agua','estruc','mani','inam'].forEach(r=>document.getElementById('bf-r-'+r).checked=false);
+  croquisPinX=null;croquisPinY=null;rellenarZonas();renderCroquisForm();
   document.getElementById('bf-btn-borrar').style.display='none';
   document.getElementById('modal-bien').classList.add('visible');
 }
@@ -905,6 +988,7 @@ async function guardarBien(){
     ubicacion: document.getElementById('bf-ubicacion').value.trim()||null,
     rescate_codigo: document.getElementById('bf-rescate').value,
     orden_rescate: parseInt(document.getElementById('bf-orden').value)||99,
+    croquis_x: croquisPinX, croquis_y: croquisPinY,
     autor: document.getElementById('bf-autor').value.trim()||null,
     cronologia: document.getElementById('bf-cronologia').value.trim()||null,
     tipo: document.getElementById('bf-tipo').value.trim()||null,
@@ -1072,6 +1156,118 @@ async function confirmarCropper(){
 // ============================================
 // AUTH
 // ============================================
+
+// ============================================
+// FASE 3 · ORDEN DE RESCATE · ZONAS · CROQUIS
+// ============================================
+const ZONAS_STD=['Altar mayor / Presbiterio','Camarín','Retablo lateral — lado derecho','Retablo lateral — lado izquierdo','Crucero — lado derecho','Crucero — lado izquierdo','Nave central','Nave lateral — derecha','Nave lateral — izquierda','Capilla lateral','Coro','Sacristía','Sala capitular','Archivo','Casa-hermandad','Almacén de pasos','Cubierta / artesonado','Muros / yeserías','Exterior / fachada'];
+const RANGO_COD={R1:1,R2:2,R3:3,RI:9};
+let edificioCroquis=null;
+let croquisPinX=null,croquisPinY=null;
+
+function bienesOrdenados(){
+  return [...bienesActuales].sort((a,b)=>(RANGO_COD[a.rescate_codigo]||5)-(RANGO_COD[b.rescate_codigo]||5)||(a.orden_rescate||99)-(b.orden_rescate||99)||(a.nombre||'').localeCompare(b.nombre||''));
+}
+function personasMax(p){const m=String(p||'').match(/\d+/g);return m?Math.max(...m.map(Number)):0;}
+function notaCorta(t,n=140){if(!t)return '';t=t.replace(/\s+/g,' ').trim();if(t.length<=n)return t;const c=t.slice(0,n);return c.slice(0,Math.max(c.lastIndexOf('. '),c.lastIndexOf(' ')))+'…';}
+
+function mostrarOrden(){
+  const nombre=document.getElementById('cab-sub').textContent.split(' · ')[0];
+  const lista=bienesOrdenados();
+  const c={};lista.forEach(b=>c[b.rescate_codigo]=(c[b.rescate_codigo]||0)+1);
+  const efR1=lista.filter(b=>b.rescate_codigo==='R1').reduce((s,b)=>s+personasMax(b.personas),0);
+  let ultimo=null;
+  const filas=lista.map((b,i)=>{
+    const sep=b.rescate_codigo!==ultimo?`<tr class="orden-sep"><td colspan="6">${rescateLabel[b.rescate_codigo]||b.rescate_codigo}${c[b.rescate_codigo]?' · '+c[b.rescate_codigo]+' bien'+(c[b.rescate_codigo]!==1?'es':''):''}</td></tr>`:'';
+    ultimo=b.rescate_codigo;
+    const riesgos=(Array.isArray(b.riesgos)?b.riesgos:[]).map(r=>`<span class="riesgo-chip ${riesgoClass[r]||''}" style="font-size:9px;padding:1px 5px">${riesgoLabels[r]||r}</span>`).join('');
+    return sep+`<tr onclick="seleccionar('${b.id}');setVista('ficha')">
+      <td class="orden-num">${b.rescate_codigo==='RI'?'—':i+1}</td>
+      <td><span class="orden-cod cod-${b.rescate_codigo||'RI'}">${b.rescate_codigo||'—'}</span></td>
+      <td><div class="orden-nombre">${b.nombre}</div><div class="orden-ubi">${[b.zona,b.ubicacion].filter(Boolean).join(' · ')}</div></td>
+      <td style="white-space:nowrap;font-family:var(--font-display);font-size:15px;font-weight:700">${b.rescate_codigo==='RI'?'<span style="color:var(--texto-muted);font-size:11px">in situ</span>':(b.personas||'—')}</td>
+      <td>${riesgos||'—'}</td>
+      <td class="orden-nota">${notaCorta(b.notas)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('main-content').innerHTML=`
+    <div class="orden-wrap">
+      <div class="orden-cab">
+        <div><div class="orden-titulo">Orden de rescate</div><div class="orden-sub">${nombre} · ${lista.length} bienes · generado ${new Date().toLocaleDateString('es-ES')}</div></div>
+        <div class="orden-kpis">
+          <div class="kpi"><b style="color:#EC7063">${c.R1||0}</b><span>R1</span></div>
+          <div class="kpi"><b style="color:#F0A500">${c.R2||0}</b><span>R2</span></div>
+          <div class="kpi"><b style="color:#D4AC0D">${c.R3||0}</b><span>R3</span></div>
+          <div class="kpi"><b>${c.RI||0}</b><span>Inamov.</span></div>
+          <div class="kpi"><b>${efR1}</b><span>Efectivos R1</span></div>
+        </div>
+      </div>
+      ${renderCroquisHTML(lista,true)}
+      <table class="orden-tabla">
+        <thead><tr><th>#</th><th>Cód.</th><th>Bien · localización</th><th>Pers.</th><th>Riesgos</th><th>Manipulación</th></tr></thead>
+        <tbody>${filas||'<tr><td colspan="6" style="text-align:center;color:var(--texto-muted);padding:30px">Sin bienes catalogados</td></tr>'}</tbody>
+      </table>
+      <div class="no-print" style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="bf-btn-guardar" onclick="window.print()">🖨 Imprimir / PDF</button>
+        ${USUARIO?`<button class="bf-btn-guardar" style="background:var(--gris-panel);border:1px solid var(--gris-borde)" onclick="abrirFormNuevoBien()">+ Añadir bien</button>`:''}
+      </div>
+    </div>`;
+}
+
+// ---------- Croquis ----------
+function numeroOrden(id){const l=bienesOrdenados();const i=l.findIndex(b=>b.id===id);return i>=0&&l[i].rescate_codigo!=='RI'?String(i+1):'RI';}
+function colorCod(c){return {R1:'#C0392B',R2:'#E67E22',R3:'#B7950B',RI:'#5A6475'}[c]||'#5A6475';}
+function renderCroquisHTML(lista,conAcciones){
+  lista=lista||bienesOrdenados();
+  if(!edificioCroquis){
+    return USUARIO?`<div class="croquis-vacio no-print">Sin croquis de planta. <button class="croquis-btn" style="background:var(--rojo);border:none" onclick="subirCroquis()">📐 Subir croquis</button><div style="font-size:11px;margin-top:6px">Vale una foto del plano de evacuación o un dibujo a mano. Luego, en cada bien, "Situar en croquis".</div></div>`:'';
+  }
+  const pins=lista.filter(b=>b.croquis_x!=null&&b.croquis_y!=null).map(b=>`<div class="croquis-pin ${b.id===seleccionado?'activo':''}" style="left:${b.croquis_x}%;top:${b.croquis_y}%;background:${colorCod(b.rescate_codigo)}" title="${b.nombre}" onclick="seleccionar('${b.id}');setVista('ficha')">${numeroOrden(b.id)}</div>`).join('');
+  const sinPin=lista.filter(b=>b.croquis_x==null).length;
+  return `<div class="croquis-wrap"><img src="${edificioCroquis}" alt="Croquis">${pins}
+    ${conAcciones&&USUARIO?`<div class="croquis-acciones no-print"><button class="croquis-btn" onclick="subirCroquis()">Cambiar croquis</button></div>`:''}
+  </div>${sinPin&&conAcciones?`<div class="no-print" style="font-size:11px;color:var(--texto-muted);margin:-10px 0 14px">${sinPin} bien${sinPin!==1?'es':''} sin situar en el croquis${USUARIO?' — edítalos y pulsa sobre el plano':''}</div>`:''}`;
+}
+let subiendoCroquis=false;
+function subirCroquis(){subiendoCroquis=true;document.getElementById('input-croquis').click();}
+document.getElementById('input-croquis').addEventListener('change',async function(){
+  const file=this.files[0];if(!file)return;
+  mostrarToast('📤 Subiendo croquis...',8000);
+  const path=`croquis/${edificioActual}_${Date.now()}.${(file.name.split('.').pop()||'jpg').toLowerCase()}`;
+  try{
+    const r=await fetch(`${SB}/storage/v1/object/patrimonio-fotos/${path}`,{method:'POST',headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':file.type},body:file});
+    if(!r.ok) throw new Error();
+    const url=`${SB}/storage/v1/object/public/patrimonio-fotos/${path}`;
+    const p=await fetch(`${SB}/rest/v1/patrimonio?id=eq.${edificioActual}`,{method:'PATCH',headers:{...H(),'Prefer':'return=minimal'},body:JSON.stringify({croquis_url:url})});
+    if(!p.ok) throw new Error(await p.text());
+    edificioCroquis=url;
+    mostrarToast('✅ Croquis guardado');
+    if(vista==='orden') mostrarOrden(); else if(vista==='edificio') mostrarEdificio(); else if(seleccionado) mostrarFicha(seleccionado);
+  }catch(e){mostrarToast('❌ Error al subir el croquis: '+(e.message||''),4000);}
+  this.value='';
+});
+async function cargarCroquis(id){
+  try{const r=await fetch(`${SB}/rest/v1/patrimonio?id=eq.${id}&select=croquis_url`,{headers:H()});const d=r.ok?await r.json():[];edificioCroquis=d[0]?.croquis_url||null;}catch(e){edificioCroquis=null;}
+}
+// En el formulario del bien: clic sobre el croquis para situarlo
+function renderCroquisForm(){
+  const cont=document.getElementById('bf-croquis-cont');
+  if(!edificioCroquis){cont.innerHTML='<div class="bf-hint" style="font-size:11px;color:var(--texto-muted)">Sin croquis del edificio. Súbelo desde la vista "Orden de rescate".</div>';return;}
+  cont.innerHTML=`<div class="bf-croquis" onclick="clicCroquisForm(event)"><img src="${edificioCroquis}" alt="">${croquisPinX!=null?`<div class="croquis-pin activo" style="left:${croquisPinX}%;top:${croquisPinY}%;background:var(--rojo)">●</div>`:''}</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:4px;font-size:11px;color:var(--texto-muted)">${croquisPinX!=null?'Situado':'Pulsa sobre el plano para situar el bien'}${croquisPinX!=null?` <button type="button" class="croquis-btn" style="background:none;color:var(--texto-muted);border-color:var(--gris-borde)" onclick="croquisPinX=null;croquisPinY=null;renderCroquisForm()">Quitar</button>`:''}</div>`;
+}
+function clicCroquisForm(ev){
+  const r=ev.currentTarget.getBoundingClientRect();
+  croquisPinX=+(((ev.clientX-r.left)/r.width)*100).toFixed(2);
+  croquisPinY=+(((ev.clientY-r.top)/r.height)*100).toFixed(2);
+  renderCroquisForm();
+}
+function rellenarZonas(){
+  const dl=document.getElementById('zonas-std');
+  const z=[...new Set([...ZONAS_STD,...bienesActuales.map(b=>b.zona).filter(Boolean)])];
+  dl.innerHTML=z.map(x=>`<option value="${x.replace(/"/g,'&quot;')}">`).join('');
+}
+
 function abrirLogin(){ document.getElementById('modal-login').classList.add('visible'); }
 function cerrarLogin(){ document.getElementById('modal-login').classList.remove('visible'); }
 
@@ -1159,7 +1355,7 @@ async function cargarEdificioDirecto(id){
   // Ocultar selector y mostrar spinner mientras carga
   mostrarFichasHTML();
   document.getElementById('main-content').innerHTML='<div style="padding:60px;text-align:center;color:var(--texto-muted);font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase;font-size:13px">Cargando edificio...</div>';
-  ['btn-ficha','btn-edificio','btn-volver','btn-imprimir'].forEach(b=>{
+  ['btn-ficha','btn-edificio','btn-orden','btn-volver','btn-imprimir'].forEach(b=>{
     document.getElementById(b).style.display='inline-block';
   });
   try {
@@ -1171,6 +1367,7 @@ async function cargarEdificioDirecto(id){
       edificioActual = e.id;
       document.getElementById('cab-sub').textContent = e.nombre + ' · Los Palacios y Villafranca';
       if(TOKEN) await verificarSeed();
+      await cargarCroquis(e.id);
       await cargarBienes(e.id);
       return;
     }

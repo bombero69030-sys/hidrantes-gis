@@ -173,6 +173,68 @@ header{background:rgba(13,15,18,0.95);border-bottom:1px solid var(--gris-borde);
 .m-normal{background:var(--naranja-dark)}
 .m-gas{background:#7B241C}
 
+/* ASISTENTE POR PASOS (Fase 1) */
+.pasos-bar{display:flex;gap:4px;margin-bottom:8px}
+.paso-dot{flex:1;text-align:center;padding:5px 2px;border-radius:6px;background:var(--gris-panel2);border:1px solid var(--gris-borde);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;transition:all .2s}
+.paso-dot b{font-family:var(--font-display);font-size:13px;color:var(--texto-dim)}
+.paso-dot span{font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--texto-dim)}
+.paso-dot.hecho b,.paso-dot.hecho span{color:#58D68D}
+.paso-dot.activo{border-color:var(--naranja);background:rgba(230,126,34,0.12)}
+.paso-dot.activo b,.paso-dot.activo span{color:var(--naranja)}
+.paso{display:none}
+.paso.visible{display:block}
+.borrador-aviso{font-size:10px;color:var(--texto-dim);text-align:right;margin-bottom:6px;min-height:14px;opacity:0;transition:opacity .3s}
+.borrador-aviso.on{opacity:1}
+.form-hint{font-size:11px;color:var(--texto-dim);line-height:1.3}
+.btn-mini{background:rgba(255,255,255,0.06);border:1px solid var(--gris-borde2);color:var(--texto);padding:7px 10px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s}
+.btn-mini:hover{border-color:var(--naranja);color:var(--naranja)}
+.btn-mini.on{background:rgba(230,126,34,0.2);border-color:var(--naranja);color:var(--naranja)}
+.coords-display{background:var(--gris-panel2);border:1px solid rgba(230,126,34,0.4);border-radius:6px;padding:8px 10px;font-family:monospace;font-size:11px;color:var(--texto-dim)}
+.coords-display.ok{color:#58D68D;border-color:rgba(88,214,141,0.4)}
+.form-nav{display:flex;gap:8px;margin-top:14px;justify-content:space-between}
+.form-nav .btn-guardar,.form-nav .btn-cancelar{flex:1}
+.planta-row{display:grid;grid-template-columns:38px 1fr 1fr auto;gap:6px;align-items:center;margin-top:6px}
+.planta-row .pl-num{font-family:var(--font-display);font-weight:700;color:var(--naranja);font-size:14px}
+.planta-row label{font-size:11px;color:var(--texto-muted);display:flex;align-items:center;gap:4px;white-space:nowrap}
+.acc-card{background:var(--gris-panel2);border:1px solid var(--gris-borde);border-radius:8px;padding:10px;margin-bottom:8px}
+.acc-head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.acc-head select{flex:1}
+.acc-del{background:none;border:none;color:var(--texto-dim);font-size:18px;cursor:pointer;padding:0 4px}
+.acc-del:hover{color:#EC7063}
+.acc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.acc-card .form-input,.acc-card .form-select{font-size:12px;padding:7px 8px}
+.acc-pin{display:flex;gap:6px;align-items:center;margin-top:6px}
+.acc-pin span{font-family:monospace;font-size:10px;color:var(--texto-dim)}
+.pci-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--gris-borde);font-size:12px}
+.pci-row:last-child{border-bottom:none}
+.seg{display:flex;background:var(--gris-panel2);border:1px solid var(--gris-borde2);border-radius:6px;overflow:hidden}
+.seg button{background:none;border:none;color:var(--texto-dim);padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;min-width:36px}
+.seg button.on[data-v="si"]{background:rgba(30,132,73,0.35);color:#58D68D}
+.seg button.on[data-v="no"]{background:rgba(192,57,43,0.35);color:#EC7063}
+.seg button.on[data-v="nd"]{background:rgba(255,255,255,0.12);color:var(--texto)}
+.chips-toggle{display:flex;flex-wrap:wrap;gap:5px}
+.chip-t{padding:5px 10px;border-radius:20px;border:1px solid var(--gris-borde2);background:var(--gris-panel2);color:var(--texto-muted);font-size:11px;cursor:pointer;transition:all .2s;user-select:none}
+.chip-t.on{background:rgba(192,57,43,0.2);border-color:#EC7063;color:#EC7063}
+.rev-bloque{background:var(--gris-panel2);border:1px solid var(--gris-borde);border-radius:8px;padding:9px 11px;margin-bottom:7px;font-size:12px}
+.rev-bloque b{color:var(--naranja);font-family:var(--font-display);font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:4px}
+.rev-aviso{border-radius:6px;padding:8px 10px;font-size:12px;margin-bottom:6px}
+.rev-aviso.err{background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.4);color:#EC7063}
+.rev-aviso.warn{background:rgba(230,126,34,0.12);border:1px solid rgba(230,126,34,0.4);color:#F0A500}
+.marcador-acceso{width:20px;height:20px;border-radius:50%;background:var(--naranja);border:2px solid white;color:white;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+/* Detalle: accesos y PCI estructurados */
+.acceso-item.est{flex-direction:column;align-items:stretch;gap:3px}
+.acceso-item.est .acc-l1{display:flex;align-items:center;gap:8px;font-weight:600}
+.acceso-item.est .acc-l2{font-size:11px;color:var(--texto-muted);padding-left:30px;line-height:1.4}
+.acc-galibo{background:rgba(230,126,34,0.2);color:#F0A500;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700;margin-left:auto;white-space:nowrap}
+.pci-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.pci-item{display:flex;align-items:center;gap:6px;font-size:11px;padding:4px 6px;border-radius:4px;background:var(--gris-panel2)}
+.pci-item .pd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.riesgo-chip{display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;background:rgba(192,57,43,0.15);color:#EC7063;margin:0 4px 4px 0}
+@media(max-width:600px){
+  .sidebar.form-abierto{height:62vh}
+  .paso-dot span{display:none}
+}
+
 @media(max-width:600px){
   .sidebar{width:100%;height:200px;border-right:none;border-bottom:1px solid var(--gris-borde)}
   .app-body{flex-direction:column}
@@ -200,91 +262,185 @@ header{background:rgba(13,15,18,0.95);border-bottom:1px solid var(--gris-borde);
     </div>
     <div class="lista-sotanos" id="lista"></div>
 
-    <!-- FORMULARIO EN SIDEBAR -->
+    <!-- FORMULARIO EN SIDEBAR — ASISTENTE POR PASOS -->
     <div id="modal-form">
       <div class="form-box">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-shrink:0">
-          <div class="form-titulo" id="form-titulo" style="font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:.04em">Añadir sótano</div>
-          <button class="form-cerrar" onclick="cerrarForm()" style="background:none;border:none;color:var(--texto-muted);font-size:22px;cursor:pointer">×</button>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0">
+          <div class="form-titulo" id="form-titulo" style="font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:.04em;margin:0">Añadir sótano</div>
+          <button class="form-cerrar" onclick="cerrarForm()" style="position:static;background:none;border:none;color:var(--texto-muted);font-size:22px;cursor:pointer">×</button>
         </div>
-        <div class="form-grid">
-          <div class="form-campo full">
-            <label class="form-label">Dirección *</label>
-            <input class="form-input" id="f-direccion" placeholder="C/ Ejemplo nº 12">
-          </div>
-          <div class="form-campo">
-            <label class="form-label">Nº Ficha</label>
-            <input class="form-input" id="f-ficha" placeholder="7">
-          </div>
-          <div class="form-campo">
-            <label class="form-label">Tipo inmueble</label>
-            <select class="form-select" id="f-tipo">
-              <option value="Residencial">Residencial</option>
-              <option value="Comercial">Comercial</option>
-              <option value="Industrial">Industrial</option>
-              <option value="Mixto">Mixto</option>
-              <option value="Otro">Otro</option>
-            </select>
-          </div>
-          <div class="form-campo full">
-            <label class="form-label">📍 Ubicación en mapa *</label>
-            <div id="f-coords-display" style="background:var(--gris-panel2);border:1px solid rgba(230,126,34,0.4);border-radius:6px;padding:8px 10px;font-family:monospace;font-size:11px;color:var(--naranja);margin-bottom:4px">← Haz clic en el mapa para ubicar</div>
-            <input type="hidden" id="f-lat">
-            <input type="hidden" id="f-lon">
-          </div>
-          <div class="form-campo full">
-            <label class="form-label">Contacto</label>
-            <input class="form-input" id="f-contacto" placeholder="Nombre propietario / encargado">
-          </div>
-          <div class="form-campo">
-            <label class="form-label">Nº de accesos</label>
-            <input class="form-input" id="f-num-accesos" type="number" placeholder="2" min="1" max="10">
-          </div>
-          <div class="form-campo full">
-            <label class="form-label">Accesos (uno por línea)</label>
-            <textarea class="form-input form-textarea" id="f-accesos" placeholder="Por la puerta del garaje&#10;Escalera interior portal 1"></textarea>
-          </div>
-          <div class="form-campo">
-            <label class="form-label">Ventilación</label>
-            <select class="form-select" id="f-ventilacion">
-              <option value="true">Sí</option>
-              <option value="false">No</option>
-            </select>
-          </div>
-          <div class="form-campo">
-            <label class="form-label">Iluminación</label>
-            <select class="form-select" id="f-iluminacion">
-              <option value="Adecuada">Adecuada</option>
-              <option value="Deficiente">Deficiente</option>
-              <option value="Sin iluminación">Sin iluminación</option>
-            </select>
-          </div>
-          <div class="form-campo">
-            <label class="form-label">Humedad / Gases</label>
-            <select class="form-select" id="f-gases">
-              <option value="false">No</option>
-              <option value="true">Sí detectados</option>
-            </select>
-          </div>
-          <div class="form-campo full">
-            <label class="form-label">Observaciones</label>
-            <textarea class="form-input form-textarea" id="f-obs" placeholder="Extintores, cámaras..."></textarea>
-          </div>
-          <div class="form-campo">
-            <label class="form-label">Inspector</label>
-            <input class="form-input" id="f-inspector" placeholder="B-31" value="B-31">
-          </div>
-          <div class="form-campo">
-            <label class="form-label">Fecha inspección</label>
-            <input class="form-input" id="f-fecha" placeholder="DD/MM/AAAA">
+
+        <div class="pasos-bar" id="pasos-bar">
+          <div class="paso-dot" data-p="1" onclick="irPaso(1)"><b>1</b><span>Edificio</span></div>
+          <div class="paso-dot" data-p="2" onclick="irPaso(2)"><b>2</b><span>Accesos</span></div>
+          <div class="paso-dot" data-p="3" onclick="irPaso(3)"><b>3</b><span>PCI</span></div>
+          <div class="paso-dot" data-p="4" onclick="irPaso(4)"><b>4</b><span>Riesgos</span></div>
+          <div class="paso-dot" data-p="5" onclick="irPaso(5)"><b>5</b><span>Revisión</span></div>
+        </div>
+        <div class="borrador-aviso" id="borrador-aviso">💾 Borrador guardado automáticamente</div>
+
+        <!-- PASO 1 · EDIFICIO Y UBICACIÓN -->
+        <div class="paso" data-paso="1">
+          <div class="form-grid">
+            <div class="form-campo full">
+              <label class="form-label">Dirección *</label>
+              <div style="display:flex;gap:6px">
+                <input class="form-input" id="f-direccion" placeholder="C/ Ejemplo nº 12" style="flex:1">
+                <button type="button" class="btn-mini" onclick="buscarDireccion()" title="Buscar en el mapa">🔎</button>
+              </div>
+              <div class="form-hint">Pulsa 🔎 para situar la dirección en el mapa automáticamente</div>
+            </div>
+            <div class="form-campo">
+              <label class="form-label">Nº Ficha</label>
+              <input class="form-input" id="f-ficha" placeholder="8" type="number" min="1">
+            </div>
+            <div class="form-campo">
+              <label class="form-label">Tipo inmueble</label>
+              <select class="form-select" id="f-tipo">
+                <option value="Residencial">Residencial</option>
+                <option value="Comercial">Comercial</option>
+                <option value="Industrial">Industrial</option>
+                <option value="Público">Edificio público</option>
+                <option value="Mixto">Mixto</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-campo full">
+              <label class="form-label">📍 Ubicación del edificio *</label>
+              <div id="f-coords-display" class="coords-display">Sin seleccionar — haz clic en el mapa</div>
+              <input type="hidden" id="f-lat"><input type="hidden" id="f-lon">
+              <div style="display:flex;gap:6px;margin-top:4px">
+                <button type="button" class="btn-mini" style="flex:1" onclick="usarGPSSotano()">📡 Estoy en la puerta (GPS)</button>
+                <button type="button" class="btn-mini" style="flex:1" onclick="modoClicEdificio()">🗺 Clic en mapa</button>
+              </div>
+            </div>
+            <hr class="form-divider">
+            <div class="form-campo">
+              <label class="form-label">Plantas bajo rasante</label>
+              <select class="form-select" id="f-num-plantas" onchange="renderPlantas()">
+                <option value="1">1 (−1)</option>
+                <option value="2">2 (−1, −2)</option>
+                <option value="3">3 (−1 a −3)</option>
+                <option value="4">4 (−1 a −4)</option>
+                <option value="0">Se desconoce</option>
+              </select>
+            </div>
+            <div class="form-campo">
+              <label class="form-label">Plantas sobre rasante</label>
+              <input class="form-input" id="f-plantas-sobre" type="number" min="0" placeholder="4">
+            </div>
+            <div class="form-campo full" id="plantas-rows"></div>
           </div>
         </div>
-        <div class="form-acciones">
-          <button class="btn-cancelar" onclick="cerrarForm()">Cancelar</button>
-          <button class="btn-guardar" id="btn-guardar-form" onclick="guardarSotano()">💾 Guardar</button>
+
+        <!-- PASO 2 · ACCESOS -->
+        <div class="paso" data-paso="2">
+          <div class="form-hint" style="margin-bottom:8px">Registra cada acceso por separado. Para las rampas, el gálibo es lo primero que mira el conductor.</div>
+          <div id="accesos-lista"></div>
+          <button type="button" class="btn-add-doc" onclick="añadirAcceso()">+ Añadir acceso</button>
+        </div>
+
+        <!-- PASO 3 · INSTALACIONES -->
+        <div class="paso" data-paso="3">
+          <div class="form-label" style="margin-bottom:6px">Protección contra incendios</div>
+          <div id="pci-lista"></div>
+          <hr class="form-divider" style="margin:10px 0">
+          <div class="form-grid">
+            <div class="form-campo">
+              <label class="form-label">Ventilación</label>
+              <select class="form-select" id="f-ventilacion">
+                <option value="natural">Natural (rejillas)</option>
+                <option value="forzada">Forzada (extracción)</option>
+                <option value="ninguna">Sin ventilación</option>
+              </select>
+            </div>
+            <div class="form-campo">
+              <label class="form-label">Iluminación</label>
+              <select class="form-select" id="f-iluminacion">
+                <option value="Adecuada">Adecuada</option>
+                <option value="Deficiente">Deficiente</option>
+                <option value="Sin iluminación">Sin iluminación</option>
+              </select>
+            </div>
+            <div class="form-campo">
+              <label class="form-label">Humedad / Gases</label>
+              <select class="form-select" id="f-gases">
+                <option value="false">No</option>
+                <option value="true">Sí detectados</option>
+              </select>
+            </div>
+            <div class="form-campo">
+              <label class="form-label">Sectorización</label>
+              <select class="form-select" id="f-sectorizacion">
+                <option value="nd">Se desconoce</option>
+                <option value="si">Sí, por plantas</option>
+                <option value="parcial">Parcial</option>
+                <option value="no">No</option>
+              </select>
+            </div>
+            <div class="form-campo full">
+              <label class="form-label">Notas sobre instalaciones</label>
+              <textarea class="form-input form-textarea" id="f-pci-notas" placeholder="Ubicación del cuadro de detección, llaves de BIEs, estado de los extintores..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- PASO 4 · RIESGOS Y CONTACTO -->
+        <div class="paso" data-paso="4">
+          <div class="form-label" style="margin-bottom:6px">Riesgos específicos</div>
+          <div class="chips-toggle" id="riesgos-lista"></div>
+          <input class="form-input" id="f-riesgos-otro" placeholder="Otro riesgo..." style="margin-top:6px">
+          <hr class="form-divider" style="margin:12px 0">
+          <div class="form-grid">
+            <div class="form-campo full">
+              <label class="form-label">Contacto</label>
+              <input class="form-input" id="f-contacto" placeholder="Nombre">
+            </div>
+            <div class="form-campo">
+              <label class="form-label">Teléfono</label>
+              <input class="form-input" id="f-contacto-tel" type="tel" placeholder="6xx xxx xxx">
+            </div>
+            <div class="form-campo">
+              <label class="form-label">Rol</label>
+              <select class="form-select" id="f-contacto-rol">
+                <option value="">—</option>
+                <option>Presidente comunidad</option>
+                <option>Administrador</option>
+                <option>Portero / conserje</option>
+                <option>Propietario</option>
+                <option>Encargado</option>
+                <option>Otro</option>
+              </select>
+            </div>
+            <div class="form-campo full">
+              <label class="form-label">Observaciones generales</label>
+              <textarea class="form-input form-textarea" id="f-obs" placeholder="Cualquier dato útil para la intervención..."></textarea>
+            </div>
+            <div class="form-campo">
+              <label class="form-label">Inspector</label>
+              <input class="form-input" id="f-inspector" placeholder="B-31" value="B-31">
+            </div>
+            <div class="form-campo">
+              <label class="form-label">Fecha inspección</label>
+              <input class="form-input" id="f-fecha" placeholder="DD/MM/AAAA">
+            </div>
+          </div>
+        </div>
+
+        <!-- PASO 5 · REVISIÓN -->
+        <div class="paso" data-paso="5">
+          <div id="revision-avisos"></div>
+          <div id="revision-resumen"></div>
+        </div>
+
+        <div class="form-nav">
+          <button type="button" class="btn-cancelar" id="btn-ant" onclick="pasoAnterior()">← Anterior</button>
+          <button type="button" class="btn-guardar" id="btn-sig" onclick="pasoSiguiente()">Siguiente →</button>
+          <button type="button" class="btn-guardar" id="btn-guardar-form" onclick="guardarSotano()" style="display:none">💾 Guardar</button>
         </div>
       </div>
     </div>
+
   </div>
 
   <div class="mapa-wrapper">
@@ -378,23 +534,6 @@ async function cargarDatos(){
   renderizarTodo();
 }
 
-// Clic en mapa para ubicar sótano
-mapa.on('click', function(e){
-  if(!window._modoUbicarSotano) return;
-  const {lat,lng} = e.latlng;
-  document.getElementById('f-lat').value = lat;
-  document.getElementById('f-lon').value = lng;
-  const display = document.getElementById('f-coords-display');
-  if(display){
-    display.textContent = lat.toFixed(6) + ', ' + lng.toFixed(6);
-    display.style.color = '#58D68D';
-  }
-  if(marcadorTempSot) mapa.removeLayer(marcadorTempSot);
-  marcadorTempSot = L.marker([lat,lng]).addTo(mapa);
-  mostrarToast('📍 Ubicación seleccionada');
-});
-
-
 function renderizarTodo(){
   Object.values(marcadores).forEach(m=>mapa.removeLayer(m));
   marcadores = {};
@@ -411,7 +550,8 @@ function renderizarLista(lista){
       <div class="sc-chips">
         ${s.ventilacion?'<span class="sc-chip chip-ok">Ventilado</span>':'<span class="sc-chip chip-alert">Sin ventilación</span>'}
         ${s.humedad_gases?'<span class="sc-chip chip-warn">⚠ Gases</span>':''}
-        <span class="sc-chip chip-gris">${s.num_accesos||1} acceso${(s.num_accesos||1)!==1?'s':''}</span>
+        <span class="sc-chip chip-gris">${getAccesos(s).length||s.num_accesos||1} acceso${(getAccesos(s).length||s.num_accesos||1)!==1?'s':''}</span>
+        ${(Array.isArray(s.riesgos)&&s.riesgos.length)?`<span class="sc-chip chip-alert">⚠ ${s.riesgos.length} riesgo${s.riesgos.length!==1?'s':''}</span>`:''}
         ${s.contacto?`<span class="sc-chip chip-gris">📞 ${s.contacto}</span>`:''}
       </div>
       <div class="sc-fecha">Inspector: ${s.inspector||'—'} · ${s.fecha_inspeccion||'—'}</div>
@@ -456,7 +596,10 @@ function mostrarDetalle(id){
 
   const fotos = Array.isArray(s.fotos)?s.fotos:[];
   const docs = Array.isArray(s.documentos)?s.documentos:[];
-  const accesosArr = [s.acceso_1,s.acceso_2,s.acceso_3,s.acceso_4,s.acceso_5].filter(Boolean);
+  const accesosArr = getAccesos(s);
+  const pci = s.pci||{};
+  const riesgos = Array.isArray(s.riesgos)?s.riesgos:[];
+  const plantas = Array.isArray(s.plantas)?s.plantas:[];
 
   const galeriaHTML = `
     <div class="galeria">
@@ -493,19 +636,33 @@ function mostrarDetalle(id){
       <div class="pd-sec-titulo">Información general</div>
       ${s.ficha_num?`<div class="pd-fila"><span class="pd-clave">Nº ficha</span><span class="pd-valor">${s.ficha_num}</span></div>`:''}
       <div class="pd-fila"><span class="pd-clave">Tipo</span><span class="pd-valor">${s.tipo_inmueble||'Residencial'}</span></div>
-      <div class="pd-fila"><span class="pd-clave">Contacto</span><span class="pd-valor">${s.contacto||'No registrado'}</span></div>
+      ${plantas.length?`<div class="pd-fila"><span class="pd-clave">Plantas</span><span class="pd-valor">${plantas.length} bajo rasante${s.plantas_sobre?' · '+s.plantas_sobre+' sobre':''}</span></div>`:''}
+      ${plantas.filter(p=>p.plazas||p.superficie||p.trasteros).map(p=>`<div class="pd-fila"><span class="pd-clave" style="padding-left:10px">Planta ${p.nivel}</span><span class="pd-valor">${[p.plazas?p.plazas+' plazas':'',p.superficie?p.superficie+' m²':'',p.trasteros?'trasteros':''].filter(Boolean).join(' · ')||'—'}</span></div>`).join('')}
+      <div class="pd-fila"><span class="pd-clave">Contacto</span><span class="pd-valor">${s.contacto?`${s.contacto}${s.contacto_rol?' <span style="color:var(--texto-dim)">('+s.contacto_rol+')</span>':''}${s.contacto_tel?`<br><a href="tel:${s.contacto_tel}" style="color:#5DADE2;text-decoration:none">📞 ${s.contacto_tel}</a>`:''}`:'No registrado'}</span></div>
       <div class="pd-fila"><span class="pd-clave">Coordenadas</span><span class="pd-valor">${s.lat?s.lat.toFixed(5)+', '+s.lon.toFixed(5):'—'}</span></div>
       <div class="pd-fila"><span class="pd-clave">Inspector</span><span class="pd-valor">${s.inspector||'—'} · ${s.fecha_inspeccion||'—'}</span></div>
     </div>
     <div class="pd-seccion">
       <div class="pd-sec-titulo">Accesos (${accesosArr.length})</div>
-      ${accesosArr.map((a,i)=>`<div class="acceso-item"><div class="acceso-num">${i+1}</div><span>${a}</span></div>`).join('')}
+      ${accesosArr.map((a,i)=>`<div class="acceso-item est">
+        <div class="acc-l1"><div class="acceso-num">${i+1}</div><span>${TIPOS_ACCESO[a.tipo]||'📍 Acceso'}${a.calle?' · '+a.calle:''}</span>${a.tipo==='rampa'&&(a.galibo_alto||a.galibo_ancho)?`<span class="acc-galibo">↕ ${a.galibo_alto||'?'} m · ↔ ${a.galibo_ancho||'?'} m</span>`:''}</div>
+        ${[a.apertura&&a.apertura!=='nd'?'🔑 '+APERTURAS[a.apertura]:'',a.plantas?'Plantas '+a.plantas:'',a.descripcion||''].filter(Boolean).length?`<div class="acc-l2">${[a.apertura&&a.apertura!=='nd'?'🔑 '+APERTURAS[a.apertura]:'',a.plantas?'Plantas '+a.plantas:'',a.descripcion||''].filter(Boolean).join(' · ')}</div>`:''}
+      </div>`).join('')||'<div class="sin-fotos" style="padding:8px">Sin accesos registrados</div>'}
+    </div>
+    <div class="pd-seccion">
+      <div class="pd-sec-titulo">Protección contra incendios</div>
+      <div class="pci-grid">
+        ${PCI_ITEMS.map(([k,l])=>{const v=pci[k]||'nd';return `<div class="pci-item"><span class="pd-dot" style="background:${v==='si'?'#27AE60':v==='no'?'#E74C3C':'#5A6475'}"></span>${l}</div>`;}).join('')}
+      </div>
+      ${pci.notas?`<div class="obs-box normal" style="margin-top:6px">${pci.notas}</div>`:''}
     </div>
     <div class="pd-seccion">
       <div class="pd-sec-titulo">Condiciones</div>
-      <div class="cond-fila"><span class="pd-clave">Ventilación</span><span class="cond-badge ${s.ventilacion?'chip-ok':'chip-alert'}">${s.ventilacion?'✓ Sí':'✗ No'}</span></div>
-      <div class="cond-fila"><span class="pd-clave">Iluminación</span><span class="cond-badge chip-ok">${s.iluminacion||'Adecuada'}</span></div>
+      <div class="cond-fila"><span class="pd-clave">Ventilación</span><span class="cond-badge ${s.ventilacion?'chip-ok':'chip-alert'}">${pci.ventilacion_tipo?({natural:'✓ Natural',forzada:'✓ Forzada',ninguna:'✗ No'})[pci.ventilacion_tipo]:(s.ventilacion?'✓ Sí':'✗ No')}</span></div>
+      <div class="cond-fila"><span class="pd-clave">Iluminación</span><span class="cond-badge ${(s.iluminacion||'Adecuada')==='Adecuada'?'chip-ok':'chip-warn'}">${s.iluminacion||'Adecuada'}</span></div>
       <div class="cond-fila"><span class="pd-clave">Humedad / Gases</span><span class="cond-badge ${s.humedad_gases?'chip-alert':'chip-ok'}">${s.humedad_gases?'⚠ Detectados':'✓ No'}</span></div>
+      ${pci.sectorizacion&&pci.sectorizacion!=='nd'?`<div class="cond-fila"><span class="pd-clave">Sectorización</span><span class="cond-badge ${pci.sectorizacion==='si'?'chip-ok':pci.sectorizacion==='parcial'?'chip-warn':'chip-alert'}">${({si:'✓ Por plantas',parcial:'Parcial',no:'✗ No'})[pci.sectorizacion]}</span></div>`:''}
+      ${riesgos.length?`<div style="margin-top:8px"><div class="pd-clave" style="margin-bottom:4px">Riesgos específicos</div>${riesgos.map(k=>`<span class="riesgo-chip">⚠ ${etqRiesgo(k)}</span>`).join('')}</div>`:''}
       ${s.observaciones?`<div class="${s.humedad_gases?'obs-box':'obs-box normal'}">${s.observaciones}</div>`:''}
     </div>
     ${docsHTML}
@@ -619,165 +776,426 @@ async function eliminarDoc(id,url){
 }
 
 // ============================================
-// FORMULARIO
+// FORMULARIO — ASISTENTE POR PASOS (Fase 1)
 // ============================================
+const TIPOS_ACCESO = {rampa:'🚗 Rampa vehículos',escalera:'🪜 Escalera',puerta:'🚪 Puerta peatonal',ascensor:'🛗 Ascensor',otro:'📍 Otro'};
+const APERTURAS = {mando:'Mando a distancia',llave:'Llave',portero:'Portero / conserje',abierto:'Abierto',forzable:'Forzable',nd:'Se desconoce'};
+const PCI_ITEMS = [
+  ['extintores','Extintores'],['bies','BIEs'],['deteccion','Detección automática'],['rociadores','Rociadores'],
+  ['extraccion_humos','Extracción de humos'],['alumbrado_emergencia','Alumbrado de emergencia'],
+  ['deteccion_co','Detección de CO'],['puertas_cortafuegos','Puertas cortafuegos']
+];
+const RIESGOS_ITEMS = [
+  ['cargadores_ve','Cargadores vehículo eléctrico'],['cuadro_electrico','Cuadro eléctrico general'],
+  ['deposito_combustible','Depósito gasoil / caldera'],['gas','Gas natural / GLP'],
+  ['trasteros','Trasteros (carga de fuego)'],['garaje_contiguo','Comunica con garaje contiguo'],
+  ['grupo_electrogeno','Grupo electrógeno'],['quimicos','Productos químicos almacenados']
+];
+const RADIO_DUPLICADO = 30; // metros
 
+let pasoActual = 1;
+let accesosForm = [];
+let marcadoresAcceso = [];
+let pinAccesoIdx = null;
+let _borradorT = null;
 
+function hoyDDMMAAAA(){const d=new Date();return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();}
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+function haversine(lat1,lon1,lat2,lon2){const R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+
+// Lee accesos de un sótano: jsonb nuevo o columnas antiguas acceso_1..5
+function getAccesos(s){
+  if(Array.isArray(s.accesos)&&s.accesos.length) return s.accesos;
+  return [s.acceso_1,s.acceso_2,s.acceso_3,s.acceso_4,s.acceso_5].filter(Boolean).map(d=>({tipo:'otro',descripcion:d}));
+}
+function resumenAcceso(a){
+  const parts=[TIPOS_ACCESO[a.tipo]?.replace(/^\S+\s/,'')||'Acceso'];
+  if(a.calle) parts.push(a.calle);
+  if(a.tipo==='rampa'&&(a.galibo_alto||a.galibo_ancho)) parts.push(`gálibo ${a.galibo_alto||'?'}×${a.galibo_ancho||'?'} m`);
+  if(a.apertura&&a.apertura!=='nd') parts.push(APERTURAS[a.apertura]);
+  if(a.descripcion) parts.push(a.descripcion);
+  return parts.join(' · ');
+}
+
+// ---------- Ubicación edificio ----------
+function setUbicacion(lat,lon,extra){
+  document.getElementById('f-lat').value=lat;
+  document.getElementById('f-lon').value=lon;
+  const d=document.getElementById('f-coords-display');
+  d.textContent=lat.toFixed(6)+', '+lon.toFixed(6)+(extra?' '+extra:'');
+  d.classList.add('ok');
+  if(marcadorTempSot) mapa.removeLayer(marcadorTempSot);
+  marcadorTempSot=L.marker([lat,lon]).addTo(mapa);
+  guardarBorrador();
+}
+function modoClicEdificio(){
+  pinAccesoIdx=null;
+  window._modoUbicarSotano=true;
+  mostrarToast('🗺 Haz clic en el mapa sobre el edificio');
+}
 function usarGPSSotano(){
   if(!navigator.geolocation){mostrarToast('❌ GPS no disponible');return;}
-  const display = document.getElementById('f-coords-display');
-  display.textContent = '⟳ Obteniendo ubicación GPS...';
-  display.style.color = '#F0A500';
+  const d=document.getElementById('f-coords-display');
+  d.textContent='⟳ Obteniendo ubicación GPS...';
   navigator.geolocation.getCurrentPosition(
-    pos => {
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-      document.getElementById('f-lat').value = lat;
-      document.getElementById('f-lon').value = lon;
-      display.textContent = lat.toFixed(6) + ', ' + lon.toFixed(6) + ' (±' + Math.round(pos.coords.accuracy) + 'm)';
-      display.style.color = '#58D68D';
-      mostrarToast('📍 Ubicación GPS obtenida');
-    },
-    err => {
-      display.textContent = 'Sin seleccionar';
-      display.style.color = '';
-      mostrarToast('❌ No se pudo obtener GPS — usa coordenadas manuales');
-    },
-    {enableHighAccuracy:true, timeout:10000}
+    pos=>{setUbicacion(pos.coords.latitude,pos.coords.longitude,'(±'+Math.round(pos.coords.accuracy)+' m)');mapa.flyTo([pos.coords.latitude,pos.coords.longitude],18);mostrarToast('📍 Ubicación GPS obtenida');},
+    ()=>{d.textContent='Sin seleccionar — haz clic en el mapa';d.classList.remove('ok');mostrarToast('❌ No se pudo obtener GPS');},
+    {enableHighAccuracy:true,timeout:10000}
   );
 }
-
-function mostrarCoordsManual(){
-  const div = document.getElementById('coords-manual');
-  div.style.display = div.style.display === 'none' ? 'block' : 'none';
+async function buscarDireccion(){
+  let q=document.getElementById('f-direccion').value.trim();
+  if(!q){mostrarToast('⚠️ Escribe primero la dirección');return;}
+  if(!/palacios/i.test(q)) q+=', Los Palacios y Villafranca, Sevilla';
+  mostrarToast('🔎 Buscando dirección...',6000);
+  try{
+    const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=es&q='+encodeURIComponent(q));
+    const res=await r.json();
+    if(!res.length){mostrarToast('❌ Dirección no encontrada — sitúala a mano en el mapa',4000);return;}
+    const lat=parseFloat(res[0].lat),lon=parseFloat(res[0].lon);
+    setUbicacion(lat,lon);
+    mapa.flyTo([lat,lon],18);
+    mostrarToast('📍 Dirección situada — comprueba que el pin está sobre el edificio',4000);
+  }catch(e){mostrarToast('❌ Error al buscar la dirección');}
 }
+mapa.on('click',function(e){
+  if(!window._modoUbicarSotano) return;
+  const {lat,lng}=e.latlng;
+  if(pinAccesoIdx!==null){
+    const i=pinAccesoIdx;
+    accesosForm[i].lat=lat;accesosForm[i].lon=lng;
+    pinAccesoIdx=null;
+    renderAccesos();dibujarPinsAcceso();guardarBorrador();
+    mostrarToast('📍 Acceso '+(i+1)+' marcado');
+    return;
+  }
+  setUbicacion(lat,lng);
+  mostrarToast('📍 Edificio ubicado');
+});
 
-function actualizarCoordsDisplay(){
-  const lat = document.getElementById('f-lat').value;
-  const lon = document.getElementById('f-lon').value;
-  const display = document.getElementById('f-coords-display');
-  if(lat && lon){
-    display.textContent = parseFloat(lat).toFixed(6) + ', ' + parseFloat(lon).toFixed(6);
-    display.style.color = '#58D68D';
+// ---------- Plantas ----------
+function renderPlantas(datos){
+  const n=parseInt(document.getElementById('f-num-plantas').value)||0;
+  const cont=document.getElementById('plantas-rows');
+  cont.innerHTML='';
+  for(let i=1;i<=n;i++){
+    const p=(datos||[]).find(x=>x.nivel===-i)||{};
+    cont.innerHTML+=`<div class="planta-row">
+      <span class="pl-num">−${i}</span>
+      <input class="form-input" id="pl-${i}-plazas" type="number" min="0" placeholder="Plazas" value="${esc(p.plazas)}">
+      <input class="form-input" id="pl-${i}-m2" type="number" min="0" placeholder="m² aprox." value="${esc(p.superficie)}">
+      <label><input type="checkbox" id="pl-${i}-trasteros" ${p.trasteros?'checked':''}> Trasteros</label>
+    </div>`;
   }
 }
+function leerPlantas(){
+  const n=parseInt(document.getElementById('f-num-plantas').value)||0, out=[];
+  for(let i=1;i<=n;i++) out.push({
+    nivel:-i,
+    plazas:parseInt(document.getElementById(`pl-${i}-plazas`).value)||null,
+    superficie:parseInt(document.getElementById(`pl-${i}-m2`).value)||null,
+    trasteros:document.getElementById(`pl-${i}-trasteros`).checked
+  });
+  return out;
+}
 
+// ---------- Accesos ----------
+function añadirAcceso(tipo){
+  accesosForm.push({tipo:tipo||(accesosForm.length===0?'rampa':'puerta'),calle:'',galibo_alto:'',galibo_ancho:'',apertura:'nd',plantas:'',descripcion:'',lat:null,lon:null});
+  renderAccesos();guardarBorrador();
+}
+function quitarAcceso(i){
+  accesosForm.splice(i,1);
+  if(pinAccesoIdx===i) pinAccesoIdx=null;
+  renderAccesos();dibujarPinsAcceso();guardarBorrador();
+}
+function accSet(i,k,v){accesosForm[i][k]=v;if(k==='tipo')renderAccesos();guardarBorrador();}
+function pinAcceso(i){
+  pinAccesoIdx=i;window._modoUbicarSotano=true;
+  document.querySelectorAll('.acc-pin .btn-mini').forEach((b,j)=>b.classList.toggle('on',j===i));
+  mostrarToast('🗺 Haz clic en el mapa sobre el acceso '+(i+1));
+}
+function renderAccesos(){
+  const cont=document.getElementById('accesos-lista');
+  if(!accesosForm.length){cont.innerHTML='<div class="form-hint" style="text-align:center;padding:14px 0">Sin accesos. Añade al menos uno.</div>';return;}
+  cont.innerHTML=accesosForm.map((a,i)=>`
+    <div class="acc-card">
+      <div class="acc-head">
+        <div class="acceso-num">${i+1}</div>
+        <select class="form-select" onchange="accSet(${i},'tipo',this.value)">
+          ${Object.entries(TIPOS_ACCESO).map(([k,v])=>`<option value="${k}" ${a.tipo===k?'selected':''}>${v}</option>`).join('')}
+        </select>
+        <button type="button" class="acc-del" onclick="quitarAcceso(${i})" title="Quitar">×</button>
+      </div>
+      <input class="form-input" placeholder="Calle / fachada por la que se entra" value="${esc(a.calle)}" oninput="accSet(${i},'calle',this.value)">
+      ${a.tipo==='rampa'?`<div class="acc-grid">
+        <input class="form-input" type="number" step="0.05" placeholder="Gálibo alto (m)" value="${esc(a.galibo_alto)}" oninput="accSet(${i},'galibo_alto',this.value)">
+        <input class="form-input" type="number" step="0.05" placeholder="Ancho (m)" value="${esc(a.galibo_ancho)}" oninput="accSet(${i},'galibo_ancho',this.value)">
+      </div>`:''}
+      <div class="acc-grid">
+        <select class="form-select" onchange="accSet(${i},'apertura',this.value)">
+          ${Object.entries(APERTURAS).map(([k,v])=>`<option value="${k}" ${a.apertura===k?'selected':''}>${v}</option>`).join('')}
+        </select>
+        <input class="form-input" placeholder="Llega a plantas: −1, −2" value="${esc(a.plantas)}" oninput="accSet(${i},'plantas',this.value)">
+      </div>
+      <input class="form-input" style="margin-top:6px" placeholder="Descripción / observaciones" value="${esc(a.descripcion)}" oninput="accSet(${i},'descripcion',this.value)">
+      <div class="acc-pin">
+        <button type="button" class="btn-mini ${pinAccesoIdx===i?'on':''}" onclick="pinAcceso(${i})">📍 ${a.lat?'Cambiar posición':'Marcar en mapa'}</button>
+        <span>${a.lat?a.lat.toFixed(5)+', '+a.lon.toFixed(5):'sin posición (opcional)'}</span>
+      </div>
+    </div>`).join('');
+}
+function dibujarPinsAcceso(){
+  marcadoresAcceso.forEach(m=>mapa.removeLayer(m));marcadoresAcceso=[];
+  accesosForm.forEach((a,i)=>{
+    if(a.lat==null) return;
+    const icon=L.divIcon({html:`<div class="marcador-acceso">${i+1}</div>`,iconSize:[20,20],iconAnchor:[10,10],className:''});
+    marcadoresAcceso.push(L.marker([a.lat,a.lon],{icon,zIndexOffset:500}).addTo(mapa));
+  });
+}
 
-function abrirFormNuevo(){
-  editandoId=null;
-  document.getElementById('form-titulo').textContent='➕ Añadir sótano';
-  limpiarForm();
-  // Ocultar lista, mostrar formulario en sidebar
+// ---------- PCI y riesgos ----------
+function renderPCI(datos){
+  const d=datos||{};
+  document.getElementById('pci-lista').innerHTML=PCI_ITEMS.map(([k,l])=>`
+    <div class="pci-row"><span>${l}</span>
+      <div class="seg" data-key="${k}">
+        ${['si','no','nd'].map(v=>`<button type="button" data-v="${v}" class="${(d[k]||'nd')===v?'on':''}" onclick="segSet(this)">${v==='si'?'Sí':v==='no'?'No':'?'}</button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function segSet(btn){btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');guardarBorrador();}
+function leerPCI(){
+  const out={};
+  PCI_ITEMS.forEach(([k])=>{out[k]=document.querySelector(`.seg[data-key="${k}"] .on`)?.dataset.v||'nd';});
+  out.ventilacion_tipo=document.getElementById('f-ventilacion').value;
+  out.sectorizacion=document.getElementById('f-sectorizacion').value;
+  out.notas=document.getElementById('f-pci-notas').value.trim()||null;
+  return out;
+}
+function renderRiesgos(sel){
+  const s=new Set(sel||[]);
+  document.getElementById('riesgos-lista').innerHTML=RIESGOS_ITEMS.map(([k,l])=>`<span class="chip-t ${s.has(k)?'on':''}" data-k="${k}" onclick="this.classList.toggle('on');guardarBorrador()">${l}</span>`).join('');
+}
+function leerRiesgos(){
+  const out=[...document.querySelectorAll('#riesgos-lista .chip-t.on')].map(e=>e.dataset.k);
+  const otro=document.getElementById('f-riesgos-otro').value.trim();
+  if(otro) out.push('otro:'+otro);
+  return out;
+}
+function etqRiesgo(k){if(k.startsWith('otro:'))return k.slice(5);return (RIESGOS_ITEMS.find(x=>x[0]===k)||[k,k])[1];}
+
+// ---------- Recoger / rellenar ----------
+function recogerForm(){
+  const v=id=>document.getElementById(id).value;
+  const vent=v('f-ventilacion');
+  const accesos=accesosForm.map(a=>({...a,galibo_alto:a.galibo_alto?parseFloat(a.galibo_alto):null,galibo_ancho:a.galibo_ancho?parseFloat(a.galibo_ancho):null}));
+  const res=accesos.map(resumenAcceso);
+  const riesgos=leerRiesgos();
+  return {
+    direccion:v('f-direccion').trim(),
+    ficha_num:v('f-ficha').trim()||null,
+    tipo_inmueble:v('f-tipo'),
+    lat:parseFloat(v('f-lat'))||null,
+    lon:parseFloat(v('f-lon'))||null,
+    plantas_sobre:parseInt(v('f-plantas-sobre'))||null,
+    plantas:leerPlantas(),
+    accesos,
+    num_accesos:accesos.length||1,
+    acceso_1:res[0]||null,acceso_2:res[1]||null,acceso_3:res[2]||null,acceso_4:res[3]||null,acceso_5:res[4]||null,
+    pci:leerPCI(),
+    ventilacion:vent!=='ninguna',
+    iluminacion:v('f-iluminacion'),
+    humedad_gases:v('f-gases')==='true',
+    riesgos,
+    contacto:v('f-contacto').trim()||null,
+    contacto_tel:v('f-contacto-tel').trim()||null,
+    contacto_rol:v('f-contacto-rol')||null,
+    observaciones:v('f-obs').trim()||null,
+    inspector:v('f-inspector').trim()||'B-31',
+    fecha_inspeccion:v('f-fecha').trim()||null
+  };
+}
+function rellenarForm(s){
+  const set=(id,val)=>{document.getElementById(id).value=val??'';};
+  set('f-direccion',s.direccion);set('f-ficha',s.ficha_num);set('f-tipo',s.tipo_inmueble||'Residencial');
+  set('f-lat',s.lat);set('f-lon',s.lon);
+  const d=document.getElementById('f-coords-display');
+  if(s.lat&&s.lon){d.textContent=(+s.lat).toFixed(6)+', '+(+s.lon).toFixed(6);d.classList.add('ok');if(marcadorTempSot)mapa.removeLayer(marcadorTempSot);marcadorTempSot=L.marker([s.lat,s.lon]).addTo(mapa);}
+  else{d.textContent='Sin seleccionar — haz clic en el mapa';d.classList.remove('ok');}
+  set('f-plantas-sobre',s.plantas_sobre);
+  const pl=Array.isArray(s.plantas)?s.plantas:[];
+  set('f-num-plantas',pl.length?String(pl.length):'1');
+  renderPlantas(pl);
+  accesosForm=getAccesos(s).map(a=>({tipo:'otro',calle:'',galibo_alto:'',galibo_ancho:'',apertura:'nd',plantas:'',descripcion:'',lat:null,lon:null,...a}));
+  renderAccesos();dibujarPinsAcceso();
+  const pci=s.pci||{};
+  renderPCI(pci);
+  set('f-ventilacion',pci.ventilacion_tipo||(s.ventilacion===false?'ninguna':'natural'));
+  set('f-sectorizacion',pci.sectorizacion||'nd');
+  set('f-pci-notas',pci.notas);
+  set('f-iluminacion',s.iluminacion||'Adecuada');
+  set('f-gases',s.humedad_gases?'true':'false');
+  const rs=Array.isArray(s.riesgos)?s.riesgos:[];
+  renderRiesgos(rs.filter(k=>!k.startsWith('otro:')));
+  set('f-riesgos-otro',(rs.find(k=>k.startsWith('otro:'))||'').slice(5));
+  set('f-contacto',s.contacto);set('f-contacto-tel',s.contacto_tel);set('f-contacto-rol',s.contacto_rol||'');
+  set('f-obs',s.observaciones);set('f-inspector',s.inspector||'B-31');set('f-fecha',s.fecha_inspeccion);
+}
+function limpiarForm(){
+  accesosForm=[];pinAccesoIdx=null;
+  rellenarForm({inspector:'B-31',fecha_inspeccion:hoyDDMMAAAA(),ficha_num:siguienteFicha()});
+  añadirAcceso('rampa');
+}
+function siguienteFicha(){const n=sotanos.map(s=>parseInt(s.ficha_num)).filter(x=>!isNaN(x));return n.length?String(Math.max(...n)+1):'1';}
+
+// ---------- Borrador automático ----------
+function claveBorrador(){return 'sotano_borrador_'+(editandoId||'nuevo');}
+function guardarBorrador(){
+  if(!document.getElementById('modal-form').classList.contains('visible')) return;
+  clearTimeout(_borradorT);
+  _borradorT=setTimeout(()=>{
+    try{
+      localStorage.setItem(claveBorrador(),JSON.stringify({t:Date.now(),paso:pasoActual,datos:recogerForm()}));
+      const av=document.getElementById('borrador-aviso');av.classList.add('on');setTimeout(()=>av.classList.remove('on'),1500);
+    }catch(e){}
+  },600);
+}
+function borrarBorrador(){localStorage.removeItem(claveBorrador());}
+document.getElementById('modal-form').addEventListener('input',guardarBorrador);
+document.getElementById('modal-form').addEventListener('change',guardarBorrador);
+
+// ---------- Navegación ----------
+function abrirFormBase(){
   document.getElementById('lista').style.display='none';
   document.getElementById('sidebar-search').style.display='none';
   document.getElementById('modal-form').classList.add('visible');
-  // Activar modo clic en mapa
-  window._modoUbicarSotano = true;
+  document.getElementById('sidebar').classList.add('form-abierto');
+  window._modoUbicarSotano=true;
   cerrarDetalle();
+  setTimeout(()=>mapa.invalidateSize(),50);
 }
-
+function abrirFormNuevo(){
+  editandoId=null;
+  document.getElementById('form-titulo').textContent='➕ Añadir sótano';
+  abrirFormBase();
+  limpiarForm();
+  let paso=1;
+  const raw=localStorage.getItem(claveBorrador());
+  if(raw){
+    try{
+      const b=JSON.parse(raw);
+      const cuando=new Date(b.t).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+      if(confirm(`Tienes una ficha sin terminar${b.datos.direccion?' ("'+b.datos.direccion+'")':''} del ${cuando}.\n\n¿Continuar con ella?\n\n(Cancelar la descarta)`)){
+        rellenarForm(b.datos);paso=b.paso||1;
+      } else borrarBorrador();
+    }catch(e){borrarBorrador();}
+  }
+  irPaso(paso);
+}
 function abrirFormEditar(id){
   const s=sotanos.find(x=>x.id===id);if(!s)return;
   editandoId=id;
   document.getElementById('form-titulo').textContent='✏️ Editar — '+s.direccion;
-  document.getElementById('f-direccion').value=s.direccion||'';
-  document.getElementById('f-ficha').value=s.ficha_num||'';
-  document.getElementById('f-tipo').value=s.tipo_inmueble||'Residencial';
-  document.getElementById('f-lat').value=s.lat||'';
-  document.getElementById('f-lon').value=s.lon||'';
-  document.getElementById('f-contacto').value=s.contacto||'';
-  document.getElementById('f-num-accesos').value=s.num_accesos||'';
-  const accesos=[s.acceso_1,s.acceso_2,s.acceso_3,s.acceso_4,s.acceso_5].filter(Boolean);
-  document.getElementById('f-accesos').value=accesos.join('\n');
-  document.getElementById('f-ventilacion').value=s.ventilacion?'true':'false';
-  document.getElementById('f-iluminacion').value=s.iluminacion||'Adecuada';
-  document.getElementById('f-gases').value=s.humedad_gases?'true':'false';
-  document.getElementById('f-obs').value=s.observaciones||'';
-  document.getElementById('f-inspector').value=s.inspector||'B-31';
-  document.getElementById('f-fecha').value=s.fecha_inspeccion||'';
-  document.getElementById('lista').style.display='none';
-  document.getElementById('sidebar-search').style.display='none';
-  document.getElementById('modal-form').classList.add('visible');
-  // En edición también permitir reclic en mapa
-  window._modoUbicarSotano = true;
+  abrirFormBase();
+  accesosForm=[];pinAccesoIdx=null;
+  rellenarForm(s);
+  irPaso(1);
 }
-
 function cerrarForm(){
   document.getElementById('modal-form').classList.remove('visible');
+  document.getElementById('sidebar').classList.remove('form-abierto');
   document.getElementById('lista').style.display='';
   document.getElementById('sidebar-search').style.display='';
-  window._modoUbicarSotano = false;
+  window._modoUbicarSotano=false;pinAccesoIdx=null;
   if(marcadorTempSot){mapa.removeLayer(marcadorTempSot);marcadorTempSot=null;}
+  marcadoresAcceso.forEach(m=>mapa.removeLayer(m));marcadoresAcceso=[];
+  setTimeout(()=>mapa.invalidateSize(),50);
+}
+function irPaso(n){
+  pasoActual=n;
+  document.querySelectorAll('.paso').forEach(p=>p.classList.toggle('visible',+p.dataset.paso===n));
+  document.querySelectorAll('.paso-dot').forEach(d=>{const p=+d.dataset.p;d.classList.toggle('activo',p===n);d.classList.toggle('hecho',p<n);});
+  document.getElementById('btn-ant').style.visibility=n===1?'hidden':'visible';
+  document.getElementById('btn-sig').style.display=n===5?'none':'';
+  document.getElementById('btn-guardar-form').style.display=n===5?'':'none';
+  if(n===5) renderRevision();
+  document.querySelector('.form-box').scrollTop=0;
+}
+function validarPaso(n){
+  if(n===1){
+    if(!document.getElementById('f-direccion').value.trim()){mostrarToast('⚠️ La dirección es obligatoria');return false;}
+    if(!document.getElementById('f-lat').value){mostrarToast('⚠️ Sitúa el edificio en el mapa');return false;}
+  }
+  if(n===2&&!accesosForm.length){mostrarToast('⚠️ Registra al menos un acceso');return false;}
+  return true;
+}
+function pasoSiguiente(){if(validarPaso(pasoActual))irPaso(pasoActual+1);}
+function pasoAnterior(){irPaso(pasoActual-1);}
+
+function posibleDuplicado(d){
+  if(!d.lat) return null;
+  return sotanos.find(s=>s.id!==editandoId&&s.lat&&haversine(d.lat,d.lon,s.lat,s.lon)<RADIO_DUPLICADO)||null;
+}
+function renderRevision(){
+  const d=recogerForm();
+  const avisos=[];
+  if(!d.direccion) avisos.push(['err','Falta la dirección']);
+  if(!d.lat) avisos.push(['err','Falta la ubicación en el mapa']);
+  if(!d.accesos.length) avisos.push(['err','No hay accesos registrados']);
+  const dup=posibleDuplicado(d);
+  if(dup) avisos.push(['warn',`Ya existe una ficha a menos de ${RADIO_DUPLICADO} m: <b style="display:inline;color:inherit">${esc(dup.direccion)}</b>. ¿Es el mismo sótano?`]);
+  const rampas=d.accesos.filter(a=>a.tipo==='rampa');
+  if(rampas.length&&rampas.some(a=>!a.galibo_alto)) avisos.push(['warn','Hay rampas sin gálibo registrado']);
+  if(!d.contacto_tel) avisos.push(['warn','Sin teléfono de contacto']);
+  const nd=PCI_ITEMS.filter(([k])=>d.pci[k]==='nd').length;
+  if(nd>=4) avisos.push(['warn',`${nd} instalaciones de PCI sin comprobar`]);
+  document.getElementById('revision-avisos').innerHTML=avisos.map(([t,m])=>`<div class="rev-aviso ${t}">${t==='err'?'⛔':'⚠️'} ${m}</div>`).join('')||'<div class="rev-aviso" style="background:rgba(30,132,73,0.15);border:1px solid rgba(30,132,73,0.4);color:#58D68D">✓ Ficha completa</div>';
+  const si=PCI_ITEMS.filter(([k])=>d.pci[k]==='si').map(x=>x[1]);
+  document.getElementById('revision-resumen').innerHTML=`
+    <div class="rev-bloque"><b>Edificio</b>${esc(d.direccion)} · ${esc(d.tipo_inmueble)}${d.ficha_num?' · Ficha '+esc(d.ficha_num):''}<br>${d.plantas.length} planta${d.plantas.length!==1?'s':''} bajo rasante${d.plantas_sobre?' · '+d.plantas_sobre+' sobre':''}</div>
+    <div class="rev-bloque"><b>Accesos (${d.accesos.length})</b>${d.accesos.map((a,i)=>`${i+1}. ${esc(resumenAcceso(a))}`).join('<br>')}</div>
+    <div class="rev-bloque"><b>PCI</b>${si.length?si.join(', '):'Ninguna confirmada'}<br>Ventilación: ${esc(d.pci.ventilacion_tipo)} · Iluminación: ${esc(d.iluminacion)}${d.humedad_gases?' · <span style="color:#EC7063">⚠ gases</span>':''}</div>
+    <div class="rev-bloque"><b>Riesgos</b>${d.riesgos.length?d.riesgos.map(etqRiesgo).join(', '):'Ninguno marcado'}</div>
+    <div class="rev-bloque"><b>Contacto</b>${d.contacto?esc(d.contacto)+(d.contacto_rol?' ('+esc(d.contacto_rol)+')':'')+(d.contacto_tel?' · '+esc(d.contacto_tel):''):'No registrado'}</div>
+    <div class="rev-bloque"><b>Inspección</b>${esc(d.inspector)} · ${esc(d.fecha_inspeccion)||'—'}</div>`;
 }
 
-function limpiarForm(){
-  ['f-direccion','f-ficha','f-lat','f-lon','f-contacto','f-num-accesos','f-accesos','f-obs','f-fecha'].forEach(id=>document.getElementById(id).value='');
-  const cd = document.getElementById('f-coords-display');
-  if(cd){cd.textContent='Sin seleccionar';cd.style.color='';}
-  const cm = document.getElementById('coords-manual');
-  if(cm) cm.style.display='none';
-  document.getElementById('f-tipo').value='Residencial';
-  document.getElementById('f-ventilacion').value='true';
-  document.getElementById('f-iluminacion').value='Adecuada';
-  document.getElementById('f-gases').value='false';
-  document.getElementById('f-inspector').value='B-31';
-}
-
+// ---------- Guardar ----------
 async function guardarSotano(){
-  const dir=document.getElementById('f-direccion').value.trim();
-  if(!dir){mostrarToast('⚠️ La dirección es obligatoria');return;}
-  const accesosRaw=document.getElementById('f-accesos').value.trim();
-  const accesosList=accesosRaw?accesosRaw.split('\n').filter(Boolean):[];
-  const datos={
-    direccion:dir,
-    ficha_num:document.getElementById('f-ficha').value.trim()||null,
-    tipo_inmueble:document.getElementById('f-tipo').value,
-    lat:parseFloat(document.getElementById('f-lat').value)||null,
-    lon:parseFloat(document.getElementById('f-lon').value)||null,
-    contacto:document.getElementById('f-contacto').value.trim()||null,
-    num_accesos:parseInt(document.getElementById('f-num-accesos').value)||accesosList.length||1,
-    acceso_1:accesosList[0]||null,acceso_2:accesosList[1]||null,
-    acceso_3:accesosList[2]||null,acceso_4:accesosList[3]||null,acceso_5:accesosList[4]||null,
-    ventilacion:document.getElementById('f-ventilacion').value==='true',
-    iluminacion:document.getElementById('f-iluminacion').value,
-    humedad_gases:document.getElementById('f-gases').value==='true',
-    observaciones:document.getElementById('f-obs').value.trim()||null,
-    inspector:document.getElementById('f-inspector').value.trim()||'B-31',
-    fecha_inspeccion:document.getElementById('f-fecha').value.trim()||null,
-    updated_at:new Date().toISOString()
-  };
+  for(const n of [1,2]) if(!validarPaso(n)){irPaso(n);return;}
+  const datos=recogerForm();
+  const dup=posibleDuplicado(datos);
+  if(dup&&!confirm(`Ya existe "${dup.direccion}" a menos de ${RADIO_DUPLICADO} m.\n¿Guardar de todas formas?`)) return;
+  datos.updated_at=new Date().toISOString();
   const btn=document.getElementById('btn-guardar-form');
   btn.disabled=true;btn.textContent='Guardando...';
   try {
     if(editandoId){
-      const r=await fetch(`${SB}/rest/v1/sotanos?id=eq.${editandoId}`,{
-        method:'PATCH',headers:{...H(),'Prefer':'return=representation'},body:JSON.stringify(datos)
-      });
+      const r=await fetch(`${SB}/rest/v1/sotanos?id=eq.${editandoId}`,{method:'PATCH',headers:{...H(),'Prefer':'return=representation'},body:JSON.stringify(datos)});
       if(!r.ok)throw new Error(await r.text());
       const [u]=await r.json();
       const idx=sotanos.findIndex(x=>x.id===editandoId);
       sotanos[idx]={...sotanos[idx],...u};
-      // Actualizar marcador
       if(marcadores[editandoId]){mapa.removeLayer(marcadores[editandoId]);delete marcadores[editandoId];}
-      if(u.lat&&u.lon) marcadores[u.id]=crearMarcador(u);
+      if(u.lat&&u.lon) marcadores[u.id]=crearMarcador(sotanos[idx]);
+      borrarBorrador();cerrarForm();
       mostrarToast('✅ Sótano actualizado');
       mostrarDetalle(editandoId);
     } else {
-      const r=await fetch(`${SB}/rest/v1/sotanos`,{
-        method:'POST',headers:{...H(),'Prefer':'return=representation'},body:JSON.stringify({...datos,fotos:[],documentos:[]})
-      });
+      const r=await fetch(`${SB}/rest/v1/sotanos`,{method:'POST',headers:{...H(),'Prefer':'return=representation'},body:JSON.stringify({...datos,fotos:[],documentos:[]})});
       if(!r.ok)throw new Error(await r.text());
       const [nuevo]=await r.json();
       sotanos.push(nuevo);
       if(nuevo.lat&&nuevo.lon) marcadores[nuevo.id]=crearMarcador(nuevo);
+      borrarBorrador();cerrarForm();
       seleccionado=nuevo.id;
       mostrarToast('✅ Sótano añadido');
       mostrarDetalle(nuevo.id);
     }
-    cerrarForm();
     renderizarLista(sotanos);
     actualizarBarra(sotanos);
-  }catch(e){mostrarToast('❌ Error: '+e.message,4000);}
+  }catch(e){mostrarToast('❌ Error: '+e.message,5000);}
   btn.disabled=false;btn.textContent='💾 Guardar';
 }
 
@@ -852,7 +1270,7 @@ function toggleSidebar(){
 // ============================================
 function abrirLightbox(src){document.getElementById('lightbox-img').src=src;document.getElementById('lightbox').classList.add('visible');}
 function cerrarLightbox(){document.getElementById('lightbox').classList.remove('visible');}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){cerrarLightbox();cerrarForm();cerrarLogin();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){cerrarLightbox();cerrarLogin();}});
 
 function mostrarToast(msg,dur=2500){
   const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';

@@ -62,7 +62,7 @@ header{background:rgba(13,15,18,0.95);border-bottom:1px solid var(--gris-borde);
 #btn-toggle{position:absolute;top:50%;left:0;transform:translateY(-50%);z-index:950;background:var(--naranja);border:none;border-radius:0 8px 8px 0;width:20px;height:56px;cursor:pointer;color:white;font-size:12px;box-shadow:3px 0 8px rgba(0,0,0,0.3)}
 
 /* PANEL DETALLE */
-#panel-detalle{position:absolute;top:12px;right:12px;width:340px;max-height:calc(100% - 24px);background:var(--gris-panel);border:1px solid var(--gris-borde2);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:900;display:none;flex-direction:column;overflow:hidden}
+#panel-detalle{position:absolute;top:12px;right:12px;width:390px;max-height:calc(100% - 24px);background:var(--gris-panel);border:1px solid var(--gris-borde2);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:900;display:none;flex-direction:column;overflow:hidden}
 .pd-header{background:var(--naranja-dark);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .pd-titulo{font-family:var(--font-display);font-size:15px;font-weight:700;color:white;letter-spacing:.03em}
 .pd-cerrar{background:none;border:none;color:rgba(255,255,255,0.7);font-size:22px;cursor:pointer;line-height:1}
@@ -70,6 +70,39 @@ header{background:rgba(13,15,18,0.95);border-bottom:1px solid var(--gris-borde);
 .pd-scroll{overflow-y:auto;flex:1}
 .pd-scroll::-webkit-scrollbar{width:4px}
 .pd-scroll::-webkit-scrollbar-thumb{background:var(--gris-borde2)}
+
+/* FASE 3 · cabecera de intervención, tira de fotos, ruta */
+.pd-sub{font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pd-sub .sc-chip{font-size:9px;padding:1px 6px}
+.cab-int{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px 12px;background:var(--gris-fondo);border-bottom:1px solid var(--gris-borde)}
+.cab-card{background:var(--gris-panel2);border:1px solid var(--gris-borde);border-left:3px solid var(--naranja);border-radius:6px;padding:7px 9px;min-height:52px}
+.cab-card.alerta{border-left-color:#E74C3C}
+.cab-card.ok{border-left-color:#27AE60}
+.cab-l{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-dim);margin-bottom:2px}
+.cab-v{font-family:var(--font-display);font-size:15px;font-weight:700;line-height:1.15;color:var(--texto)}
+.cab-v small{display:block;font-family:var(--font-body);font-size:10px;font-weight:400;color:var(--texto-muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cab-v a{color:#5DADE2;text-decoration:none}
+.tira-fotos{display:flex;gap:4px;overflow-x:auto;padding:8px 12px;scroll-snap-type:x mandatory;background:var(--gris-fondo)}
+.tira-fotos::-webkit-scrollbar{height:4px}
+.tira-fotos::-webkit-scrollbar-thumb{background:var(--gris-borde2);border-radius:2px}
+.tira-foto{position:relative;flex:0 0 118px;height:82px;border-radius:5px;overflow:hidden;scroll-snap-align:start;background:var(--gris-panel2)}
+.tira-foto img{width:100%;height:100%;object-fit:cover;cursor:pointer}
+.tira-foto .gal-etq{font-size:8px}
+.tira-foto .btn-del-foto{top:3px;right:3px;width:18px;height:18px;font-size:10px}
+.tira-foto:hover .btn-del-foto.admin{display:flex}
+.tira-add{flex:0 0 82px;height:82px;border:2px dashed var(--gris-borde2);border-radius:5px;background:none;color:var(--texto-dim);font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.tira-add:hover{border-color:var(--naranja);color:var(--naranja)}
+.pd-nota{margin:0 12px 8px;background:rgba(192,57,43,0.12);border:1px solid rgba(192,57,43,0.35);border-radius:6px;padding:8px 10px;font-size:12px;color:#F5B7B1;line-height:1.4}
+.pd-toggle{cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between}
+.pd-toggle::after{content:'▾';color:var(--texto-dim);font-size:11px;transition:transform .2s}
+.pd-seccion.cerrada .pd-toggle::after{transform:rotate(-90deg)}
+.pd-seccion.cerrada > *:not(.pd-sec-titulo){display:none}
+.marcador-acceso-v{width:22px;height:22px;border-radius:50%;background:var(--naranja);border:2px solid white;color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.marcador-acceso-v.rampa{background:#1E8449}
+.marcador-parque{width:26px;height:26px;border-radius:50%;background:#1A5276;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.btn-ruta-quitar{background:none;border:1px solid var(--gris-borde2);color:var(--texto-muted);border-radius:4px;font-size:10px;padding:2px 7px;cursor:pointer;margin-left:6px}
+.btn-ruta-quitar:hover{color:var(--texto);border-color:var(--texto-muted)}
+@media(max-width:600px){ .cab-int{grid-template-columns:1fr 1fr} .tira-foto{flex-basis:100px;height:70px} }
 
 /* GALERÍA EN PANEL */
 .galeria{display:grid;grid-template-columns:1fr 1fr;gap:2px}
@@ -549,6 +582,85 @@ L.control.layers({
 setTimeout(()=>mapa.invalidateSize(),400);
 window.addEventListener('resize',()=>mapa.invalidateSize());
 
+// ============================================
+// FASE 3 · RUTA DESDE EL PARQUE Y PINS DE ACCESO
+// ============================================
+const PARQUE = {lat:37.1606665, lon:-5.9371868, nombre:'Parque de Bomberos — Pol. El Muro'};
+const OSRM_URL = 'https://router.project-osrm.org/route/v1/driving/';
+let capaRuta=null, marcadorParque=null, pinsAccesoVista=[];
+let rutaToken=0;
+function fmtDist(m){return m<1000?Math.round(m)+' m':(m/1000).toFixed(1).replace('.',',')+' km';}
+function fmtDur(s){const m=Math.round(s/60);return m<1?'<1 min':m+' min';}
+async function rutaOSRM(desde,hasta){
+  const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),6000);
+  try{
+    const r=await fetch(`${OSRM_URL}${desde.lon},${desde.lat};${hasta.lon},${hasta.lat}?overview=full&geometries=geojson`,{signal:ctrl.signal});
+    if(!r.ok) return null;
+    const d=await r.json();
+    if(d.code!=='Ok'||!d.routes?.length) return null;
+    const ru=d.routes[0];
+    return {dist:ru.distance,dur:ru.duration,coords:ru.geometry.coordinates.map(([x,y])=>[y,x]),hasta:[hasta.lat,hasta.lon],calc:new Date().toISOString()};
+  }catch(e){return null;}finally{clearTimeout(t);}
+}
+// Punto de llegada del vehículo: rampa con posición > primer acceso con posición > edificio
+function puntoLlegada(s){
+  const acc=getAccesos(s);
+  const rampa=acc.find(a=>a.tipo==='rampa'&&coordOK(a.lat,a.lon));
+  if(rampa) return {lat:+rampa.lat,lon:+rampa.lon,desc:'rampa'};
+  const cualquiera=acc.find(a=>coordOK(a.lat,a.lon));
+  if(cualquiera) return {lat:+cualquiera.lat,lon:+cualquiera.lon,desc:'acceso'};
+  if(coordOK(s.lat,s.lon)) return {lat:+s.lat,lon:+s.lon,desc:'edificio'};
+  return null;
+}
+function limpiarRuta(){
+  if(capaRuta){mapa.removeLayer(capaRuta);capaRuta=null;}
+  if(marcadorParque){mapa.removeLayer(marcadorParque);marcadorParque=null;}
+  pinsAccesoVista.forEach(m=>mapa.removeLayer(m));pinsAccesoVista=[];
+}
+function pintarPinsAccesoVista(s){
+  getAccesos(s).forEach((a,i)=>{
+    if(!coordOK(a.lat,a.lon)) return;
+    const icon=L.divIcon({html:`<div class="marcador-acceso-v ${a.tipo==='rampa'?'rampa':''}" title="${(TIPOS_ACCESO[a.tipo]||'Acceso').replace(/^\S+\s/,'')}">${i+1}</div>`,iconSize:[22,22],iconAnchor:[11,11],className:''});
+    const m=L.marker([a.lat,a.lon],{icon,zIndexOffset:600}).addTo(mapa);
+    m.bindPopup(`<b>Acceso ${i+1} · ${TIPOS_ACCESO[a.tipo]||'Acceso'}</b><br>${resumenAcceso(a)}`);
+    pinsAccesoVista.push(m);
+  });
+}
+async function cargarRutaSotano(s){
+  const token=++rutaToken;
+  limpiarRuta();
+  pintarPinsAccesoVista(s);
+  const setHTML=(id,html)=>{const e=document.getElementById(id);if(e&&token===rutaToken)e.innerHTML=html;};
+  const llegada=puntoLlegada(s);
+  if(!llegada){setHTML('cab-ruta','<span style="color:var(--texto-dim)">Sin ubicación</span>');return;}
+  let ruta=s.ruta_geom;
+  const valida=ruta&&ruta.coords&&ruta.hasta&&Math.abs(ruta.hasta[0]-llegada.lat)<1e-6&&Math.abs(ruta.hasta[1]-llegada.lon)<1e-6;
+  if(!valida){
+    setHTML('cab-ruta','<span style="color:var(--texto-dim)">⟳ calculando…</span>');
+    ruta=await rutaOSRM(PARQUE,llegada);
+    if(token!==rutaToken) return;
+    if(ruta){ s.ruta_geom=ruta; if(USUARIO) patchSotano(s.id,{ruta_geom:ruta}); }
+  }
+  if(!ruta){
+    const recta=haversine(PARQUE.lat,PARQUE.lon,llegada.lat,llegada.lon);
+    setHTML('cab-ruta',`${fmtDist(recta)}<small>línea recta · sin ruta</small>`);
+    return;
+  }
+  try{
+    capaRuta=L.layerGroup([
+      L.polyline(ruta.coords,{color:'#fff',weight:7,opacity:.9}),
+      L.polyline(ruta.coords,{color:'#E67E22',weight:4,opacity:.95})
+    ]).addTo(mapa);
+    marcadorParque=L.marker([PARQUE.lat,PARQUE.lon],{icon:L.divIcon({html:'<div class="marcador-parque">🚒</div>',iconSize:[26,26],iconAnchor:[13,13],className:''})}).addTo(mapa).bindPopup(PARQUE.nombre);
+    mapa.fitBounds(L.latLngBounds(ruta.coords).pad(0.15),{paddingTopLeft:[20,20],paddingBottomRight:[410,20],animate:true,duration:0.8,maxZoom:17});
+  }catch(e){console.error('Ruta:',e);}
+  setHTML('cab-ruta',`${fmtDur(ruta.dur)} · ${fmtDist(ruta.dist)}<small>hasta ${llegada.desc==='rampa'?'la rampa':llegada.desc==='acceso'?'el acceso':'el edificio'} · por calles</small>`);
+  const b=document.getElementById('btn-quitar-ruta');if(b)b.style.display='';
+}
+function quitarRuta(){limpiarRuta();const b=document.getElementById('btn-quitar-ruta');if(b)b.style.display='none';if(seleccionado){const s=sotanos.find(x=>x.id===seleccionado);if(s)pintarPinsAccesoVista(s);}}
+function centrarSotano(){const s=sotanos.find(x=>x.id===seleccionado);if(s&&coordOK(s.lat,s.lon))mapa.flyTo([s.lat,s.lon],18,{animate:true,duration:0.6});}
+function toggleSeccion(el){el.parentElement.classList.toggle('cerrada');}
+
 function coordOK(lat,lon){lat=+lat;lon=+lon;return isFinite(lat)&&isFinite(lon)&&lat>36&&lat<38.5&&lon>-7&&lon<-4;}
 function crearMarcador(s){
   if(!coordOK(s.lat,s.lon)) return null;
@@ -594,7 +706,7 @@ function renderizarLista(lista){
         ${s.contacto?`<span class="sc-chip chip-gris">📞 ${s.contacto}</span>`:''}
       </div>
       <div class="sc-chips" style="margin-top:2px">${s.estado_ficha==='borrador'?'<span class="sc-chip chip-estado-borrador">Borrador</span>':s.estado_ficha==='validada'?'<span class="sc-chip chip-estado-validada">✓ Validada</span>':''}${revisionVencida(s)?'<span class="sc-chip chip-vencida">⚠ Revisión vencida</span>':''}</div>
-      <div class="sc-fecha">Inspector: ${s.inspector||'—'} · ${s.fecha_inspeccion||'—'}${s.proxima_revision?' · rev. '+fmtISO(s.proxima_revision):''}</div>
+      <div class="sc-fecha">${s.ruta_geom?'🚒 '+fmtDur(s.ruta_geom.dur)+' · '+fmtDist(s.ruta_geom.dist)+' · ':''}Inspector: ${s.inspector||'—'} · ${s.fecha_inspeccion||'—'}${s.proxima_revision?' · rev. '+fmtISO(s.proxima_revision):''}</div>
     </div>
   `).join('');
 }
@@ -627,11 +739,7 @@ function mostrarDetalle(id){
   Object.entries(marcadores).forEach(([mid,m])=>{
     m.getElement()?.querySelector('.marcador-sotano')?.classList.toggle('activo',mid===id);
   });
-  if(coordOK(s.lat,s.lon)&&!mapa.getBounds().contains([s.lat,s.lon])){
-    mapa.flyTo([s.lat,s.lon],16,{animate:true,duration:0.8});
-  }
-
-  document.getElementById('pd-titulo').textContent=s.direccion;
+  document.getElementById('pd-titulo').innerHTML=`${s.direccion}<div class="pd-sub">${s.ficha_num?'Ficha '+s.ficha_num+' · ':''}${s.tipo_inmueble||'Residencial'}${s.estado_ficha==='borrador'?' <span class="sc-chip chip-estado-borrador">Borrador</span>':s.estado_ficha==='validada'?' <span class="sc-chip chip-estado-validada">✓ Validada</span>':''}${revisionVencida(s)?' <span class="sc-chip chip-vencida">⚠ Revisión vencida</span>':''}</div>`;
   document.getElementById('panel-detalle').style.display='flex';
 
   const fotos = Array.isArray(s.fotos)?s.fotos:[];
@@ -641,21 +749,16 @@ function mostrarDetalle(id){
   const riesgos = Array.isArray(s.riesgos)?s.riesgos:[];
   const plantas = Array.isArray(s.plantas)?s.plantas:[];
 
-  const etqPresentes=[...new Set(fotos.map(f=>f.etiqueta||'otra'))];
-  const galeriaHTML = `
-    ${fotos.length>1&&etqPresentes.length>1?`<div class="gal-filtros"><span class="on" onclick="filtrarGaleria(this,'')">Todas (${fotos.length})</span>${etqPresentes.map(e=>`<span onclick="filtrarGaleria(this,'${e}')">${ETQ_MAP[e]||e} (${fotos.filter(f=>(f.etiqueta||'otra')===e).length})</span>`).join('')}</div>`:''}
-    <div class="galeria" id="galeria-sot">
+  const galeriaHTML = (fotos.length||USUARIO) ? `
+    <div class="tira-fotos">
       ${fotos.map(f=>`
-        <div class="galeria-foto" data-etq="${f.etiqueta||'otra'}">
+        <div class="tira-foto">
           <img src="${f.url}" loading="lazy" onclick="abrirLightbox('${f.url}')">
           ${f.etiqueta?`<div class="gal-etq">${ETQ_MAP[f.etiqueta]||f.etiqueta}</div>`:''}
           <button class="btn-del-foto${USUARIO?' admin':''}" onclick="eliminarFoto('${id}','${f.url}')">×</button>
-        </div>
-      `).join('')}
-      ${USUARIO?`<button class="btn-add-foto" onclick="iniciarFoto('${id}')">📷<br>Añadir foto</button>`:''}
-      ${fotos.length===0&&!USUARIO?`<div class="sin-fotos">Sin fotografías registradas</div>`:''}
-    </div>
-  `;
+        </div>`).join('')}
+      ${USUARIO?`<button class="tira-add" onclick="iniciarFoto('${id}')">📷<span>Añadir</span></button>`:''}
+    </div>` : '';
 
   const docsHTML = docs.length>0||USUARIO ? `
     <div class="pd-seccion">
@@ -673,46 +776,53 @@ function mostrarDetalle(id){
     </div>
   ` : '';
 
+  const rampa=accesosArr.find(a=>a.tipo==='rampa');
+  const pciSi=PCI_ITEMS.filter(([k])=>pci[k]==='si').map(x=>x[1]);
+  const pciNo=PCI_ITEMS.filter(([k])=>pci[k]==='no').map(x=>x[1]);
+  const ventTxt=pci.ventilacion_tipo?({natural:'Natural',forzada:'Forzada',ninguna:'Sin ventilación'})[pci.ventilacion_tipo]:(s.ventilacion?'Sí':'Sin ventilación');
+  const peligro=s.humedad_gases||!s.ventilacion||pci.ventilacion_tipo==='ninguna';
+
   document.getElementById('pd-body').innerHTML = `
+    <div class="cab-int">
+      <div class="cab-card"><div class="cab-l">🚒 Desde el parque</div><div class="cab-v" id="cab-ruta"><span style="color:var(--texto-dim)">⟳</span></div></div>
+      <div class="cab-card ${rampa?(rampa.galibo_alto&&rampa.galibo_alto<2.2?'alerta':'ok'):''}"><div class="cab-l">Acceso vehículos</div><div class="cab-v">${rampa?`${rampa.galibo_alto?'↕ '+rampa.galibo_alto+' m':'gálibo ?'}${rampa.galibo_ancho?' · ↔ '+rampa.galibo_ancho+' m':''}<small>${rampa.calle||'rampa'}${rampa.apertura&&rampa.apertura!=='nd'?' · '+APERTURAS[rampa.apertura]:''}</small>`:`<span style="color:var(--texto-muted);font-size:13px">Sin rampa</span><small>${accesosArr.length} acceso${accesosArr.length!==1?'s':''} peatonal${accesosArr.length!==1?'es':''}</small>`}</div></div>
+      <div class="cab-card ${peligro?'alerta':'ok'}"><div class="cab-l">Atmósfera</div><div class="cab-v">${s.humedad_gases?'⚠ Gases':'Sin gases'}<small>Ventilación: ${ventTxt}${pci.sectorizacion&&pci.sectorizacion!=='nd'?' · sect. '+({si:'sí',parcial:'parcial',no:'no'})[pci.sectorizacion]:''}</small></div></div>
+      <div class="cab-card ${s.contacto_tel?'':'alerta'}"><div class="cab-l">Contacto</div><div class="cab-v">${s.contacto_tel?`<a href="tel:${s.contacto_tel}">📞 ${s.contacto_tel}</a>`:'<span style="color:#EC7063;font-size:13px">Sin teléfono</span>'}<small>${s.contacto||'No registrado'}${s.contacto_rol?' · '+s.contacto_rol:''}</small></div></div>
+    </div>
+    ${riesgos.length?`<div style="padding:8px 12px 0">${riesgos.map(k=>`<span class="riesgo-chip">⚠ ${etqRiesgo(k)}</span>`).join('')}</div>`:''}
+    ${s.observaciones?`<div class="pd-nota" style="margin-top:8px">${s.observaciones}</div>`:''}
     ${galeriaHTML}
     <div class="pd-seccion">
-      <div class="pd-sec-titulo">Información general</div>
-      ${s.ficha_num?`<div class="pd-fila"><span class="pd-clave">Nº ficha</span><span class="pd-valor">${s.ficha_num}</span></div>`:''}
-      <div class="pd-fila"><span class="pd-clave">Tipo</span><span class="pd-valor">${s.tipo_inmueble||'Residencial'}</span></div>
-      ${plantas.length?`<div class="pd-fila"><span class="pd-clave">Plantas</span><span class="pd-valor">${plantas.length} bajo rasante${s.plantas_sobre?' · '+s.plantas_sobre+' sobre':''}</span></div>`:''}
+      <div class="pd-sec-titulo pd-toggle" onclick="toggleSeccion(this)">Accesos (${accesosArr.length})</div>
+      ${accesosArr.map((a,i)=>`<div class="acceso-item est" ${coordOK(a.lat,a.lon)?`style="cursor:pointer" onclick="mapa.flyTo([${a.lat},${a.lon}],19)"`:''}>
+        <div class="acc-l1"><div class="acceso-num" style="${a.tipo==='rampa'?'background:rgba(30,132,73,0.25);border-color:rgba(30,132,73,0.4);color:#58D68D':''}">${i+1}</div><span>${TIPOS_ACCESO[a.tipo]||'📍 Acceso'}${a.calle?' · '+a.calle:''}</span>${a.tipo==='rampa'&&(a.galibo_alto||a.galibo_ancho)?`<span class="acc-galibo">↕ ${a.galibo_alto||'?'} m · ↔ ${a.galibo_ancho||'?'} m</span>`:''}</div>
+        ${[a.apertura&&a.apertura!=='nd'?'🔑 '+APERTURAS[a.apertura]:'',a.plantas?'Plantas '+a.plantas:'',a.descripcion||'',coordOK(a.lat,a.lon)?'📍 en mapa':''].filter(Boolean).length?`<div class="acc-l2">${[a.apertura&&a.apertura!=='nd'?'🔑 '+APERTURAS[a.apertura]:'',a.plantas?'Plantas '+a.plantas:'',a.descripcion||'',coordOK(a.lat,a.lon)?'📍 en mapa':''].filter(Boolean).join(' · ')}</div>`:''}
+      </div>`).join('')||'<div class="sin-fotos" style="padding:8px">Sin accesos registrados</div>'}
+    </div>
+    <div class="pd-seccion">
+      <div class="pd-sec-titulo pd-toggle" onclick="toggleSeccion(this)">Protección contra incendios <span style="font-weight:400;letter-spacing:0;text-transform:none;color:var(--texto-dim);margin-left:auto;margin-right:6px">${pciSi.length} sí · ${pciNo.length} no</span></div>
+      <div class="pci-grid">
+        ${PCI_ITEMS.map(([k,l])=>{const v=pci[k]||'nd';return `<div class="pci-item"><span class="pd-dot" style="background:${v==='si'?'#27AE60':v==='no'?'#E74C3C':'#5A6475'}"></span>${l}</div>`;}).join('')}
+      </div>
+      <div class="cond-fila" style="margin-top:6px"><span class="pd-clave">Iluminación</span><span class="cond-badge ${(s.iluminacion||'Adecuada')==='Adecuada'?'chip-ok':'chip-warn'}">${s.iluminacion||'Adecuada'}</span></div>
+      ${pci.notas?`<div class="obs-box normal" style="margin-top:6px">${pci.notas}</div>`:''}
+    </div>
+    <div class="pd-seccion cerrada">
+      <div class="pd-sec-titulo pd-toggle" onclick="toggleSeccion(this)">Edificio y plantas</div>
+      ${plantas.length?`<div class="pd-fila"><span class="pd-clave">Bajo rasante</span><span class="pd-valor">${plantas.length} planta${plantas.length!==1?'s':''}${s.plantas_sobre?' · '+s.plantas_sobre+' sobre rasante':''}</span></div>`:''}
       ${plantas.filter(p=>p.plazas||p.superficie||p.trasteros).map(p=>`<div class="pd-fila"><span class="pd-clave" style="padding-left:10px">Planta ${p.nivel}</span><span class="pd-valor">${[p.plazas?p.plazas+' plazas':'',p.superficie?p.superficie+' m²':'',p.trasteros?'trasteros':''].filter(Boolean).join(' · ')||'—'}</span></div>`).join('')}
-      <div class="pd-fila"><span class="pd-clave">Contacto</span><span class="pd-valor">${s.contacto?`${s.contacto}${s.contacto_rol?' <span style="color:var(--texto-dim)">('+s.contacto_rol+')</span>':''}${s.contacto_tel?`<br><a href="tel:${s.contacto_tel}" style="color:#5DADE2;text-decoration:none">📞 ${s.contacto_tel}</a>`:''}`:'No registrado'}</span></div>
-      <div class="pd-fila"><span class="pd-clave">Coordenadas</span><span class="pd-valor">${s.lat?s.lat.toFixed(5)+', '+s.lon.toFixed(5):'—'}</span></div>
+      <div class="pd-fila"><span class="pd-clave">Coordenadas</span><span class="pd-valor" style="cursor:pointer" onclick="centrarSotano()">${coordOK(s.lat,s.lon)?(+s.lat).toFixed(5)+', '+(+s.lon).toFixed(5)+' 🎯':'—'}</span></div>
+    </div>
+    <div class="pd-seccion cerrada">
+      <div class="pd-sec-titulo pd-toggle" onclick="toggleSeccion(this)">Inspección</div>
       <div class="pd-fila"><span class="pd-clave">Inspector</span><span class="pd-valor">${s.inspector||'—'} · ${s.fecha_inspeccion||'—'}</span></div>
       <div class="pd-fila"><span class="pd-clave">Estado</span><span class="pd-valor"><span class="cond-badge ${s.estado_ficha==='validada'?'chip-estado-validada':s.estado_ficha==='borrador'?'chip-estado-borrador':'chip-gris'}">${s.estado_ficha==='validada'?'✓ Validada'+(s.validado_por?' · '+s.validado_por:''):s.estado_ficha==='borrador'?'Borrador':'Completa'}</span></span></div>
       <div class="pd-fila"><span class="pd-clave">Próxima revisión</span><span class="pd-valor" style="${revisionVencida(s)?'color:#EC7063;font-weight:700':''}">${revisionVencida(s)?'⚠ ':''}${fmtISO(s.proxima_revision)}</span></div>
     </div>
-    <div class="pd-seccion">
-      <div class="pd-sec-titulo">Accesos (${accesosArr.length})</div>
-      ${accesosArr.map((a,i)=>`<div class="acceso-item est">
-        <div class="acc-l1"><div class="acceso-num">${i+1}</div><span>${TIPOS_ACCESO[a.tipo]||'📍 Acceso'}${a.calle?' · '+a.calle:''}</span>${a.tipo==='rampa'&&(a.galibo_alto||a.galibo_ancho)?`<span class="acc-galibo">↕ ${a.galibo_alto||'?'} m · ↔ ${a.galibo_ancho||'?'} m</span>`:''}</div>
-        ${[a.apertura&&a.apertura!=='nd'?'🔑 '+APERTURAS[a.apertura]:'',a.plantas?'Plantas '+a.plantas:'',a.descripcion||''].filter(Boolean).length?`<div class="acc-l2">${[a.apertura&&a.apertura!=='nd'?'🔑 '+APERTURAS[a.apertura]:'',a.plantas?'Plantas '+a.plantas:'',a.descripcion||''].filter(Boolean).join(' · ')}</div>`:''}
-      </div>`).join('')||'<div class="sin-fotos" style="padding:8px">Sin accesos registrados</div>'}
-    </div>
-    <div class="pd-seccion">
-      <div class="pd-sec-titulo">Protección contra incendios</div>
-      <div class="pci-grid">
-        ${PCI_ITEMS.map(([k,l])=>{const v=pci[k]||'nd';return `<div class="pci-item"><span class="pd-dot" style="background:${v==='si'?'#27AE60':v==='no'?'#E74C3C':'#5A6475'}"></span>${l}</div>`;}).join('')}
-      </div>
-      ${pci.notas?`<div class="obs-box normal" style="margin-top:6px">${pci.notas}</div>`:''}
-    </div>
-    <div class="pd-seccion">
-      <div class="pd-sec-titulo">Condiciones</div>
-      <div class="cond-fila"><span class="pd-clave">Ventilación</span><span class="cond-badge ${s.ventilacion?'chip-ok':'chip-alert'}">${pci.ventilacion_tipo?({natural:'✓ Natural',forzada:'✓ Forzada',ninguna:'✗ No'})[pci.ventilacion_tipo]:(s.ventilacion?'✓ Sí':'✗ No')}</span></div>
-      <div class="cond-fila"><span class="pd-clave">Iluminación</span><span class="cond-badge ${(s.iluminacion||'Adecuada')==='Adecuada'?'chip-ok':'chip-warn'}">${s.iluminacion||'Adecuada'}</span></div>
-      <div class="cond-fila"><span class="pd-clave">Humedad / Gases</span><span class="cond-badge ${s.humedad_gases?'chip-alert':'chip-ok'}">${s.humedad_gases?'⚠ Detectados':'✓ No'}</span></div>
-      ${pci.sectorizacion&&pci.sectorizacion!=='nd'?`<div class="cond-fila"><span class="pd-clave">Sectorización</span><span class="cond-badge ${pci.sectorizacion==='si'?'chip-ok':pci.sectorizacion==='parcial'?'chip-warn':'chip-alert'}">${({si:'✓ Por plantas',parcial:'Parcial',no:'✗ No'})[pci.sectorizacion]}</span></div>`:''}
-      ${riesgos.length?`<div style="margin-top:8px"><div class="pd-clave" style="margin-bottom:4px">Riesgos específicos</div>${riesgos.map(k=>`<span class="riesgo-chip">⚠ ${etqRiesgo(k)}</span>`).join('')}</div>`:''}
-      ${s.observaciones?`<div class="${s.humedad_gases?'obs-box':'obs-box normal'}">${s.observaciones}</div>`:''}
-    </div>
     ${docsHTML}
     <div class="pd-acciones">
       <button class="pd-btn pd-btn-osm" onclick="verOSM('${id}')">🗺 OSM</button>
+      <button class="pd-btn pd-btn-osm" id="btn-quitar-ruta" onclick="quitarRuta()" style="display:none">✕ Ruta</button>
       <button class="pd-btn pd-btn-editar" id="pd-editar" onclick="abrirFormEditar('${id}')">✏️ Editar</button>
       ${s.estado_ficha!=='validada'?`<button class="pd-btn pd-btn-validar" id="pd-validar" onclick="validarSotano('${id}')">✓ Validar</button>`:''}
       <button class="pd-btn pd-btn-borrar" id="pd-borrar" onclick="borrarSotano('${id}')">🗑 Borrar</button>
@@ -728,11 +838,13 @@ function mostrarDetalle(id){
     const q=document.getElementById('busqueda').value.toLowerCase();
     return !q||(s.direccion||'').toLowerCase().includes(q);
   }));
+  cargarRutaSotano(s).catch(e=>console.error('Ruta sótano:',e));
 }
 
 function cerrarDetalle(){
   document.getElementById('panel-detalle').style.display='none';
   seleccionado=null;
+  limpiarRuta();
 }
 
 function verOSM(id){
@@ -1145,6 +1257,7 @@ document.getElementById('modal-form').addEventListener('change',guardarBorrador)
 
 // ---------- Navegación ----------
 function abrirFormBase(){
+  limpiarRuta();
   document.getElementById('lista').style.display='none';
   document.getElementById('sidebar-search').style.display='none';
   document.getElementById('modal-form').classList.add('visible');
@@ -1246,6 +1359,9 @@ async function guardarSotano(){
   const datos=recogerForm();
   const dup=posibleDuplicado(datos);
   if(dup&&!confirm(`Ya existe "${dup.direccion}" a menos de ${RADIO_DUPLICADO} m.\n¿Guardar de todas formas?`)) return;
+  const prev=editandoId?sotanos.find(x=>x.id===editandoId):null;
+  const llA=prev?puntoLlegada(prev):null, llB=puntoLlegada(datos);
+  if(!prev||!llA||!llB||Math.abs(llA.lat-llB.lat)>1e-7||Math.abs(llA.lon-llB.lon)>1e-7) datos.ruta_geom=null;
   datos.updated_at=new Date().toISOString();
   const btn=document.getElementById('btn-guardar-form');
   btn.disabled=true;btn.textContent='Guardando...';

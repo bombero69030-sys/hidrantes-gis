@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script src="../comun/auth.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Sótanos · Portal Bomberos Los Palacios</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -568,7 +569,7 @@ let subiendoParaId = null, subiendoTipoDoc = null;
 let sidebarOculto = false;
 let marcadorTempSot = null;
 
-const H = (x={})=>({'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+(TOKEN||KEY),...x});
+const H = (x={})=>({'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+(PortalAuth.token()||TOKEN||KEY),...x});
 
 // ============================================
 // MAPA
@@ -896,7 +897,7 @@ document.getElementById('input-foto').addEventListener('change',async function()
     const path=`${subiendoParaId}/${Date.now()}.${ext}`;
     try {
       const r=await fetch(`${SB}/storage/v1/object/sotanos-fotos/${path}`,{
-        method:'POST',headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':file.type},body:file
+        method:'POST',headers:{'apikey':KEY,'Authorization':'Bearer '+(PortalAuth.token()||TOKEN),'Content-Type':file.type},body:file
       });
       if(r.ok) fotos.push({url:`${SB}/storage/v1/object/public/sotanos-fotos/${path}`,path,etiqueta:etiquetaFoto});
     }catch(e){}
@@ -927,7 +928,7 @@ document.getElementById('input-doc').addEventListener('change',async function(){
   const path=`${subiendoParaId}/${Date.now()}.${ext}`;
   try {
     const r=await fetch(`${SB}/storage/v1/object/sotanos-fotos/${path}`,{
-      method:'POST',headers:{'apikey':KEY,'Authorization':'Bearer '+TOKEN,'Content-Type':file.type},body:file
+      method:'POST',headers:{'apikey':KEY,'Authorization':'Bearer '+(PortalAuth.token()||TOKEN),'Content-Type':file.type},body:file
     });
     if(r.ok){
       const url=`${SB}/storage/v1/object/public/sotanos-fotos/${path}`;

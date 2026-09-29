@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script src="../comun/auth.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HidrantesGIS — Consorcio Bomberos Sevilla</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -415,7 +416,7 @@
 // ============================================
 const SB_URL = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
-const getHEADERS = () => ({'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+(TOKEN_H||SB_KEY)});
+const getHEADERS = () => ({'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+(PortalAuth.token()||TOKEN_H||SB_KEY)});
 
 async function sbGet(params=''){
   const r = await fetch(`${SB_URL}/rest/v1/hidrantes?${params}&order=created_at.desc`,{headers:getHEADERS()});

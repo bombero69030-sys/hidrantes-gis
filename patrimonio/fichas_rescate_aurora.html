@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fichas de Rescate — Capilla de La Aurora / Gran Poder</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--rojo:#8B1A1A;--rojo-dark:#5C0F0F;--naranja:#C05000;--naranja-light:#FFF3E0;--verde:#166534;--gris-oscuro:#1A1A1A;--gris-medio:#2D2D2D;--gris-panel:#F5F2EE;--gris-borde:#DDD8D0;--texto:#1A1A1A;--texto-muted:#6B6560;--blanco:#FFFEF9;--crema:#F9F6F0;--font-display:'Oswald',sans-serif;--font-body:'Source Serif 4',serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--crema);color:var(--texto)}
+.cabecera{background:var(--gris-oscuro);border-bottom:4px solid var(--rojo);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.cab-izq{display:flex;align-items:center;gap:14px}
+.cab-emblema{width:42px;height:42px;border:2px solid var(--rojo);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
+.cab-titulo{font-family:var(--font-display);font-size:13px;font-weight:600;color:var(--blanco);letter-spacing:.12em;text-transform:uppercase}
+.cab-sub{font-size:11px;color:rgba(255,255,255,.4);font-family:var(--font-display);letter-spacing:.08em;margin-top:1px}
+.cab-der{display:flex;gap:8px}
+.vista-btn{font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border:1px solid rgba(255,255,255,.2);border-radius:3px;cursor:pointer;color:rgba(255,255,255,.5);background:transparent;transition:all .2s}
+.vista-btn.active{background:var(--rojo);color:var(--blanco);border-color:var(--rojo)}
+.layout{display:flex;height:calc(100vh - 70px)}
+.panel{width:260px;flex-shrink:0;background:var(--gris-medio);overflow-y:auto;border-right:1px solid rgba(255,255,255,.06)}
+.panel-zona{padding:8px 12px 4px;font-family:var(--font-display);font-size:9px;font-weight:600;color:rgba(255,255,255,.3);letter-spacing:.14em;text-transform:uppercase;border-top:1px solid rgba(255,255,255,.06);margin-top:4px}
+.panel-zona:first-child{border-top:none;margin-top:0}
+.bien-item{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;transition:background .15s;border-bottom:1px solid rgba(255,255,255,.04)}
+.bien-item:hover{background:rgba(255,255,255,.05)}
+.bien-item.active{background:rgba(139,26,26,.3);border-left:3px solid var(--rojo);padding-left:9px}
+.bien-thumb{width:40px;height:40px;border-radius:3px;object-fit:cover;flex-shrink:0;background:rgba(255,255,255,.1)}
+.bien-thumb-ph{width:40px;height:40px;border-radius:3px;flex-shrink:0;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:16px}
+.bien-info{flex:1;min-width:0}
+.bien-nombre-panel{font-family:var(--font-display);font-size:12px;font-weight:500;color:rgba(255,255,255,.85);line-height:1.3}
+.bien-num-panel{font-family:var(--font-display);font-size:10px;color:var(--rojo);letter-spacing:.04em;margin-top:2px}
+.main{flex:1;overflow-y:auto}
+.ficha-hero{position:relative;height:240px;overflow:hidden;background:var(--gris-oscuro)}
+.ficha-hero img{width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
+.ficha-hero-ph{width:100%;height:100%;background:linear-gradient(135deg,#2D1A1A,#1A1A1A);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.ph-icon{font-size:56px;color:rgba(255,255,255,.08)}
+.ph-label{font-family:var(--font-display);font-size:11px;color:rgba(255,255,255,.2);letter-spacing:.1em;text-transform:uppercase}
+.ficha-hero-overlay{position:absolute;bottom:0;left:0;right:0;padding:20px 28px 18px;background:linear-gradient(transparent,rgba(0,0,0,.85))}
+.ficha-num{font-family:var(--font-display);font-size:11px;font-weight:600;color:var(--rojo);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
+.ficha-nombre{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--blanco);text-transform:uppercase;letter-spacing:.04em;line-height:1.1}
+.ficha-autor{font-size:12px;color:rgba(255,255,255,.55);font-style:italic;margin-top:4px}
+.badge-rescate{position:absolute;top:14px;right:14px;font-family:var(--font-display);font-size:11px;font-weight:700;padding:5px 12px;border-radius:2px;letter-spacing:.08em;text-transform:uppercase}
+.badge-r1{background:var(--rojo);color:white}
+.badge-r2{background:var(--naranja);color:white}
+.badge-r3{background:#854D0E;color:white}
+.badge-ri{background:#374151;color:#D1D5DB}
+.badge-upload{position:absolute;top:14px;left:14px;font-family:var(--font-display);font-size:10px;font-weight:600;padding:4px 10px;border-radius:2px;letter-spacing:.06em;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.3);color:white;cursor:pointer;transition:background .15s}
+.badge-upload:hover{background:rgba(139,26,26,.7)}
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);background:var(--gris-oscuro);border-bottom:3px solid var(--rojo)}
+.stat{padding:11px 14px;text-align:center;border-right:1px solid rgba(255,255,255,.07)}
+.stat:last-child{border-right:none}
+.stat-val{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--blanco);line-height:1}
+.stat-key{font-family:var(--font-display);font-size:9px;font-weight:600;color:rgba(255,255,255,.35);letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+.seccion{background:var(--blanco);margin-bottom:6px}
+.sec-header{padding:9px 20px;border-bottom:1px solid var(--gris-borde);font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--texto-muted);display:flex;align-items:center;gap:10px}
+.sec-header::after{content:'';flex:1;height:1px;background:var(--gris-borde)}
+.sec-grid{display:grid;grid-template-columns:1fr 1fr}
+.cb{padding:10px 14px;border-bottom:1px solid var(--gris-borde);border-right:1px solid var(--gris-borde)}
+.cb:nth-child(even){border-right:none}
+.cb.full{grid-column:1/-1;border-right:none}
+.cb:last-child,.cb:nth-last-child(2):nth-child(odd){border-bottom:none}
+.cl{font-family:var(--font-display);font-size:9px;font-weight:700;color:var(--texto-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.cv{font-size:13px;color:var(--texto);line-height:1.5;font-family:var(--font-body)}
+.cv.alert{color:var(--rojo);font-weight:600}
+.cv.warn{color:var(--naranja);font-weight:600}
+.personas-num{font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--texto);line-height:1}
+.personas-sub{font-size:12px;color:var(--texto-muted);margin-top:2px}
+.riesgo-chip{display:inline-block;font-family:var(--font-display);font-size:11px;font-weight:600;padding:3px 9px;border-radius:2px;margin:2px 2px 2px 0;letter-spacing:.04em}
+.riesgo-fuego{background:#FEE2E2;color:#7F1D1D}
+.riesgo-agua{background:#DBEAFE;color:#1E3A5F}
+.riesgo-estruc{background:#FEF3C7;color:#78350F}
+.riesgo-mani{background:#F3E8FF;color:#4A1D96}
+.riesgo-inam{background:#F0FDF4;color:#14532D;border:1px solid #86EFAC}
+.alerta-box{display:flex;gap:10px;padding:12px 16px;border-left:4px solid var(--rojo);background:#FFF5F5;font-size:13px;color:#5C0F0F;line-height:1.5;font-family:var(--font-body)}
+.zona-mapa{background:var(--gris-panel);padding:12px 20px;display:flex;align-items:center;gap:14px}
+.zona-valor{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--rojo);letter-spacing:.04em}
+.vista-edificio{padding:20px}
+.edificio-titulo{font-family:var(--font-display);font-size:20px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--rojo);margin-bottom:4px}
+.edificio-sub{font-size:13px;color:var(--texto-muted);margin-bottom:20px}
+.zona-grupo{margin-bottom:20px}
+.zona-titulo{font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blanco);background:var(--gris-oscuro);padding:6px 12px;margin-bottom:8px}
+.grid-bienes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bien-card{background:var(--blanco);border:1px solid var(--gris-borde);border-radius:4px;overflow:hidden;cursor:pointer;transition:all .15s}
+.bien-card:hover{border-color:var(--rojo);transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,26,26,.15)}
+.bien-card-img{width:100%;height:90px;object-fit:cover;background:var(--gris-panel)}
+.bien-card-img-ph{width:100%;height:90px;background:var(--gris-panel);display:flex;align-items:center;justify-content:center;font-size:24px;flex-direction:column;gap:4px}
+.bien-card-img-ph span{font-family:var(--font-display);font-size:9px;color:var(--texto-muted);letter-spacing:.06em}
+.bien-card-body{padding:8px 10px}
+.bien-card-num{font-family:var(--font-display);font-size:10px;color:var(--rojo);font-weight:700;letter-spacing:.06em;margin-bottom:2px}
+.bien-card-nombre{font-family:var(--font-display);font-size:12px;font-weight:500;color:var(--texto);line-height:1.3}
+.bien-card-ubi{font-size:10px;color:var(--texto-muted);margin-top:3px}
+.bien-card-badges{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.mini-badge{font-family:var(--font-display);font-size:9px;font-weight:700;padding:2px 5px;border-radius:2px}
+.sec-body{padding:14px 20px}
+@media print{.cabecera,.panel,.cab-der{display:none!important}.layout{display:block;height:auto}.main{overflow:visible}.ficha-wrap{page-break-after:always}.stats-strip{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="cabecera">
+  <div class="cab-izq">
+    <div class="cab-emblema">🔥</div>
+    <div>
+      <div class="cab-titulo">Fichas de Rescate · Patrimonio</div>
+      <div class="cab-sub">Capilla de La Aurora / Gran Poder · Los Palacios y Villafranca</div>
+    </div>
+  </div>
+  <div class="cab-der">
+    <button class="vista-btn active" id="btn-ficha" onclick="setVista('ficha')">Ficha individual</button>
+    <button class="vista-btn" id="btn-edificio" onclick="setVista('edificio')">Vista edificio</button>
+    <button class="vista-btn" onclick="window.print()">🖨 Imprimir</button>
+  </div>
+</div>
+<div class="layout">
+  <div class="panel" id="panel-lateral"></div>
+  <div class="main" id="main-content"></div>
+</div>
+<script>
+const riesgoLabels={fuego:'Fuego',agua:'Agua',estruc:'Derrumbe',mani:'Manipulación delicada',inam:'Inamovible'};
+const riesgoClass={fuego:'riesgo-fuego',agua:'riesgo-agua',estruc:'riesgo-estruc',mani:'riesgo-mani',inam:'riesgo-inam'};
+const rescateLabel={R1:'Rescate nº 1',R2:'Rescate nº 2',R3:'Rescate nº 3',RI:'Inamovible — proteger in situ'};
+const rescateClass={R1:'badge-r1',R2:'badge-r2',R3:'badge-r3',RI:'badge-ri'};
+
+const bienes=[
+  {id:1,zona:'Altar Mayor / Camarín',rescate:'R1',nombre:'Ntra. Sra. de la Asunción (Virgen de la Aurora)',autor:'Anónimo — S. XVIII',ubicacion:'Altar mayor / Camarín de la Virgen',tipo:'Imagen de madera policromada',cronologia:'Siglo XVIII — anónima',material:'Madera policromada — fragilidad alta',personas:'2–3',peso:'Pendiente de medir',dimensiones:'Pendiente de medir',riesgos:['fuego','agua','mani'],notas:'PRIMERA PRIORIDAD DE RESCATE. Imagen titular del altar mayor, ubicada en camarín elevado. Acceso al camarín por escalera de caracol de hierro — solo puede subir UNA persona a la vez. Prever mínimo 3 efectivos: uno sube, dos reciben abajo. Sujeción por la base, nunca por extremidades ni atributos. Extremadamente sensible al calor y la humedad. El camarín tiene una escalera oculta descubierta en 1995 que da acceso al ático — no confundir con la escalera de acceso a la imagen.',contacto:'Hermandad del Gran Poder — pendiente de obtener teléfono',img:null},
+  {id:2,zona:'Altar Mayor / Camarín',rescate:'R2',nombre:'Ntro. Padre Jesús del Gran Poder',autor:'Pendiente de confirmar',ubicacion:'Retablo — lado derecho del crucero',tipo:'Imagen de madera policromada',cronologia:'Pendiente de confirmar',material:'Madera policromada',personas:'2–3',peso:'Pendiente de medir',dimensiones:'Pendiente de medir',riesgos:['fuego','agua','mani'],notas:'Segunda prioridad de rescate. Medalla de Oro de la Villa. Verificar si la imagen está anclada al retablo antes de extraer. Sujeción por la base o el cuerpo del paso, nunca por las manos ni el rostro. Coordinar con la Hermandad para conocer el sistema de anclaje.',contacto:'Hermandad del Gran Poder — pendiente',img:null},
+  {id:3,zona:'Retablo derecho del crucero',rescate:'R2',nombre:'María Stma. de la Soledad',autor:'Pendiente de confirmar',ubicacion:'Retablo — lado derecho del crucero',tipo:'Imagen de madera policromada',cronologia:'Pendiente de confirmar',material:'Madera policromada — vestimenta de tela',personas:'2',peso:'Pendiente de medir',dimensiones:'Pendiente de medir',riesgos:['fuego','agua','mani'],notas:'Titular mariana de la cofradía. Verificar anclaje en retablo. Vestimenta de tela puede arder con rapidez — priorizar rescate antes de que el fuego alcance la zona del crucero. Sujeción por la base, nunca por las manos ni la cabeza.',contacto:'Hermandad del Gran Poder — pendiente',img:null},
+  {id:4,zona:'Retablo derecho del crucero',rescate:'R3',nombre:'San Juan Evangelista',autor:'Pendiente de confirmar',ubicacion:'Pendiente de confirmar ubicación exacta',tipo:'Imagen de madera policromada',cronologia:'Pendiente de confirmar',material:'Madera policromada',personas:'1–2',peso:'Pendiente',dimensiones:'Pendiente',riesgos:['fuego','agua'],notas:'Rescatar tras asegurar el rescate de las titulares. Confirmar ubicación exacta con la Hermandad antes de la visita presencial.',contacto:'Hermandad del Gran Poder — pendiente',img:null},
+  {id:5,zona:'Nave — junto al titular cristífero',rescate:'R3',nombre:'Ntra. Sra. de los Dolores',autor:'Anónimo — 2ª mitad S. XVIII',ubicacion:'Junto al titular cristífero',tipo:'Imagen de madera policromada',cronologia:'2ª mitad S. XVIII — anónima',material:'Madera policromada',personas:'1–2',peso:'Pendiente',dimensiones:'Pendiente',riesgos:['fuego','agua'],notas:'Imagen antigua de gran valor devocional. Rescatar tras asegurar las titulares. Confirmar ubicación exacta en visita presencial.',contacto:'Hermandad del Gran Poder — pendiente',img:null},
+  {id:6,zona:'Ornamentación mural — nave',rescate:'RI',nombre:'Yeserías del S. XVIII con simbología mariana',autor:'Anónimo — S. XVIII',ubicacion:'Muros interiores de la nave',tipo:'Decoración mural en yeso policromado',cronologia:'S. XVIII — restauradas en 1999–2005',material:'Yeso policromado con estofados y dorados — extremadamente sensible al agua y al calor',personas:'INAMOVIBLE',peso:'INAMOVIBLE',dimensiones:'Toda la superficie interior de la nave',riesgos:['fuego','agua','inam'],notas:'INAMOVIBLE — No intentar rescatar en ningún caso. Las yeserías cubren los muros interiores con inscripciones bíblicas en latín, simbología mariana, estofados y dorados. Son extremadamente sensibles al agua de extinción. Comunicar al mando: EVITAR PROYECCIÓN DIRECTA DE AGUA sobre los muros interiores. Usar niebla de baja presión en su lugar si es posible.',contacto:'Hermandad del Gran Poder',img:null},
+];
+
+let seleccionado=1,vista='ficha';
+function setVista(v){vista=v;document.getElementById('btn-ficha').classList.toggle('active',v==='ficha');document.getElementById('btn-edificio').classList.toggle('active',v==='edificio');if(v==='ficha')mostrarFicha(seleccionado);else mostrarEdificio()}
+function renderPanel(){
+  const zonas=[...new Set(bienes.map(b=>b.zona))];
+  document.getElementById('panel-lateral').innerHTML=zonas.map(zona=>`
+    <div class="panel-zona">${zona}</div>
+    ${bienes.filter(b=>b.zona===zona).map(b=>`
+      <div class="bien-item ${b.id===seleccionado?'active':''}" id="pi-${b.id}" onclick="seleccionar(${b.id})">
+        ${b.img?`<img class="bien-thumb" src="${b.img}" alt="">`:``}
+        <div class="bien-thumb-ph" ${b.img?'style="display:none"':''}>🎨</div>
+        <div class="bien-info">
+          <div class="bien-nombre-panel">${b.nombre}</div>
+          <div class="bien-num-panel">${rescateLabel[b.rescate]}</div>
+        </div>
+      </div>`).join('')}`).join('');
+}
+function seleccionar(id){seleccionado=id;document.querySelectorAll('.bien-item').forEach(el=>el.classList.remove('active'));const el=document.getElementById('pi-'+id);if(el)el.classList.add('active');if(vista==='ficha')mostrarFicha(id)}
+function subirFoto(id){const input=document.createElement('input');input.type='file';input.accept='image/*';input.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{bienes.find(x=>x.id===id).img=ev.target.result;renderPanel();mostrarFicha(id)};r.readAsDataURL(f)};input.click()}
+function mostrarFicha(id){
+  const b=bienes.find(x=>x.id===id);
+  const chips=b.riesgos.map(r=>`<span class="riesgo-chip ${riesgoClass[r]}">${riesgoLabels[r]}</span>`).join('');
+  const esInam=b.rescate==='RI';
+  document.getElementById('main-content').innerHTML=`
+    <div class="ficha-wrap">
+      <div class="ficha-hero">
+        ${b.img?`<img src="${b.img}" alt="${b.nombre}">`:``}
+        <div class="ficha-hero-ph" ${b.img?'style="display:none"':''}>
+          <div class="ph-icon">🎨</div>
+          <div class="ph-label">Foto pendiente de añadir</div>
+        </div>
+        <div class="ficha-hero-overlay">
+          <div class="ficha-num">Capilla La Aurora / Gran Poder · ${b.zona}</div>
+          <div class="ficha-nombre">${b.nombre}</div>
+          <div class="ficha-autor">${b.autor}</div>
+        </div>
+        <div class="badge-rescate ${rescateClass[b.rescate]}">${rescateLabel[b.rescate]}</div>
+        <button class="badge-upload" onclick="subirFoto(${b.id})">📷 Añadir foto</button>
+      </div>
+      <div class="stats-strip">
+        <div class="stat"><div class="stat-val" style="color:${b.rescate==='R1'?'#EF4444':b.rescate==='R2'?'#F97316':b.rescate==='RI'?'#6B7280':'#D97706'}">${b.rescate==='RI'?'—':b.rescate}</div><div class="stat-key">Prioridad</div></div>
+        <div class="stat"><div class="stat-val">${b.personas}</div><div class="stat-key">Personas</div></div>
+        <div class="stat"><div class="stat-val" style="font-size:13px;padding-top:4px">${b.riesgos.map(r=>riesgoLabels[r]).join(' / ')}</div><div class="stat-key">Riesgos</div></div>
+        <div class="stat"><div class="stat-val" style="font-size:12px;padding-top:3px">${b.zona.split(' ').slice(0,2).join(' ')}</div><div class="stat-key">Zona</div></div>
+      </div>
+      <div class="seccion"><div class="sec-header">Ubicación en el edificio</div><div class="zona-mapa"><div><div class="cl">Localización exacta</div><div class="zona-valor">${b.ubicacion}</div></div></div></div>
+      <div class="seccion"><div class="sec-header">Datos del bien</div><div class="sec-grid">
+        <div class="cb"><div class="cl">Tipo / Tipología</div><div class="cv">${b.tipo}</div></div>
+        <div class="cb"><div class="cl">Cronología</div><div class="cv">${b.cronologia}</div></div>
+        <div class="cb"><div class="cl">Peso estimado</div><div class="cv ${b.peso==='INAMOVIBLE'?'alert':''}">${b.peso}</div></div>
+        <div class="cb"><div class="cl">Dimensiones</div><div class="cv ${b.dimensiones==='INAMOVIBLE'?'alert':''}">${b.dimensiones}</div></div>
+        <div class="cb full"><div class="cl">Material / Fragilidad</div><div class="cv">${b.material}</div></div>
+      </div></div>
+      <div class="seccion"><div class="sec-header">Para la intervención</div><div class="sec-grid">
+        <div class="cb"><div class="cl">Personas necesarias</div>${esInam?`<div class="cv alert">NO RESCATAR</div>`:`<div class="personas-num">${b.personas}</div><div class="personas-sub">personas mínimo</div>`}</div>
+        <div class="cb"><div class="cl">Riesgos específicos</div><div style="margin-top:4px">${chips}</div></div>
+        <div class="cb full"><div class="cl">Notas especiales de manipulación</div><div class="cv">${b.notas}</div></div>
+      </div></div>
+      ${esInam?`<div class="seccion"><div class="alerta-box"><span>⚠️</span><div>BIEN INAMOVIBLE — No intentar trasladar. Proteger in situ con mantas ignífugas y comunicar al mando su localización exacta.</div></div></div>`:''}
+      <div class="seccion" style="margin-bottom:0"><div class="sec-header">Contacto</div><div class="sec-body">
+        <div class="cl">Responsable del bien</div><div class="cv">${b.contacto}</div>
+        <div style="margin-top:12px"><button style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;background:var(--rojo);color:white;border:none;cursor:pointer;border-radius:2px" onclick="window.print()">🖨 Imprimir esta ficha</button></div>
+      </div></div>
+    </div>`;
+}
+function mostrarEdificio(){
+  const zonas=[...new Set(bienes.map(b=>b.zona))];
+  document.getElementById('main-content').innerHTML=`
+    <div class="vista-edificio">
+      <div class="edificio-titulo">Capilla de La Aurora / Gran Poder</div>
+      <div class="edificio-sub">Fichas de rescate — ${bienes.length} bienes catalogados · Haz clic en un bien para ver su ficha</div>
+      ${zonas.map(zona=>`
+        <div class="zona-grupo"><div class="zona-titulo">${zona}</div>
+        <div class="grid-bienes">
+          ${bienes.filter(b=>b.zona===zona).map(b=>`
+            <div class="bien-card" onclick="seleccionar(${b.id});setVista('ficha')">
+              ${b.img?`<img class="bien-card-img" src="${b.img}" alt="">`:``}
+              <div class="bien-card-img-ph" ${b.img?'style="display:none"':''}><span>🎨</span><span>Foto pendiente</span></div>
+              <div class="bien-card-body">
+                <div class="bien-card-num">${rescateLabel[b.rescate]}</div>
+                <div class="bien-card-nombre">${b.nombre}</div>
+                <div class="bien-card-ubi">${b.ubicacion}</div>
+                <div class="bien-card-badges">${b.riesgos.map(r=>`<span class="mini-badge riesgo-chip ${riesgoClass[r]}">${riesgoLabels[r]}</span>`).join('')}</div>
+              </div>
+            </div>`).join('')}
+        </div></div>`).join('')}
+    </div>`;
+}
+renderPanel();mostrarFicha(1);
+</script>
+</body>
+</html>

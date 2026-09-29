@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fichas de Rescate — Parroquia Santa María la Blanca</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --rojo: #8B1A1A;
+  --rojo-dark: #5C0F0F;
+  --rojo-vivo: #C0392B;
+  --naranja: #C05000;
+  --naranja-light: #FFF3E0;
+  --amarillo: #F59E0B;
+  --verde: #166534;
+  --gris-oscuro: #1A1A1A;
+  --gris-medio: #2D2D2D;
+  --gris-panel: #F5F2EE;
+  --gris-borde: #DDD8D0;
+  --texto: #1A1A1A;
+  --texto-muted: #6B6560;
+  --blanco: #FFFEF9;
+  --crema: #F9F6F0;
+  --font-display: 'Oswald', sans-serif;
+  --font-body: 'Source Serif 4', serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: var(--crema); color: var(--texto); }
+
+/* ── CABECERA ── */
+.cabecera {
+  background: var(--gris-oscuro);
+  border-bottom: 4px solid var(--rojo);
+  padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.cab-izq { display: flex; align-items: center; gap: 14px; }
+.cab-emblema {
+  width: 44px; height: 44px; border: 2px solid var(--rojo);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.cab-titulo { font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--blanco); letter-spacing: .12em; text-transform: uppercase; }
+.cab-sub { font-size: 11px; color: rgba(255,255,255,.4); font-family: var(--font-display); letter-spacing: .08em; margin-top: 1px; }
+.cab-der { display: flex; gap: 8px; }
+.vista-btn {
+  font-family: var(--font-display); font-size: 11px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; padding: 6px 14px;
+  border: 1px solid rgba(255,255,255,.2); border-radius: 3px; cursor: pointer;
+  color: rgba(255,255,255,.5); background: transparent; transition: all .2s;
+}
+.vista-btn.active { background: var(--rojo); color: var(--blanco); border-color: var(--rojo); }
+
+/* ── LAYOUT ── */
+.layout { display: flex; height: calc(100vh - 72px); }
+
+/* ── PANEL LATERAL ── */
+.panel {
+  width: 260px; flex-shrink: 0;
+  background: var(--gris-medio);
+  overflow-y: auto; border-right: 1px solid rgba(255,255,255,.06);
+}
+.panel-zona {
+  padding: 8px 12px 4px;
+  font-family: var(--font-display); font-size: 9px; font-weight: 600;
+  color: rgba(255,255,255,.3); letter-spacing: .14em; text-transform: uppercase;
+  border-top: 1px solid rgba(255,255,255,.06); margin-top: 4px;
+}
+.panel-zona:first-child { border-top: none; margin-top: 0; }
+.bien-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; cursor: pointer; transition: background .15s;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.bien-item:hover { background: rgba(255,255,255,.05); }
+.bien-item.active { background: rgba(139,26,26,.3); border-left: 3px solid var(--rojo); padding-left: 9px; }
+.bien-thumb {
+  width: 40px; height: 40px; border-radius: 3px; object-fit: cover;
+  flex-shrink: 0; background: rgba(255,255,255,.1);
+}
+.bien-thumb-placeholder {
+  width: 40px; height: 40px; border-radius: 3px; flex-shrink: 0;
+  background: rgba(255,255,255,.08); display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.bien-info { flex: 1; min-width: 0; }
+.bien-nombre-panel { font-family: var(--font-display); font-size: 12px; font-weight: 500; color: rgba(255,255,255,.85); line-height: 1.3; }
+.bien-num-panel { font-family: var(--font-display); font-size: 10px; color: var(--rojo); letter-spacing: .04em; margin-top: 2px; }
+
+/* ── MAIN ── */
+.main { flex: 1; overflow-y: auto; }
+
+/* ── FICHA INDIVIDUAL ── */
+.ficha-wrap { padding: 0; }
+
+.ficha-hero {
+  position: relative; height: 260px; overflow: hidden;
+  background: var(--gris-oscuro);
+}
+.ficha-hero img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.55); }
+.ficha-hero-placeholder {
+  width: 100%; height: 100%; background: linear-gradient(135deg, #2D1A1A, #1A1A1A);
+  display: flex; align-items: center; justify-content: center; font-size: 80px; color: rgba(255,255,255,.08);
+}
+.ficha-hero-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 24px 28px 20px;
+  background: linear-gradient(transparent, rgba(0,0,0,.85));
+}
+.ficha-num { font-family: var(--font-display); font-size: 11px; font-weight: 600; color: var(--rojo); letter-spacing: .14em; text-transform: uppercase; margin-bottom: 4px; }
+.ficha-nombre { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--blanco); text-transform: uppercase; letter-spacing: .04em; line-height: 1.1; }
+.ficha-autor { font-size: 13px; color: rgba(255,255,255,.55); font-family: var(--font-body); font-style: italic; margin-top: 4px; }
+.badge-rescate {
+  position: absolute; top: 16px; right: 16px;
+  font-family: var(--font-display); font-size: 11px; font-weight: 700;
+  padding: 5px 12px; border-radius: 2px; letter-spacing: .08em; text-transform: uppercase;
+}
+.badge-r1 { background: var(--rojo); color: white; }
+.badge-r2 { background: var(--naranja); color: white; }
+.badge-r3 { background: #854D0E; color: white; }
+.badge-ri { background: #374151; color: #D1D5DB; }
+
+/* STATS */
+.stats-strip {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  background: var(--gris-oscuro); border-bottom: 3px solid var(--rojo);
+}
+.stat { padding: 12px 16px; text-align: center; border-right: 1px solid rgba(255,255,255,.07); }
+.stat:last-child { border-right: none; }
+.stat-val { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--blanco); line-height: 1; }
+.stat-key { font-family: var(--font-display); font-size: 9px; font-weight: 600; color: rgba(255,255,255,.35); letter-spacing: .1em; text-transform: uppercase; margin-top: 3px; }
+
+/* SECCIONES */
+.seccion { background: var(--blanco); margin-bottom: 6px; }
+.sec-header {
+  padding: 10px 20px; border-bottom: 1px solid var(--gris-borde);
+  font-family: var(--font-display); font-size: 10px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--texto-muted);
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-header::after { content: ''; flex: 1; height: 1px; background: var(--gris-borde); }
+.sec-body { padding: 14px 20px; }
+.sec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.campo-bloque { padding: 10px 14px; border-bottom: 1px solid var(--gris-borde); border-right: 1px solid var(--gris-borde); }
+.campo-bloque:nth-child(even) { border-right: none; }
+.campo-bloque.full { grid-column: 1/-1; border-right: none; }
+.campo-bloque:last-child, .campo-bloque:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+.campo-label { font-family: var(--font-display); font-size: 9px; font-weight: 700; color: var(--texto-muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
+.campo-val { font-size: 13px; color: var(--texto); line-height: 1.5; font-family: var(--font-body); }
+.campo-val.alert { color: var(--rojo); font-weight: 600; }
+.campo-val.warn { color: var(--naranja); font-weight: 600; }
+.campo-val.ok { color: var(--verde); font-weight: 600; }
+.personas-num { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--texto); line-height: 1; }
+.personas-sub { font-size: 12px; color: var(--texto-muted); margin-top: 2px; }
+
+/* RIESGOS */
+.riesgo-chip {
+  display: inline-block; font-family: var(--font-display); font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: 2px; margin: 3px 3px 3px 0; letter-spacing: .04em;
+}
+.riesgo-fuego { background: #FEE2E2; color: #7F1D1D; }
+.riesgo-agua { background: #DBEAFE; color: #1E3A5F; }
+.riesgo-estruc { background: #FEF3C7; color: #78350F; }
+.riesgo-mani { background: #F3E8FF; color: #4A1D96; }
+.riesgo-inam { background: #F0FDF4; color: #14532D; border: 1px solid #86EFAC; }
+
+/* ALERTA ESPECIAL */
+.alerta-box {
+  display: flex; gap: 10px; padding: 12px 16px;
+  border-left: 4px solid var(--rojo); background: #FFF5F5;
+  font-size: 13px; color: #5C0F0F; line-height: 1.5; font-family: var(--font-body);
+}
+.alerta-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+/* ZONA EDIFICIO */
+.zona-mapa {
+  background: var(--gris-panel); padding: 14px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.zona-etiqueta {
+  font-family: var(--font-display); font-size: 11px; font-weight: 600;
+  color: var(--texto-muted); letter-spacing: .08em; text-transform: uppercase;
+}
+.zona-valor {
+  font-family: var(--font-display); font-size: 14px; font-weight: 700;
+  color: var(--rojo); letter-spacing: .04em;
+}
+
+/* VISTA EDIFICIO */
+.vista-edificio { padding: 20px; }
+.edificio-titulo {
+  font-family: var(--font-display); font-size: 20px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em; color: var(--rojo);
+  margin-bottom: 4px;
+}
+.edificio-sub { font-size: 13px; color: var(--texto-muted); margin-bottom: 20px; }
+.zona-grupo { margin-bottom: 20px; }
+.zona-titulo {
+  font-family: var(--font-display); font-size: 11px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--blanco);
+  background: var(--gris-oscuro); padding: 6px 12px; margin-bottom: 8px;
+}
+.grid-bienes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.bien-card {
+  background: var(--blanco); border: 1px solid var(--gris-borde); border-radius: 4px;
+  overflow: hidden; cursor: pointer; transition: all .15s;
+}
+.bien-card:hover { border-color: var(--rojo); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(139,26,26,.15); }
+.bien-card-img { width: 100%; height: 100px; object-fit: cover; background: var(--gris-panel); }
+.bien-card-img-ph { width: 100%; height: 100px; background: var(--gris-panel); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+.bien-card-body { padding: 8px 10px; }
+.bien-card-num { font-family: var(--font-display); font-size: 10px; color: var(--rojo); font-weight: 700; letter-spacing: .06em; margin-bottom: 2px; }
+.bien-card-nombre { font-family: var(--font-display); font-size: 12px; font-weight: 500; color: var(--texto); line-height: 1.3; }
+.bien-card-ubi { font-size: 10px; color: var(--texto-muted); margin-top: 3px; }
+.bien-card-badges { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.mini-badge { font-family: var(--font-display); font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 2px; }
+
+/* PRINT */
+@media print {
+  .cabecera, .panel, .cab-der { display: none !important; }
+  .layout { display: block; height: auto; }
+  .main { overflow: visible; }
+  .ficha-wrap { page-break-after: always; }
+  .stats-strip { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* SCROLL */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="cabecera">
+  <div class="cab-izq">
+    <div class="cab-emblema">🔥</div>
+    <div>
+      <div class="cab-titulo">Fichas de Rescate · Patrimonio</div>
+      <div class="cab-sub">Parroquia Mayor de Santa María la Blanca · Los Palacios y Villafranca</div>
+    </div>
+  </div>
+  <div class="cab-der">
+    <button class="vista-btn active" id="btn-ficha" onclick="setVista('ficha')">Ficha individual</button>
+    <button class="vista-btn" id="btn-edificio" onclick="setVista('edificio')">Vista edificio</button>
+    <button class="vista-btn" onclick="window.print()">🖨 Imprimir</button>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="panel" id="panel-lateral"></div>
+  <div class="main" id="main-content"></div>
+</div>
+
+<script>
+const BASE = 'http://santamarialospalacios.com';
+
+const bienes = [
+  // ALTAR MAYOR
+  { id:1, zona:'Altar Mayor y Presbiterio', rescate:'R1', nombre:'Ntra. Sra. de las Nieves (Patrona)', autor:'Gabriel de Astorga Miranda, 1864', ubicacion:'Hornacina central del retablo mayor', tipo:'Imagen de candelero de madera policromada', cronologia:'1864 (sobre imagen anterior de 1530)', material:'Madera policromada — fragilidad alta', personas:'2–3', peso:'Pendiente de medir', dimensiones:'Reducidas proporciones — imagen de candelero', riesgos:['fuego','agua','mani'], notas:'PRIMERA PRIORIDAD ABSOLUTA DE RESCATE. Imagen inclina el rostro hacia un hombro (rasgo singular de los Astorga). Análisis radiográfico por Miñarro en 1996. Sujeción por la base, nunca por extremidades ni atributos. Sensible al calor y humedad.', contacto:'Parroquia — pendiente de obtener teléfono directo', img: BASE+'/Altar/Parroquia_AltarMayor_IMG_0750_ps_web.jpg' },
+  { id:2, zona:'Altar Mayor y Presbiterio', rescate:'RI', nombre:'Retablo Mayor — La Adoración de los Pastores', autor:'Pablo Legot, 1631–1636', ubicacion:'Capilla mayor — altar mayor', tipo:'Lienzo sobre tela (4,60 × 2,08 m)', cronologia:'1631–1636. Reconstruido 1865. Restaurado 2002.', material:'Óleo sobre lienzo — inamovible', personas:'INAMOVIBLE', peso:'INAMOVIBLE', dimensiones:'4,60 × 2,08 metros', riesgos:['fuego','agua','inam'], notas:'INAMOVIBLE — No intentar descolgar. Proteger con mantas ignífugas in situ. Documentar fotográficamente de inmediato al llegar. Obra excepcional: único Pablo Legot en el municipio.', contacto:'Parroquia', img: BASE+'/Altar/Parroquia_AltarMayor_IMG_1072_ps_web.jpg' },
+  { id:3, zona:'Altar Mayor y Presbiterio', rescate:'R2', nombre:'San Juan Bautista', autor:'Pablo Legot, 1631–1636', ubicacion:'Retablo mayor — lateral izquierdo', tipo:'Lienzo sobre tela', cronologia:'1631–1636. Restaurado 2002.', material:'Óleo sobre lienzo', personas:'2', peso:'Pendiente', dimensiones:'Pendiente', riesgos:['fuego','agua'], notas:'Lienzo lateral del retablo mayor. Restaurado en 2002 junto al lienzo central. Intentar proteger in situ si el rescate del lienzo central es inviable.', contacto:'Parroquia', img: BASE+'/Altar/Parroquia_AltarMayor_IMG_0744_ps_web.jpg' },
+  { id:4, zona:'Altar Mayor y Presbiterio', rescate:'R2', nombre:'San Juan Evangelista', autor:'Pablo Legot, 1631–1636', ubicacion:'Retablo mayor — lateral derecho', tipo:'Lienzo sobre tela', cronologia:'1631–1636. Restaurado 2002.', material:'Óleo sobre lienzo', personas:'2', peso:'Pendiente', dimensiones:'Pendiente', riesgos:['fuego','agua'], notas:'Lienzo lateral del retablo mayor. Restaurado en 2002.', contacto:'Parroquia', img: BASE+'/Altar/Parroquia_AltarMayor_IMG_0745_ps_web.jpg' },
+
+  // CAPILLA CRISTO SALUD
+  { id:5, zona:'Capilla del Cristo de la Salud', rescate:'R2', nombre:'Cristo de la Salud', autor:'Anónimo — Escuela granadina', ubicacion:'Retablo capilla Cristo de la Salud — nave derecha', tipo:'Talla de madera policromada', cronologia:'Fin S. XVI / inicio S. XVII', material:'Madera policromada — fragilidad alta. Policromía expresiva del maltrato y la muerte.', personas:'2–3', peso:'Pendiente de medir', dimensiones:'Pendiente', riesgos:['fuego','agua','mani'], notas:'Obra creada para retablo, no procesional — puede estar fijada a la estructura. Verificar anclaje antes de extraer. Policromía de gran expresividad y fragilidad. Sujeción por la base o por los brazos del travesaño, nunca por la cabeza ni el sudario.', contacto:'Parroquia', img: BASE+'/Salud/Parroquia_Salud_IMG_0774_ps_web.jpg' },
+  { id:6, zona:'Capilla del Cristo de la Salud', rescate:'R3', nombre:'Virgen María al pie de la Cruz', autor:'Anónimo, S. XVII', ubicacion:'Retablo capilla Cristo de la Salud', tipo:'Escultura de madera policromada', cronologia:'S. XVII', material:'Madera policromada', personas:'1–2', peso:'Pendiente', dimensiones:'Pendiente', riesgos:['fuego','agua'], notas:'Escultura complementaria del retablo. Rescatar tras el Cristo de la Salud.', contacto:'Parroquia', img: BASE+'/Salud/Parroquia_Salud_IMG_0800_ps_web.jpg' },
+  { id:7, zona:'Capilla del Cristo de la Salud', rescate:'R3', nombre:'San Juan Evangelista al pie de la Cruz', autor:'Anónimo, S. XVII', ubicacion:'Retablo capilla Cristo de la Salud', tipo:'Escultura de madera policromada', cronologia:'S. XVII', material:'Madera policromada', personas:'1–2', peso:'Pendiente', dimensiones:'Pendiente', riesgos:['fuego','agua'], notas:'Escultura complementaria del retablo. Rescatar tras el Cristo de la Salud.', contacto:'Parroquia', img: BASE+'/Salud/Parroquia_Salud_IMG_0801_ps_web.jpg' },
+
+  // CAPILLA ROSARIO
+  { id:8, zona:'Capilla de la Virgen del Rosario', rescate:'R2', nombre:'Virgen del Rosario', autor:'Anónimo, h. 1725', ubicacion:'Hornacina central retablo — cabecera nave derecha', tipo:'Imagen de madera policromada', cronologia:'H. 1725', material:'Madera policromada', personas:'2', peso:'Pendiente', dimensiones:'Pendiente', riesgos:['fuego','agua'], notas:'Imagen en hornacina central. Verificar si está anclada antes de extraer.', contacto:'Parroquia', img:null },
+
+  // SAGRARIO
+  { id:9, zona:'Capilla del Sagrario', rescate:'R2', nombre:'Inmaculada Concepción', autor:'Anónimo, S. XVIII', ubicacion:'Hornacina central retablo — Capilla del Sagrario', tipo:'Escultura de madera policromada', cronologia:'S. XVIII', material:'Madera policromada', personas:'2', peso:'Pendiente', dimensiones:'Pendiente', riesgos:['fuego','agua'], notas:'Alto valor devocional. Verificar anclaje en hornacina antes de extraer.', contacto:'Parroquia', img:null },
+
+  // MUSEO
+  { id:10, zona:'Museo Parroquial / Sacristía', rescate:'R1', nombre:'Custodia', autor:'Pendiente de atribuir', ubicacion:'Museo Parroquial — Sacristía', tipo:'Orfebrería', cronologia:'Pendiente de datar', material:'Metal precioso — muy sensible a golpes y calor', personas:'1–2', peso:'Pendiente', dimensiones:'Pendiente', riesgos:['fuego','mani'], notas:'SEGUNDA PRIORIDAD DE RESCATE junto a la Patrona. Pieza de orfebrería de primer orden. Manipular con guantes. Transportar en posición vertical. No inclinar ni golpear.', contacto:'Parroquia', img: BASE+'/Museo/Parroquia_Museo_IMG_0999_ps_web.jpg' },
+  { id:11, zona:'Museo Parroquial / Sacristía', rescate:'R1', nombre:'Cruz procesional (Guión de Plata)', autor:'Posiblemente S. XV–XVI', ubicacion:'Museo Parroquial / Sacristía', tipo:'Orfebrería — cruz procesional', cronologia:'S. XV–XVI (pendiente de confirmar)', material:'Plata — sensible a golpes', personas:'1–2', peso:'Pendiente', dimensiones:'Pendiente', riesgos:['fuego','mani'], notas:'Único vestigio del vínculo histórico con los Ponce de León. Tondo central con representación del antiguo castillo de Los Palacios. Pieza histórica excepcional. Prioridad de rescate máxima junto a la Patrona y la Custodia.', contacto:'Parroquia', img: BASE+'/Museo/Parroquia_Museo_IMG_0997_ps_web.jpg' },
+
+  // ÓRGANO
+  { id:12, zona:'Coro y Órgano', rescate:'RI', nombre:'Órgano de Francisco de Ortíguez', autor:'Francisco de Ortíguez, 1747', ubicacion:'Coro — tribuna del órgano', tipo:'Instrumento de tubos histórico', cronologia:'1747', material:'Madera, metal, cuero — inamovible. Extremadamente sensible a la humedad y al fuego.', personas:'INAMOVIBLE', peso:'INAMOVIBLE', dimensiones:'Gran formato — inamovible', riesgos:['fuego','agua','inam'], notas:'INAMOVIBLE. No intentar rescatar en ningún caso. Documentar fotográficamente. Evitar proyección de agua directa — el cuero y la madera de los fuelles se destruyen con la humedad. Comunicar al mando la presencia del órgano antes de usar agua en la zona del coro.', contacto:'Parroquia', img: BASE+'/Arquitectura/Parroquia_CoroOrgano_IMG_0741_ps_web.jpg' },
+];
+
+const riesgoLabels = { fuego:'Fuego', agua:'Agua', estruc:'Derrumbe', mani:'Manipulación delicada', inam:'Inamovible' };
+const riesgoClass = { fuego:'riesgo-fuego', agua:'riesgo-agua', estruc:'riesgo-estruc', mani:'riesgo-mani', inam:'riesgo-inam' };
+const rescateLabel = { R1:'Rescate nº 1', R2:'Rescate nº 2', R3:'Rescate nº 3', RI:'Inamovible — proteger in situ' };
+const rescateClass = { R1:'badge-r1', R2:'badge-r2', R3:'badge-r3', RI:'badge-ri' };
+
+let seleccionado = 1;
+let vista = 'ficha';
+
+function setVista(v) {
+  vista = v;
+  document.getElementById('btn-ficha').classList.toggle('active', v === 'ficha');
+  document.getElementById('btn-edificio').classList.toggle('active', v === 'edificio');
+  if (v === 'ficha') mostrarFicha(seleccionado);
+  else mostrarEdificio();
+}
+
+function renderPanel() {
+  const zonas = [...new Set(bienes.map(b => b.zona))];
+  document.getElementById('panel-lateral').innerHTML = zonas.map(zona => `
+    <div class="panel-zona">${zona}</div>
+    ${bienes.filter(b => b.zona === zona).map(b => `
+      <div class="bien-item ${b.id === seleccionado ? 'active' : ''}" id="pi-${b.id}" onclick="seleccionar(${b.id})">
+        ${b.img ? `<img class="bien-thumb" src="${b.img}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+        <div class="bien-thumb-placeholder" ${b.img ? 'style="display:none"' : ''}>🎨</div>
+        <div class="bien-info">
+          <div class="bien-nombre-panel">${b.nombre}</div>
+          <div class="bien-num-panel">${rescateLabel[b.rescate]}</div>
+        </div>
+      </div>
+    `).join('')}
+  `).join('');
+}
+
+function seleccionar(id) {
+  seleccionado = id;
+  document.querySelectorAll('.bien-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('pi-' + id);
+  if (el) { el.classList.add('active'); }
+  if (vista === 'ficha') mostrarFicha(id);
+}
+
+function mostrarFicha(id) {
+  const b = bienes.find(x => x.id === id);
+  const chips = b.riesgos.map(r => `<span class="riesgo-chip ${riesgoClass[r]}">${riesgoLabels[r]}</span>`).join('');
+  const esInamovible = b.rescate === 'RI';
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="ficha-wrap">
+      <div class="ficha-hero">
+        ${b.img ? `<img src="${b.img}" alt="${b.nombre}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+        <div class="ficha-hero-placeholder" ${b.img ? 'style="display:none"' : ''}>🎨</div>
+        <div class="ficha-hero-overlay">
+          <div class="ficha-num">Parroquia Santa María la Blanca · ${b.zona}</div>
+          <div class="ficha-nombre">${b.nombre}</div>
+          <div class="ficha-autor">${b.autor}</div>
+        </div>
+        <div class="badge-rescate ${rescateClass[b.rescate]}">${rescateLabel[b.rescate]}</div>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat">
+          <div class="stat-val" style="color:${b.rescate==='R1'?'#EF4444':b.rescate==='R2'?'#F97316':b.rescate==='RI'?'#6B7280':'#D97706'}">${b.rescate === 'RI' ? '—' : b.rescate}</div>
+          <div class="stat-key">Prioridad</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val">${b.personas}</div>
+          <div class="stat-key">Personas</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" style="font-size:14px;padding-top:4px">${b.riesgos.map(r=>riesgoLabels[r]).join(' / ')}</div>
+          <div class="stat-key">Riesgos</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" style="font-size:13px;padding-top:2px">${b.zona.split(' ').slice(0,2).join(' ')}</div>
+          <div class="stat-key">Zona</div>
+        </div>
+      </div>
+
+      <div class="seccion">
+        <div class="sec-header">Ubicación en el edificio</div>
+        <div class="zona-mapa">
+          <div>
+            <div class="campo-label">Localización exacta</div>
+            <div class="zona-valor">${b.ubicacion}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="seccion">
+        <div class="sec-header">Datos del bien</div>
+        <div class="sec-grid">
+          <div class="campo-bloque">
+            <div class="campo-label">Tipo / Tipología</div>
+            <div class="campo-val">${b.tipo}</div>
+          </div>
+          <div class="campo-bloque">
+            <div class="campo-label">Cronología</div>
+            <div class="campo-val">${b.cronologia}</div>
+          </div>
+          <div class="campo-bloque">
+            <div class="campo-label">Peso estimado</div>
+            <div class="campo-val ${b.peso==='INAMOVIBLE'?'alert':''}">${b.peso}</div>
+          </div>
+          <div class="campo-bloque">
+            <div class="campo-label">Dimensiones</div>
+            <div class="campo-val ${b.dimensiones==='INAMOVIBLE'?'alert':''}">${b.dimensiones}</div>
+          </div>
+          <div class="campo-bloque full">
+            <div class="campo-label">Material / Fragilidad</div>
+            <div class="campo-val">${b.material}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="seccion">
+        <div class="sec-header">Para la intervención</div>
+        <div class="sec-grid">
+          <div class="campo-bloque">
+            <div class="campo-label">Personas necesarias</div>
+            ${esInamovible ? `<div class="campo-val alert">NO RESCATAR</div>` : `<div class="personas-num">${b.personas}</div><div class="personas-sub">personas mínimo</div>`}
+          </div>
+          <div class="campo-bloque">
+            <div class="campo-label">Riesgos específicos</div>
+            <div style="margin-top:4px">${chips}</div>
+          </div>
+          <div class="campo-bloque full">
+            <div class="campo-label">Notas especiales de manipulación</div>
+            <div class="campo-val">${b.notas}</div>
+          </div>
+        </div>
+      </div>
+
+      ${esInamovible ? `
+      <div class="seccion">
+        <div class="alerta-box">
+          <div class="alerta-icon">⚠️</div>
+          <div>BIEN INAMOVIBLE — No intentar trasladar en ningún caso. Actuación: proteger con mantas ignífugas, documentar fotográficamente y comunicar al mando su presencia y localización exacta.</div>
+        </div>
+      </div>` : ''}
+
+      <div class="seccion" style="margin-bottom:0">
+        <div class="sec-header">Contacto</div>
+        <div class="sec-body">
+          <div class="campo-label">Responsable del bien</div>
+          <div class="campo-val">${b.contacto}</div>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;background:var(--rojo);color:white;border:none;cursor:pointer;border-radius:2px" onclick="window.print()">🖨 Imprimir esta ficha</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function mostrarEdificio() {
+  const zonas = [...new Set(bienes.map(b => b.zona))];
+  document.getElementById('main-content').innerHTML = `
+    <div class="vista-edificio">
+      <div class="edificio-titulo">Parroquia Mayor de Santa María la Blanca</div>
+      <div class="edificio-sub">Fichas de rescate — ${bienes.length} bienes catalogados · Haz clic en un bien para ver su ficha</div>
+      ${zonas.map(zona => `
+        <div class="zona-grupo">
+          <div class="zona-titulo">${zona}</div>
+          <div class="grid-bienes">
+            ${bienes.filter(b => b.zona === zona).map(b => `
+              <div class="bien-card" onclick="seleccionar(${b.id});setVista('ficha')">
+                ${b.img ? `<img class="bien-card-img" src="${b.img}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+                <div class="bien-card-img-ph" ${b.img ? 'style="display:none"' : ''}>🎨</div>
+                <div class="bien-card-body">
+                  <div class="bien-card-num">${rescateLabel[b.rescate]}</div>
+                  <div class="bien-card-nombre">${b.nombre}</div>
+                  <div class="bien-card-ubi">${b.ubicacion}</div>
+                  <div class="bien-card-badges">
+                    ${b.riesgos.map(r => `<span class="mini-badge riesgo-chip ${riesgoClass[r]}">${riesgoLabels[r]}</span>`).join('')}
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+renderPanel();
+mostrarFicha(1);
+</script>
+</body>
+</html>

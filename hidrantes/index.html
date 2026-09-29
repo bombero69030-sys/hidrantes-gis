@@ -159,6 +159,7 @@
 
 
   .chip-osm{background:#7EBC6F;color:white;font-size:9px;padding:1px 4px;border-radius:2px;font-weight:700}
+  .chip-ema{background:#1A73E8;color:white;font-size:9px;padding:1px 4px;border-radius:2px;font-weight:700}
 
   @media(max-width:700px){
     .sidebar{width:100%;height:210px;border-right:none;border-bottom:1px solid #dde;flex-shrink:0}
@@ -261,6 +262,10 @@
       <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('tipo','columna',this)">🟣 Columna seca</label>
       <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('tipo','deposito',this)">🟤 Depósito</label>
       <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('tipo','toma_aspiration',this)">🟠 Toma aspiración</label>
+      <hr class="divider">
+      <p class="seccion-titulo">Fuente</p>
+      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('fuente','propia',this)">🚒 Propios (Los Palacios)</label>
+      <label class="filtro-chip activo"><input type="checkbox" checked onchange="toggleFiltro('fuente','emasesa',this)">💧 EMASESA (área metropolitana)</label>
       <hr class="divider">
       <p class="seccion-titulo">Municipio</p>
       <select id="filtro-municipio" onchange="aplicarFiltros()">
@@ -422,7 +427,7 @@ async function sbPatch(id,body){
   if(!r.ok) throw new Error(await r.text());
 }
 async function sbDelete(id){
-  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?id=eq.${id}`,{method:'DELETE',headers:HEADERS});
+  const r = await fetch(`${SB_URL}/rest/v1/hidrantes?id=eq.${id}`,{method:'DELETE',headers:getHEADERS()});
   if(!r.ok) throw new Error(await r.text());
 }
 async function sbCount(){
@@ -445,6 +450,7 @@ const POR_PAGINA = 30;
 let filtros = {
   estado: new Set(['operativo','revision','inoperativo','desconocido']),
   tipo: new Set(['soterra','boca','columna','deposito','toma_aspiration','otro']),
+  fuente: new Set(['propia','emasesa']),
   municipio: '',
   busqueda: ''
 };
@@ -481,11 +487,20 @@ function crearIcono(h){
   });
 }
 
+const COLOR_ESTADO={operativo:'#27AE60',revision:'#F0A500',inoperativo:'#E74C3C',desconocido:'#8892A0'};
+const lienzo = L.canvas({padding:0.3});
 function renderizarMapa(){
   Object.values(marcadores).forEach(m=>mapa.removeLayer(m));
   marcadores = {};
+  // Con miles de puntos (EMASESA) los iconos HTML son muy pesados: se usan círculos en canvas
+  const ligero = hidrantesFiltrados.length > 600;
   hidrantesFiltrados.forEach(h=>{
-    const m = L.marker([h.lat,h.lon],{icon:crearIcono(h)}).addTo(mapa);
+    let m;
+    if(ligero && h.fuente==='emasesa'){
+      m = L.circleMarker([h.lat,h.lon],{renderer:lienzo,radius:6,color:'#fff',weight:1.5,fillColor:COLOR_ESTADO[h.estado]||COLOR_ESTADO.desconocido,fillOpacity:0.95}).addTo(mapa);
+    } else {
+      m = L.marker([h.lat,h.lon],{icon:crearIcono(h)}).addTo(mapa);
+    }
     m.on('click',()=>mostrarDetalle(h.id));
     marcadores[h.id]=m;
   });
@@ -499,8 +514,14 @@ async function cargarDatos(){
   document.getElementById('overlay-carga').style.display='flex';
   setSyncStatus('cargando','⟳ Cargando...');
   try {
-    // Carga con límite alto (Supabase devuelve 1000 por defecto)
-    todosHidrantes = await sbGet('select=*&limit=2000');
+    // Carga por páginas de 1000 (límite de Supabase por petición)
+    todosHidrantes = [];
+    for(let off=0;;off+=1000){
+      const lote = await sbGet(`select=*&limit=1000&offset=${off}`);
+      todosHidrantes.push(...lote);
+      setSyncStatus('cargando',`⟳ ${todosHidrantes.length}...`);
+      if(lote.length<1000) break;
+    }
     setSyncStatus('ok',`✓ ${todosHidrantes.length} hidrantes`);
     aplicarFiltros();
     actualizarSelectMunicipios();
@@ -526,6 +547,7 @@ function setSyncStatus(tipo,texto){
 function esVisible(h){
   if(!filtros.estado.has(h.estado||'desconocido')) return false;
   if(!filtros.tipo.has(h.tipo||'otro')) return false;
+  if(!filtros.fuente.has(h.fuente||'propia')) return false;
   if(filtros.municipio && (h.municipio||'')!==filtros.municipio) return false;
   if(filtros.busqueda){
     const q=filtros.busqueda.toLowerCase();
@@ -552,6 +574,7 @@ function toggleFiltro(tipo,valor,cb){
 function resetFiltros(){
   filtros.estado=new Set(['operativo','revision','inoperativo','desconocido']);
   filtros.tipo=new Set(['soterra','boca','columna','deposito','toma_aspiration','otro']);
+  filtros.fuente=new Set(['propia','emasesa']);
   filtros.municipio='';filtros.busqueda='';
   document.getElementById('filtro-municipio').value='';
   document.getElementById('busqueda-input').value='';
@@ -592,7 +615,7 @@ function renderizarLista(){
     <div class="hidrante-item${seleccionadoId===h.id?' seleccionado':''}" onclick="mostrarDetalle('${h.id}')">
       <div class="hi-icono" style="background:${colorEstado(h.estado)}20;color:${colorEstado(h.estado)}">${emojiTipo(h.tipo)}</div>
       <div class="hi-info">
-        <div class="hi-nombre">${h.ref||h.osm_id?.replace('node/','#')||h.id.slice(0,8)} ${h.osm_id?'<span class="chip-osm">OSM</span>':''}</div>
+        <div class="hi-nombre">${h.ref||h.osm_id?.replace('node/','#')||h.id.slice(0,8)} ${h.osm_id?'<span class="chip-osm">OSM</span>':''}${h.fuente==='emasesa'?'<span class="chip-ema">EMASESA</span>':''}</div>
         <div class="hi-dir">${h.direccion||h.municipio||'Sin referencia'}</div>
         <div class="hi-badges">
           <span class="badge ${badgeEstado(h.estado)}">${etqEstado(h.estado)}</span>
@@ -628,7 +651,7 @@ function mostrarDetalle(id){
   const h=todosHidrantes.find(x=>x.id===id);
   if(!h) return;
   seleccionadoId=id;
-  document.getElementById('pd-titulo').textContent=`${emojiTipo(h.tipo)} ${h.ref||h.osm_id||'Hidrante'}`;
+  document.getElementById('pd-titulo').textContent=`${emojiTipo(h.tipo)} ${h.ref||h.osm_id||'Hidrante'}${h.municipio&&h.fuente==='emasesa'?' · '+h.municipio:''}`;
   const campos=[
     ['Estado',`<span class="badge ${badgeEstado(h.estado)}">${etqEstado(h.estado)}</span>`],
     ['Tipo',etqTipo(h.tipo)],
@@ -638,6 +661,7 @@ function mostrarDetalle(id){
     ['Presión',h.presion!=null?h.presion+' bar':'—'],
     ['Caudal',h.caudal?h.caudal+' l/min':'—'],
     ['Operador',h.operador||'—'],
+    ['Fuente',h.fuente==='emasesa'?'<span class="chip-ema">EMASESA</span> inventario nov. 2022':'Propio'],
     ['Última revisión',h.ultima_revision||'—'],
     ['Ref. interna',h.ref||'—'],
     ['ID OSM',h.osm_id||'—'],
@@ -665,7 +689,8 @@ function mostrarDetalle(id){
     mapa.flyTo([h.lat,h.lon], Math.max(mapa.getZoom(),16), {animate:true, duration:0.8});
   }
   Object.entries(marcadores).forEach(([mid,m])=>{
-    m.getElement()?.querySelector('.marcador-hidrante')?.classList.toggle('m-seleccionado',mid===id);
+    if(m.setStyle){ m.setStyle({radius:mid===id?10:6,weight:mid===id?3:1.5,color:mid===id?'#E74C3C':'#fff'}); if(mid===id&&m.bringToFront) m.bringToFront(); }
+    else m.getElement()?.querySelector('.marcador-hidrante')?.classList.toggle('m-seleccionado',mid===id);
   });
   renderizarLista();
 }

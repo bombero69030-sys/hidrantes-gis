@@ -113,6 +113,11 @@
   .pd-btn-borrar:hover{background:#F1948A}
   .pd-btn-nav{background:var(--verde-claro);color:var(--verde)}
   .pd-btn-nav:hover{background:#A9DFBF}
+  .pd-btn-ruta{background:#FDEBD0;color:#9C4A00}
+  .pd-btn-ruta:hover{background:#F8C471}
+  .pd-ruta-info{background:#FDF2E9;border:1px solid #F5CBA7;border-radius:var(--radio);padding:7px 10px;font-size:12px;margin-top:6px;display:none;align-items:center;gap:8px}
+  .pd-ruta-info b{font-size:14px;color:#9C4A00}
+  .pd-ruta-info button{margin-left:auto;background:none;border:1px solid #F5CBA7;border-radius:4px;font-size:10px;padding:2px 7px;cursor:pointer;color:#9C4A00}
 
   #barra-estado{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);background:white;border-radius:30px;padding:7px 18px;box-shadow:var(--sombra);z-index:900;display:flex;gap:14px;align-items:center;font-size:12px;white-space:nowrap}
   .be-item{display:flex;align-items:center;gap:5px}
@@ -671,6 +676,11 @@ function mostrarDetalle(id){
   document.getElementById('pd-body').innerHTML=`
     ${campos.map(([k,v])=>`<div class="pd-campo"><span class="pd-clave">${k}</span><span class="pd-valor">${v}</span></div>`).join('')}
     <div class="pd-acciones">
+      <button class="pd-btn-ruta" onclick="rutaHasta('${h.id}','gps')">📍 Desde mí</button>
+      <button class="pd-btn-ruta" onclick="rutaHasta('${h.id}','parque')">🚒 Desde parque</button>
+    </div>
+    <div class="pd-ruta-info" id="pd-ruta-info"></div>
+    <div class="pd-acciones">
       <button class="pd-btn-editar" id="pd-editar-${h.id}" onclick="editarHidrante('${h.id}')" style="display:none">✏️ Editar</button>
       <button class="pd-btn-nav" onclick="verEnOSM('${h.id}')">🗺 OSM</button>
       <button class="pd-btn-borrar" id="pd-borrar-${h.id}" onclick="borrarHidrante('${h.id}')" style="display:none">🗑 Borrar</button>
@@ -1024,7 +1034,54 @@ const OSRM_URL = 'https://router.project-osrm.org/route/v1/driving/';
 const OSRM_TIMEOUT = 4000;
 const N_CANDIDATOS = 4;
 
+const PARQUE = {lat:37.1606665, lon:-5.9371868, nombre:'Parque de Bomberos — Pol. El Muro'};
+let marcadorParque = null, rutaHastaToken = 0;
+function obtenerPosicion(){
+  return new Promise((res,rej)=>{
+    if(!navigator.geolocation) return rej(new Error('Sin geolocalización'));
+    navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy}),e=>rej(e),{enableHighAccuracy:true,timeout:10000,maximumAge:15000});
+  });
+}
+// Ruta hasta un hidrante concreto, desde el GPS o desde el parque
+async function rutaHasta(id, origen){
+  const h = todosHidrantes.find(x=>x.id===id); if(!h) return;
+  const token = ++rutaHastaToken;
+  const info = document.getElementById('pd-ruta-info');
+  const show = html => { if(info && token===rutaHastaToken){ info.style.display='flex'; info.innerHTML=html; } };
+  show('⟳ Calculando ruta...');
+  let desde, etq;
+  if(origen==='gps'){
+    try { const p = await obtenerPosicion(); desde = p; etq = 'desde tu posición';
+      if(marcadorPosicion) mapa.removeLayer(marcadorPosicion);
+      if(circuloPosicion) mapa.removeLayer(circuloPosicion);
+      marcadorPosicion = L.marker([p.lat,p.lon],{icon:L.divIcon({html:`<div style="width:20px;height:20px;border-radius:50%;background:#1A73E8;border:3px solid white;box-shadow:0 0 0 3px rgba(26,115,232,0.3)"></div>`,iconSize:[20,20],iconAnchor:[10,10],className:''}),zIndexOffset:1000}).addTo(mapa);
+      circuloPosicion = L.circle([p.lat,p.lon],{radius:p.acc,color:'#1A73E8',fillColor:'#1A73E8',fillOpacity:0.1,weight:1}).addTo(mapa);
+    } catch(e){ show('❌ Sin GPS — usa "Desde parque"'); return; }
+  } else { desde = PARQUE; etq = 'desde el parque'; }
+  if(token!==rutaHastaToken) return;
+  const ruta = await rutaOSRM(desde.lat, desde.lon, h);
+  if(token!==rutaHastaToken) return;
+  limpiarRuta();
+  if(!ruta){
+    const recta = haversine(desde.lat,desde.lon,h.lat,h.lon);
+    capaRuta = L.polyline([[desde.lat,desde.lon],[h.lat,h.lon]],{color:'#E74C3C',weight:3,dashArray:'6,8',opacity:0.9}).addTo(mapa);
+    show(`<b>${fmtDist(recta)}</b> línea recta ${etq} · sin ruta por calles <button onclick="quitarRutaHasta()">✕</button>`);
+  } else {
+    capaRuta = L.layerGroup([
+      L.polyline(ruta.coords,{color:'#FFFFFF',weight:8,opacity:0.9}),
+      L.polyline(ruta.coords,{color:'#E67E22',weight:5,opacity:0.95})
+    ]).addTo(mapa);
+    show(`<b>${fmtDur(ruta.dur)}</b> · ${fmtDist(ruta.dist)} ${etq} <button onclick="quitarRutaHasta()">✕</button>`);
+  }
+  if(origen==='parque'){
+    marcadorParque = L.marker([PARQUE.lat,PARQUE.lon],{icon:L.divIcon({html:'<div style="width:26px;height:26px;border-radius:50%;background:#1A5276;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.5)">🚒</div>',iconSize:[26,26],iconAnchor:[13,13],className:''})}).addTo(mapa).bindPopup(PARQUE.nombre);
+  }
+  const pts = ruta ? ruta.coords : [[desde.lat,desde.lon],[h.lat,h.lon]];
+  mapa.flyToBounds(L.latLngBounds(pts),{padding:[60,60],animate:true,duration:1});
+}
+function quitarRutaHasta(){ limpiarRuta(); const i=document.getElementById('pd-ruta-info'); if(i){i.style.display='none';i.innerHTML='';} }
 function limpiarRuta(){
+  if(marcadorParque){ mapa.removeLayer(marcadorParque); marcadorParque = null; }
   if(capaRuta){ mapa.removeLayer(capaRuta); capaRuta = null; }
   if(marcadorCercano){ mapa.removeLayer(marcadorCercano); marcadorCercano = null; }
 }

@@ -301,7 +301,8 @@ header{background:rgba(13,15,18,0.95);border-bottom:1px solid var(--gris-borde);
   <div class="header-titulo">🅿️ Sótanos <span>& Garajes</span></div>
   <div class="header-right">
     <span class="usuario-badge" id="usuario-badge"></span>
-    <button class="btn-nuevo-h" id="btn-nuevo" onclick="abrirFormNuevo()">+ Añadir sótano</button>
+      <button class="btn-nuevo-h" style="background:#C0392B;border-color:#C0392B" onclick="emgSotanos()">🔥 Emergencia</button>
+  <button class="btn-nuevo-h" id="btn-nuevo" onclick="abrirFormNuevo()">+ Añadir sótano</button>
     <button class="btn-login-h" id="btn-login" onclick="abrirLogin()">🔐 Acceso</button>
   </div>
 </header>
@@ -1479,5 +1480,190 @@ function mostrarToast(msg,dur=2500){
 detectarSesion();
 cargarDatos();
 </script>
+<!-- ===== MODO EMERGENCIA · Sótanos ===== -->
+<script src="../comun/incidencia.js"></script>
+<script src="../comun/emergencia.js"></script>
+<script>
+let EMG_SOT = null;
+
+function emgSotanos(){
+  if(!EMG_SOT) EMG_SOT = Emergencia.crear({
+    modulo:'sotanos',
+    nombreModulo:'Sótanos',
+    color:'#E67E22',
+    pregunta:'¿Qué garaje o sótano?',
+    explica:'Busca la ficha por dirección o por número. Si no está dada de alta, ' +
+            'escribe la dirección y pulsa Intro.',
+    marcador:'C/ Ejemplo 12, o número de ficha',
+
+    registros: ()=> sotanos || [],
+    etiqueta: s => ({
+      titulo: s.direccion || 'Sin dirección',
+      sub: [s.ficha_num ? 'Ficha ' + s.ficha_num : '',
+            s.tipo_inmueble || '',
+            plantasBajo(s) ? plantasBajo(s) + ' plantas bajo rasante' : ''
+           ].filter(Boolean).join(' · ')
+    }),
+    punto: s => puntoLlegada(s),
+
+    /* Accesos sobre el mapa, numerados como en la ficha */
+    capas: (s, ctx)=>{
+      getAccesos(s).forEach((a,i)=>{
+        if(!coordOK(a.lat, a.lon)) return;
+        const esRampa = a.tipo === 'rampa';
+        ctx.capas.addLayer(L.marker([a.lat, a.lon], {
+          icon: L.divIcon({className:'', iconSize:[26,26], iconAnchor:[13,13],
+            html:`<div style="width:26px;height:26px;border-radius:50%;`+
+                 `background:${esRampa ? '#1E8449' : '#5D6D7E'};border:3px solid #fff;`+
+                 `box-shadow:0 2px 6px rgba(0,0,0,.5);color:#fff;font:700 13px/1 sans-serif;`+
+                 `display:flex;align-items:center;justify-content:center">${i+1}</div>`}),
+          zIndexOffset:2000
+        }).bindPopup(`<b>Acceso ${i+1}</b><br>${resumenAcceso(a)}`));
+      });
+    },
+
+    panel: (s, ctx)=> panelSotano(s, ctx)
+  });
+  EMG_SOT.abrir();
+}
+
+/* En emergencia no valen todas las fotos por igual: primero lo que ves al llegar */
+const ORDEN_FOTO = ['rampa','fachada','acceso','cuadro','pci','p1','p2','p3','riesgo','otra'];
+function fotosOrdenadas(s, soloEstas){
+  const fotos = Array.isArray(s.fotos) ? s.fotos : [];
+  return fotos
+    .filter(f => f && f.url && (!soloEstas || soloEstas.includes(f.etiqueta)))
+    .slice()
+    .sort((a,b)=>{
+      const ia = ORDEN_FOTO.indexOf(a.etiqueta), ib = ORDEN_FOTO.indexOf(b.etiqueta);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    })
+    .map(f => ({url:f.url, pie: ETQ_MAP[f.etiqueta] || f.etiqueta || ''}));
+}
+
+function plantasBajo(s){
+  const pl = Array.isArray(s.plantas) ? s.plantas : [];
+  return pl.length || null;
+}
+
+function panelSotano(s, ctx){
+  const {el, chip, bloque} = ctx;
+  const trozos = [];
+  const accesos = getAccesos(s);
+  const rampa = accesos.find(a=>a.tipo==='rampa');
+
+  /* 1 · lo que decide si el vehículo entra */
+  const alto = rampa && rampa.galibo_alto ? parseFloat(rampa.galibo_alto) : null;
+  const bajo = alto != null && alto < 2.2;
+  const cuerpo = [];
+  if(rampa){
+    cuerpo.push(el('div','emx-grande',
+      alto != null ? `↕ ${alto} m de gálibo` : 'Gálibo sin medir'));
+    const c = el('div','emx-chips');
+    if(rampa.galibo_ancho) c.appendChild(chip('↔ ' + rampa.galibo_ancho + ' m de ancho'));
+    if(rampa.calle) c.appendChild(chip(rampa.calle));
+    if(rampa.apertura && rampa.apertura !== 'nd') c.appendChild(chip('🔑 ' + APERTURAS[rampa.apertura]));
+    if(c.children.length) cuerpo.push(c);
+    if(bajo) cuerpo.push(el('div','emx-txt',
+      'Por debajo de 2,20 m: la autobomba no pasa. Tendido a pie por la rampa.'));
+    if(alto == null) cuerpo.push(el('div','emx-txt',
+      'Nadie ha medido esta rampa. No des por hecho que el vehículo entra.'));
+  } else {
+    cuerpo.push(el('div','emx-grande','Sin rampa de vehículos'));
+    cuerpo.push(el('div','emx-txt',
+      `${accesos.length} acceso${accesos.length!==1?'s':''} peatonal${accesos.length!==1?'es':''}. ` +
+      'Todo el tendido es a pie.'));
+  }
+  const fotosEntrada = fotosOrdenadas(s, ['rampa','fachada','acceso']);
+  if(fotosEntrada.length) cuerpo.push(ctx.tira(fotosEntrada));
+  else cuerpo.push(el('div','emx-sinfoto','Sin fotos del acceso.'));
+  trozos.push(bloque(bajo || !rampa || alto == null ? 'alerta' : 'calma',
+                     'Entrada de vehículos', cuerpo));
+
+  /* 2 · profundidad */
+  const pl = Array.isArray(s.plantas) ? s.plantas : [];
+  if(pl.length || s.plantas_sobre != null){
+    const c = [];
+    if(pl.length) c.push(el('div','emx-grande',
+      pl.length + (pl.length === 1 ? ' planta bajo rasante' : ' plantas bajo rasante')));
+    const ch = el('div','emx-chips');
+    if(s.plantas_sobre) ch.appendChild(chip(s.plantas_sobre + ' plantas sobre rasante'));
+    if(s.tipo_inmueble) ch.appendChild(chip(s.tipo_inmueble));
+    if(ch.children.length) c.push(ch);
+    const fp = fotosOrdenadas(s, ['p1','p2','p3']);
+    if(fp.length) c.push(ctx.tira(fp));
+    trozos.push(bloque(pl.length >= 2 ? 'ojo' : '', 'Profundidad', c));
+  }
+
+  /* 3 · atmósfera */
+  const atm = el('div','emx-chips');
+  const vent = s.ventilacion_tipo || (s.ventilacion === false ? 'ninguna' : null);
+  if(vent) atm.appendChild(chip('Ventilación: ' + vent,
+    (vent === 'ninguna' || vent === 'natural') ? 'ojo' : 'ok'));
+  if(s.gases) atm.appendChild(chip('Gases: ' + s.gases, 'ojo'));
+  if(s.sectorizacion) atm.appendChild(chip('Sectorización: ' + s.sectorizacion));
+  if(s.iluminacion) atm.appendChild(chip('Iluminación: ' + s.iluminacion));
+  if(atm.children.length){
+    const c = [atm];
+    if(s.pci_notas) c.push(el('div','emx-txt', s.pci_notas));
+    const fpci = fotosOrdenadas(s, ['pci','cuadro']);
+    if(fpci.length) c.push(ctx.tira(fpci));
+    trozos.push(bloque(vent === 'ninguna' ? 'alerta' : 'ojo', 'Ventilación y PCI', c));
+  }
+
+  /* 4 · riesgos */
+  const riesgos = Array.isArray(s.riesgos) ? s.riesgos : [];
+  if(riesgos.length){
+    const ul = el('ul','emx-ul');
+    riesgos.forEach(r=> ul.appendChild(el('li','', typeof r === 'string' ? r : (r.nombre||''))));
+    const fr = fotosOrdenadas(s, ['riesgo']);
+    trozos.push(bloque('alerta', 'Riesgos', fr.length ? [ul, ctx.tira(fr)] : ul));
+  }
+
+  /* 5 · el resto de accesos */
+  if(accesos.length > 1 || (accesos.length === 1 && !rampa)){
+    const ul = el('ul','emx-ul');
+    accesos.forEach((a,i)=>{
+      const li = el('li','', `${i+1}. ${resumenAcceso(a)}`);
+      ul.appendChild(li);
+    });
+    trozos.push(bloque('', 'Accesos', ul));
+  }
+
+  /* 6 · a quién llamar */
+  if(s.contacto || s.contacto_tel){
+    const c = [];
+    c.push(el('div','emx-txt',
+      [s.contacto, s.contacto_rol].filter(Boolean).join(' · ') || 'Contacto'));
+    if(s.contacto_tel){
+      const a = el('a','emx-ir', '📞 ' + s.contacto_tel);
+      a.href = 'tel:' + String(s.contacto_tel).replace(/\s+/g,'');
+      c.push(a);
+    }
+    trozos.push(bloque('', 'Contacto', c));
+  }
+
+  /* 7 · lo demás */
+  if(s.observaciones) trozos.push(bloque('', 'Observaciones', s.observaciones));
+
+  const ficha = el('button','emx-ir','Abrir la ficha completa');
+  ficha.type = 'button';
+  ficha.onclick = ()=>{ EMG_SOT.cerrar(); mostrarDetalle(s.id); };
+  trozos.push(ficha);
+
+  return trozos;
+}
+
+(function(){
+  function arranca(){
+    Incidencia.pintarBarra({despuesDe:'header', alCambiar:()=>{ emgSotanos(); EMG_SOT.cambiar(); }});
+    if(new URLSearchParams(location.search).get('emergencia') === '1') emgSotanos();
+  }
+  if(document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', arranca);
+  else arranca();
+})();
+</script>
+
 </body>
 </html>

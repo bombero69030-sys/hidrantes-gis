@@ -361,6 +361,7 @@ header{
       <button class="mode-btn active" id="btn-intervencion" onclick="setModo('intervencion')">Intervención</button>
       <button class="mode-btn" id="btn-planificacion" onclick="setModo('planificacion')">Planificación</button>
     </div>
+    <button class="btn-nuevo-header" style="display:inline-block;background:#C0392B;color:#fff" onclick="emgPatrimonio()">🔥 Emergencia</button>
     <span class="usuario-badge" id="usuario-badge"></span>
     <button class="btn-nuevo-header" id="btn-nuevo" onclick="abrirFormNuevo()">+ Añadir edificio</button>
     <button class="btn-login-header" id="btn-login" onclick="abrirLogin()">🔐 Acceso</button>
@@ -1668,5 +1669,173 @@ document.getElementById('input-imagen-principal').addEventListener('change', fun
 detectarSesion();
 cargarDatos();
 </script>
+<!-- ===== MODO EMERGENCIA · Patrimonio ===== -->
+<script src="../comun/incidencia.js"></script>
+<script src="../comun/emergencia.js"></script>
+<script>
+let EMG_PAT = null;
+
+function emgPatrimonio(){
+  if(!EMG_PAT) EMG_PAT = Emergencia.crear({
+    modulo:'patrimonio',
+    nombreModulo:'Patrimonio',
+    color:'#8E44AD',
+    pregunta:'¿Qué edificio protegido?',
+    explica:'Busca por nombre o por calle. Si el edificio no está catalogado, ' +
+            'escribe la dirección y pulsa Intro.',
+    marcador:'Santa María la Blanca, o C/ Abajo',
+
+    registros: ()=> edificios || [],
+    etiqueta: b => ({
+      titulo: b.nombre || 'Sin nombre',
+      sub: [b.tipo || '', b.direccion || '',
+            b.prioridad ? 'Prioridad ' + b.prioridad : ''].filter(Boolean).join(' · ')
+    }),
+    punto: b => (b.lat != null && b.lon != null) ? {lat:+b.lat, lon:+b.lon} : null,
+
+    capas: (b, ctx)=>{
+      ['entrada','veh'].forEach(k=>{
+        const la = b[k+'_lat'], lo = b[k+'_lon'];
+        if(la == null || lo == null || !Incidencia.coordOK(+la, +lo)) return;
+        const esEntrada = k === 'entrada';
+        ctx.capas.addLayer(L.marker([+la, +lo], {
+          icon: L.divIcon({className:'', iconSize:[26,26], iconAnchor:[13,13],
+            html:`<div style="width:26px;height:26px;border-radius:50%;`+
+                 `background:${esEntrada ? '#C0392B' : '#1A5276'};border:3px solid #fff;`+
+                 `box-shadow:0 2px 6px rgba(0,0,0,.5);display:flex;align-items:center;`+
+                 `justify-content:center;font-size:13px">${esEntrada ? '🚪' : '🚒'}</div>`}),
+          zIndexOffset:2000
+        }).bindPopup(esEntrada ? 'Entrada de intervención' : 'Posición del vehículo'));
+      });
+    },
+
+    panel: (b, ctx)=> panelEdificio(b, ctx)
+  });
+  EMG_PAT.abrir();
+}
+
+function panelEdificio(b, ctx){
+  const {el, chip, bloque} = ctx;
+  const trozos = [];
+
+  /* 1 · lo que cambia la maniobra nada más llegar */
+  if(b.nota_operativa){
+    trozos.push(bloque('alerta', 'Atención', b.nota_operativa));
+  }
+
+  /* 1 bis · ver el edificio antes de llegar */
+  const fotos = [];
+  (Array.isArray(b.fotos) ? b.fotos : []).forEach(f=>{
+    if(f && f.url) fotos.push({url:f.url, pie:f.etiqueta || f.nombre || ''});
+  });
+  if(b.imagen_url) fotos.push({url:b.imagen_url, pie:'Vista exterior'});
+  if(fotos.length) trozos.push(bloque('', 'El edificio en foto', ctx.tira(fotos)));
+
+  /* 2 · por dónde se entra */
+  const ent = [];
+  if(b.entrada) ent.push(el('div','emx-txt', b.entrada));
+  if(b.acceso){
+    /* El dato a veces ya empieza por "Vehículo"; no lo repitas */
+    const t = /^veh[ií]culo/i.test(b.acceso.trim()) ? b.acceso : 'Vehículo: ' + b.acceso;
+    ent.push(el('div','emx-txt', t));
+  }
+  if(ent.length) trozos.push(bloque('ojo', 'Entrada y posicionamiento', ent));
+
+  /* 3 · identificación */
+  const id = el('div','emx-chips');
+  if(b.tipo) id.appendChild(chip(b.tipo));
+  if(b.prioridad) id.appendChild(chip('Prioridad ' + b.prioridad,
+    b.prioridad === 'A' ? 'mal' : b.prioridad === 'B' ? 'ojo' : null));
+  if(b.direccion) id.appendChild(chip(b.direccion));
+  if(id.children.length) trozos.push(bloque('', 'El edificio', id));
+
+  /* 4 · riesgos */
+  const riesgos = Array.isArray(b.riesgos) ? b.riesgos : [];
+  if(riesgos.length){
+    const ul = el('ul','emx-ul');
+    riesgos.forEach(r=> ul.appendChild(el('li','', typeof r === 'string' ? r : (r.nombre||''))));
+    trozos.push(bloque('alerta', 'Riesgos', ul));
+  }
+
+  /* 5 · hidrantes anotados en la ficha */
+  const hid = Array.isArray(b.hidrantes) ? b.hidrantes : [];
+  if(hid.length){
+    const ul = el('ul','emx-ul');
+    hid.forEach(h=>{
+      const t = [h.loc || '', h.nota || ''].filter(Boolean).join(' — ');
+      const li = el('li','', t || 'Sin detalle');
+      if(h.ok === false) li.style.color = '#F0A868';
+      ul.appendChild(li);
+    });
+    trozos.push(bloque(hid.some(h=>h.ok === false) ? 'ojo' : '',
+                       'Hidrantes anotados en la ficha', ul));
+  }
+
+  /* 6 · qué se saca y en qué orden */
+  const bienes = Array.isArray(b.bienes_muebles) ? b.bienes_muebles : [];
+  if(bienes.length){
+    const c = [];
+    const ol = el('ol','emx-ul');
+    bienes.slice(0,6).forEach(x=>{
+      ol.appendChild(el('li','', [x.nombre, x.siglo].filter(Boolean).join(' · ')));
+    });
+    c.push(ol);
+    if(bienes.length > 6) c.push(el('div','emx-txt', `y ${bienes.length-6} más en la ficha`));
+    const f = el('a','emx-ir principal','📋 Orden de rescate completo');
+    f.href = '../fichas/index.html';
+    c.push(f);
+    trozos.push(bloque('ojo', 'Bienes a rescatar', c));
+  }
+
+  /* 7 · a quién llamar */
+  if(b.contacto) trozos.push(bloque('', 'Contacto', b.contacto));
+
+  /* 8 · estado de la documentación: decirlo claro evita buscar lo que no hay */
+  const docs = [];
+  const añadeDoc = (url, titulo)=>{
+    if(!url) return;
+    const a = el('a','emx-ir', '📄 ' + titulo);
+    a.href = url; a.target = '_blank'; a.rel = 'noopener';
+    docs.push(a);
+  };
+  añadeDoc(b.doc_planos, 'Planos');
+  añadeDoc(b.doc_ficha_intervencion, 'Ficha de intervención');
+  añadeDoc(b.doc_plan_salvaguarda, 'Plan de salvaguarda');
+  (Array.isArray(b.doc_otros) ? b.doc_otros : []).forEach((d,i)=>{
+    añadeDoc(typeof d === 'string' ? d : d && d.url,
+             (d && d.nombre) || 'Otro documento ' + (i+1));
+  });
+
+  const falta = [];
+  if(!b.doc_plan_salvaguarda && b.plan_salvaguarda === 'no') falta.push('plan de salvaguarda');
+  if(b.plan_emergencia === 'no') falta.push('plan de emergencia');
+  if(!b.doc_planos && b.planos === 'pendiente') falta.push('planos');
+
+  if(docs.length || falta.length){
+    const c = docs.slice();
+    if(falta.length) c.push(el('div','emx-txt',
+      'Sin ' + falta.join(', ') + '. No pierdas tiempo buscándolos.'));
+    trozos.push(bloque('', 'Documentación', c));
+  }
+
+  const ficha = el('button','emx-ir','Abrir la ficha completa');
+  ficha.type = 'button';
+  ficha.onclick = ()=>{ EMG_PAT.cerrar(); mostrarFicha(b.id); };
+  trozos.push(ficha);
+
+  return trozos;
+}
+
+(function(){
+  function arranca(){
+    Incidencia.pintarBarra({despuesDe:'header', alCambiar:()=>{ emgPatrimonio(); EMG_PAT.cambiar(); }});
+    if(new URLSearchParams(location.search).get('emergencia') === '1') emgPatrimonio();
+  }
+  if(document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', arranca);
+  else arranca();
+})();
+</script>
+
 </body>
 </html>

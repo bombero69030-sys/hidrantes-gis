@@ -1319,9 +1319,14 @@ body:has(#emg.abierto) #pa-user{display:none!important}
 @keyframes emgLatido{70%{box-shadow:0 0 0 9px rgba(231,76,60,0)}100%{box-shadow:0 0 0 0 rgba(231,76,60,0)}}
 #emg .emg-sitio{flex:1;min-width:0;font-size:17px;font-weight:600;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#emg .emg-acciones{display:flex;gap:8px;flex-shrink:0}
 #emg .emg-salir{background:none;border:1px solid #3A4149;color:#9AA3AD;
-  font:inherit;font-size:13px;padding:7px 15px;border-radius:5px;cursor:pointer;flex-shrink:0}
+  font:inherit;font-size:13px;padding:7px 15px;border-radius:5px;cursor:pointer;
+  flex-shrink:0;white-space:nowrap}
 #emg .emg-salir:hover{border-color:#5A636D;color:#F2F3F5}
+#emg .emg-salir.destacado{border-color:#6B757F;color:#F2F3F5;font-weight:600}
+#emg .emg-salir.destacado:hover{border-color:#C0392B;background:rgba(192,57,43,.14)}
+#emg .emg-corto{display:none}
 
 /* ---- pantalla de entrada ---- */
 #emg-entrada{flex:1;display:flex;flex-direction:column;justify-content:center;
@@ -1403,7 +1408,13 @@ body:has(#emg.abierto) #pa-user{display:none!important}
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
   #emg .emg-top{padding:10px 13px;gap:10px}
   #emg .emg-rotulo{font-size:0;gap:0}
-  #emg .emg-salir{padding:7px 12px}
+  #emg .emg-top{flex-wrap:wrap;row-gap:9px}
+  #emg .emg-sitio{flex:1 1 100%;order:1}
+  #emg .emg-rotulo{order:0}
+  #emg .emg-acciones{order:2;flex:1;justify-content:flex-end}
+  #emg .emg-salir{padding:8px 13px;font-size:13.5px}
+  #emg .emg-largo{display:none}
+  #emg .emg-corto{display:inline}
   #emg-entrada h2{font-size:23px}
   .emg-busca{flex-direction:column}
   .emg-btn{width:100%}
@@ -1417,7 +1428,19 @@ body:has(#emg.abierto) #pa-user{display:none!important}
   <div class="emg-top">
     <span class="emg-rotulo">Emergencia</span>
     <span class="emg-sitio" id="emg-sitio">Sin localizar</span>
-    <button class="emg-salir" type="button" onclick="emgCerrar()">Salir al módulo</button>
+    <div class="emg-acciones">
+      <button class="emg-salir destacado" type="button" onclick="emgCambiarSitio()"
+              title="Buscar otra dirección">
+        <span class="emg-largo">Cambiar dirección</span><span class="emg-corto">Cambiar</span>
+      </button>
+      <button class="emg-salir" type="button" onclick="emgCerrarIncidencia()"
+              title="Dar la incidencia por terminada">
+        <span class="emg-largo">Cerrar incidencia</span><span class="emg-corto">Cerrar</span>
+      </button>
+      <button class="emg-salir" type="button" onclick="emgCerrar()">
+        <span class="emg-largo">Salir al módulo</span><span class="emg-corto">Salir</span>
+      </button>
+    </div>
   </div>
 
   <div id="emg-entrada">
@@ -1493,10 +1516,29 @@ function emgCerrar(){
   document.body.style.overflow = '';
   emgEligiendoEnMapa = false;
 }
+/* Buscar otro sitio sin salir del modo emergencia */
+function emgCambiarSitio(){
+  Incidencia.limpiar();
+  emgEligiendoEnMapa = false;
+  if(emgMapa) emgMapa.getContainer().style.cursor = '';
+  emgAviso(''); emgOpciones(null);
+  const campo = document.getElementById('emg-dir');
+  campo.value = '';
+  emgPantallaEntrada();
+  setTimeout(()=>campo.focus(), 120);
+}
+/* Dar la intervención por terminada: borra la incidencia de todos los módulos */
+function emgCerrarIncidencia(){
+  if(!confirm('¿Cerrar la incidencia? Los demás módulos dejarán de tenerla.')) return;
+  Incidencia.limpiar();
+  emgCerrar();
+}
 function emgPantallaEntrada(){
   document.getElementById('emg-entrada').style.display = 'flex';
   document.getElementById('emg-res').classList.remove('visible');
   document.getElementById('emg-sitio').textContent = 'Sin localizar';
+  document.querySelectorAll('#emg .emg-acciones .destacado, #emg .emg-acciones .emg-salir')
+    .forEach(b=>{ if(b.getAttribute('onclick') !== 'emgCerrar()') b.style.display = 'none'; });
 }
 
 async function emgBuscar(ev){
@@ -1583,6 +1625,7 @@ async function emgCalcular(){
   document.getElementById('emg-entrada').style.display = 'none';
   document.getElementById('emg-res').classList.add('visible');
   document.getElementById('emg-sitio').textContent = inc.etiqueta;
+  document.querySelectorAll('#emg .emg-acciones .emg-salir').forEach(b=>b.style.display='');
   const lista = document.getElementById('emg-lista');
   lista.innerHTML = '<div id="emg-vacio">⟳ Buscando hidrantes…</div>';
   emgPrepararMapa();

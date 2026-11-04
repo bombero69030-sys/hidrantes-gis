@@ -10,6 +10,11 @@
   const SB  = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
   const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
   const LS  = 'portal_sesion';
+  const ESCUDO = (function(){
+    try{ const s = document.currentScript && document.currentScript.src;
+         if(s) return s.replace(/auth\.js(\?.*)?$/, 'escudo.png'); }catch(e){}
+    return 'comun/escudo.png';
+  })();
   const MARGEN_RENOVACION = 5*60; // segundos antes de caducar en que se renueva
 
   let sesion = null; // {access_token, refresh_token, expires_at, email, uid, rol, nombre}
@@ -111,7 +116,7 @@
   #pa-gate{position:fixed;inset:0;z-index:99999;background:#0D0F12;display:flex;align-items:center;justify-content:center;font-family:'Barlow','Segoe UI',sans-serif;color:#F0F2F5}
   #pa-gate::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(192,57,43,.10),transparent 60%),radial-gradient(ellipse 40% 60% at 80% 80%,rgba(26,82,118,.10),transparent 60%)}
   .pa-box{position:relative;background:#161A1F;border:1px solid #2A2F38;border-radius:14px;padding:32px 30px 26px;width:360px;max-width:92vw;box-shadow:0 24px 70px rgba(0,0,0,.7)}
-  .pa-escudo{width:52px;height:52px;background:#7B241C;border:2px solid #C0392B;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px;box-shadow:0 0 22px rgba(192,57,43,.4)}
+  .pa-escudo{height:84px;width:auto;display:block;margin:0 auto 16px;filter:drop-shadow(0 3px 16px rgba(192,57,43,.45))}
   .pa-t{font-family:'Barlow Condensed','Barlow',sans-serif;font-size:24px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-align:center;line-height:1.1}
   .pa-s{font-size:11px;color:#8892A0;letter-spacing:.12em;text-transform:uppercase;text-align:center;margin:4px 0 22px}
   .pa-in{width:100%;background:#1E232B;border:1px solid #353C47;border-radius:6px;color:#F0F2F5;padding:11px 12px;font-size:14px;margin-bottom:10px;font-family:inherit;outline:none;box-sizing:border-box}
@@ -135,9 +140,9 @@
     if(!g){
       g=document.createElement('div'); g.id='pa-gate';
       g.innerHTML=`<div class="pa-box">
-        <div class="pa-escudo">🚒</div>
+        <img class="pa-escudo" src="${ESCUDO}" alt="Servicio de Prevención y Extinción de Incendios de Los Palacios y Villafranca">
         <div class="pa-t">Portal Operativo</div>
-        <div class="pa-s">Acceso restringido · Bomberos Los Palacios</div>
+        <div class="pa-s">Acceso restringido</div>
         <form id="pa-form" autocomplete="on">
           <input class="pa-in" id="pa-email" type="email" placeholder="Email" autocomplete="username" required>
           <input class="pa-in" id="pa-pass" type="password" placeholder="Contraseña" autocomplete="current-password" required>

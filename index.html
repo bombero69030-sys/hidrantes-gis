@@ -5,280 +5,219 @@
 <script src="comun/auth.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Portal Operativo — Bomberos Los Palacios y Villafranca</title>
+<link rel="icon" href="comun/escudo.png">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --rojo:#C0392B;--rojo-dark:#7B241C;--rojo-glow:rgba(192,57,43,0.4);
-  --naranja:#E67E22;--verde:#1E8449;--azul:#1A5276;--azul-tac:#1B4F72;
-  --gris-fondo:#0D0F12;--gris-panel:#161A1F;--gris-borde:#2A2F38;
-  --texto:#F0F2F5;--texto-muted:#8892A0;
+  --rojo:#C0392B;--rojo-dark:#7B241C;
+  --naranja:#E67E22;--purpura:#8E44AD;--azul:#2E86C1;--verde:#1E8449;
+  --gris-fondo:#0D0F12;--gris-panel:#161A1F;--gris-panel2:#1E232B;--gris-borde:#2A2F38;
+  --texto:#F0F2F5;--texto-muted:#8892A0;--texto-dim:#5A6475;
   --font-display:'Barlow Condensed',sans-serif;
   --font-body:'Barlow',sans-serif;
 }
-html,body{height:100%;overflow:hidden}
+html,body{min-height:100%}
 body{
-  font-family:var(--font-body);
-  background:var(--gris-fondo);
-  color:var(--texto);
-  display:flex;flex-direction:column;
-  position:relative;
+  font-family:var(--font-body);background:var(--gris-fondo);color:var(--texto);
+  display:flex;flex-direction:column;min-height:100vh;position:relative;
 }
 
-/* FONDO GEOMÉTRICO */
+/* FONDO */
 body::before{
-  content:'';position:absolute;inset:0;
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
-    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(192,57,43,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 60% at 80% 80%, rgba(26,82,118,0.08) 0%, transparent 60%);
-  pointer-events:none;z-index:0;
+    radial-gradient(ellipse 60% 40% at 18% 15%, rgba(192,57,43,0.09) 0%, transparent 62%),
+    radial-gradient(ellipse 45% 55% at 85% 85%, rgba(46,134,193,0.07) 0%, transparent 62%);
 }
 .grid-bg{
-  position:absolute;inset:0;z-index:0;
+  position:fixed;inset:0;z-index:0;pointer-events:none;
   background-image:
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-  background-size:40px 40px;
-  pointer-events:none;
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size:44px 44px;
 }
 
-/* HEADER */
+/* CABECERA */
 header{
-  position:relative;z-index:10;
-  padding:16px 24px;
-  display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:10;flex-shrink:0;
+  padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;
   border-bottom:1px solid var(--gris-borde);
-  background:rgba(13,15,18,0.8);
-  backdrop-filter:blur(10px);
-  flex-shrink:0;
+  background:rgba(13,15,18,0.86);backdrop-filter:blur(10px);
 }
-.header-left{display:flex;align-items:center;gap:14px}
-.escudo{
-  width:44px;height:44px;
-  background:var(--rojo-dark);
-  border:2px solid var(--rojo);
-  border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;
-  box-shadow:0 0 20px var(--rojo-glow);
-}
+.header-left{display:flex;align-items:center;gap:14px;min-width:0}
+.escudo{height:52px;width:auto;display:block;flex-shrink:0;
+  filter:drop-shadow(0 2px 10px rgba(192,57,43,0.35))}
 .header-titulo{
-  font-family:var(--font-display);
-  font-size:22px;font-weight:800;
-  letter-spacing:.06em;text-transform:uppercase;
-  line-height:1.1;
+  font-family:var(--font-display);font-size:23px;font-weight:800;
+  letter-spacing:.055em;text-transform:uppercase;line-height:1.05;
 }
 .header-subtitulo{
-  font-size:11px;color:var(--texto-muted);
-  letter-spacing:.08em;text-transform:uppercase;
-  font-family:var(--font-display);font-weight:400;
+  font-family:var(--font-display);font-size:11px;font-weight:400;
+  color:var(--texto-muted);letter-spacing:.09em;text-transform:uppercase;margin-top:1px;
 }
-.header-right{display:flex;align-items:center;gap:10px}
-.badge-parque{
-  background:rgba(192,57,43,0.15);
-  border:1px solid rgba(192,57,43,0.3);
-  color:var(--rojo);
-  font-family:var(--font-display);
-  font-size:11px;font-weight:600;letter-spacing:.1em;
-  padding:5px 12px;border-radius:4px;text-transform:uppercase;
-}
+.header-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .hora{
-  font-family:var(--font-display);font-size:18px;font-weight:700;
-  color:var(--texto-muted);letter-spacing:.05em;
-  min-width:70px;text-align:right;
+  font-family:var(--font-display);font-size:19px;font-weight:700;
+  color:var(--texto-muted);letter-spacing:.04em;min-width:58px;text-align:right;
+  font-variant-numeric:tabular-nums;
 }
 
-/* CONTENIDO PRINCIPAL */
+/* CUERPO */
 .main{
-  position:relative;z-index:5;
-  flex:1;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  padding:24px 20px;
-  gap:20px;
-  overflow:hidden;
+  position:relative;z-index:5;flex:1;
+  display:flex;flex-direction:column;justify-content:center;
+  gap:32px;padding:30px 24px;max-width:1180px;width:100%;margin:0 auto;
 }
-
-/* TÍTULO CENTRAL */
-.portal-titulo{
-  text-align:center;
-  font-family:var(--font-display);
-  font-size:13px;font-weight:600;
-  letter-spacing:.2em;text-transform:uppercase;
-  color:var(--texto-muted);
+.seccion-titulo{
+  font-family:var(--font-display);font-size:12px;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--texto-muted);
+  margin-bottom:12px;display:flex;align-items:center;gap:14px;
 }
+.seccion-titulo::after{content:'';flex:1;height:1px;background:var(--gris-borde)}
 
-/* GRID DE MÓDULOS — 4 módulos: 2+2 */
-.modulos{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:14px;
-  width:100%;
-  max-width:1060px;
+/* ── ACCESO POR TIPO DE INTERVENCIÓN ── */
+.intervenciones{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.inter{
+  position:relative;display:flex;flex-direction:column;gap:8px;
+  background:var(--gris-panel);border:1px solid var(--gris-borde);
+  border-left:4px solid var(--color);border-radius:4px;
+  padding:20px 18px 15px;
+  transition:border-left-width .18s ease, background .18s ease, transform .18s ease;
 }
+.inter:hover{background:var(--gris-panel2);border-left-width:9px;transform:translateY(-2px)}
+.inter:active{transform:translateY(0) scale(.995)}
+.inter:has(.inter-principal:focus-visible){outline:2px solid var(--color);outline-offset:2px}
+.inter-icono{font-size:30px;line-height:1}
+.inter-nombre{margin:0}
+.inter-principal{
+  font-family:var(--font-display);font-size:21px;font-weight:800;
+  letter-spacing:.02em;line-height:1.08;text-transform:uppercase;
+  color:var(--color-texto);text-decoration:none;
+}
+/* El enlace cubre toda la tarjeta */
+.inter-principal::after{content:'';position:absolute;inset:0;z-index:1}
+.inter-principal:focus-visible{outline:none}
+.inter-que{font-size:13px;color:var(--texto-muted);line-height:1.4;flex:1;margin:0}
+.inter-destino{
+  font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--texto-dim);margin:0;
+  padding-top:8px;border-top:1px solid var(--gris-borde);
+}
+.inter-extra{
+  position:relative;z-index:2;
+  font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--color-texto);opacity:.8;
+  text-decoration:none;border-bottom:1px dotted currentColor;
+}
+.inter-extra:hover,.inter-extra:focus-visible{opacity:1}
+/* El pie flotante de sesión sobra aquí: la cabecera ya muestra el usuario */
+#pa-user{display:none!important}
 
-/* TARJETA DE MÓDULO */
+.i-fuego{--color:var(--rojo);--color-texto:#F1948A}
+.i-sotano{--color:var(--naranja);--color-texto:#F0A862}
+.i-patrimonio{--color:var(--purpura);--color-texto:#C39BD3}
+.i-sitac{--color:var(--azul);--color-texto:#85C1E9}
+
+/* ── MÓDULOS ── */
+.modulos{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .modulo{
-  position:relative;
-  background:var(--gris-panel);
-  border:1px solid var(--gris-borde);
-  border-radius:12px;
-  padding:28px 20px 24px;
-  cursor:pointer;
-  text-decoration:none;
-  display:flex;flex-direction:column;align-items:center;
-  gap:12px;
-  transition:all 0.25s ease;
-  overflow:hidden;
-  min-height:200px;
-  justify-content:center;
+  position:relative;background:var(--gris-panel);border:1px solid var(--gris-borde);
+  border-radius:12px;padding:16px 18px;text-decoration:none;color:inherit;
+  display:flex;align-items:center;gap:14px;overflow:hidden;
+  transition:border-color .2s ease, background .2s ease;
   -webkit-user-select:none;user-select:none;
 }
-.modulo::before{
-  content:'';
-  position:absolute;inset:0;
-  opacity:0;
-  transition:opacity 0.25s;
-  border-radius:12px;
+.modulo:hover,.modulo:focus-visible{border-color:var(--color);background:var(--gris-panel2)}
+.modulo:focus-visible{outline:2px solid var(--color);outline-offset:2px}
+.modulo-icono{
+  width:46px;height:46px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  background:var(--color-fondo);border:1px solid var(--color-borde);
 }
-.modulo:hover{transform:translateY(-3px);border-color:var(--color)}
-.modulo:hover::before{opacity:1}
-.modulo:active{transform:scale(0.97)}
-
-/* ── Colores por módulo ── */
-.mod-hidrantes{--color:var(--rojo)}
-.mod-hidrantes::before{background:radial-gradient(ellipse at top,rgba(192,57,43,0.12),transparent 70%)}
-.mod-hidrantes .modulo-icono-bg{background:rgba(192,57,43,0.12);border-color:rgba(192,57,43,0.3)}
-.mod-hidrantes .modulo-num{color:var(--rojo)}
-.mod-hidrantes:hover{box-shadow:0 8px 30px rgba(192,57,43,0.2)}
-
-.mod-sotanos{--color:var(--naranja)}
-.mod-sotanos::before{background:radial-gradient(ellipse at top,rgba(230,126,34,0.12),transparent 70%)}
-.mod-sotanos .modulo-icono-bg{background:rgba(230,126,34,0.12);border-color:rgba(230,126,34,0.3)}
-.mod-sotanos .modulo-num{color:var(--naranja)}
-.mod-sotanos:hover{box-shadow:0 8px 30px rgba(230,126,34,0.2)}
-
-.mod-patrimonio{--color:#8E44AD}
-.mod-patrimonio::before{background:radial-gradient(ellipse at top,rgba(142,68,173,0.12),transparent 70%)}
-.mod-patrimonio .modulo-icono-bg{background:rgba(142,68,173,0.12);border-color:rgba(142,68,173,0.3)}
-.mod-patrimonio .modulo-num{color:#8E44AD}
-.mod-patrimonio:hover{box-shadow:0 8px 30px rgba(142,68,173,0.2)}
-
-.mod-sitac{--color:#2E86C1}
-.mod-sitac::before{background:radial-gradient(ellipse at top,rgba(46,134,193,0.12),transparent 70%)}
-.mod-sitac .modulo-icono-bg{background:rgba(46,134,193,0.12);border-color:rgba(46,134,193,0.3)}
-.mod-sitac .modulo-num{color:#2E86C1}
-.mod-sitac:hover{box-shadow:0 8px 30px rgba(46,134,193,0.2)}
-
-/* ── Elementos internos ── */
-.modulo-icono-bg{
-  width:64px;height:64px;border-radius:16px;
-  border:1px solid;
-  display:flex;align-items:center;justify-content:center;
-  font-size:30px;
-  position:relative;z-index:1;
-  transition:transform 0.2s;
-}
-.modulo:hover .modulo-icono-bg{transform:scale(1.08)}
-
+.modulo-cuerpo{min-width:0;flex:1}
 .modulo-nombre{
-  font-family:var(--font-display);
-  font-size:22px;font-weight:800;
-  letter-spacing:.04em;text-transform:uppercase;
-  position:relative;z-index:1;
-  text-align:center;
+  font-family:var(--font-display);font-size:17px;font-weight:800;
+  letter-spacing:.04em;text-transform:uppercase;color:var(--color-texto);line-height:1.1;
 }
-.modulo-desc{
-  font-size:12px;color:var(--texto-muted);
-  text-align:center;line-height:1.4;
-  position:relative;z-index:1;
+.modulo-cifra{
+  font-family:var(--font-display);font-size:26px;font-weight:800;line-height:1;
+  margin-top:3px;font-variant-numeric:tabular-nums;
 }
-.modulo-num{
-  font-family:var(--font-display);
-  font-size:28px;font-weight:800;
-  position:relative;z-index:1;
-  line-height:1;
+.modulo-cifra small{
+  font-family:var(--font-body);font-size:11px;font-weight:400;
+  color:var(--texto-muted);letter-spacing:0;margin-left:5px;text-transform:none;
 }
-.modulo-num-label{
-  font-size:10px;color:var(--texto-muted);
-  letter-spacing:.1em;text-transform:uppercase;
-  position:relative;z-index:1;
-  margin-top:-8px;
-}
+.modulo-desc{font-size:11.5px;color:var(--texto-dim);line-height:1.4;margin-top:5px}
 
-/* CHIPS DE ESTADO */
-.modulo-chips{
-  display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
-  position:relative;z-index:1;
-}
-.chip{
-  padding:3px 8px;border-radius:20px;
-  font-size:10px;font-weight:600;
-  letter-spacing:.05em;
-  background:rgba(255,255,255,0.06);
-  color:var(--texto-muted);
-}
-.chip.ok{background:rgba(30,132,73,0.2);color:#58D68D}
-.chip.warn{background:rgba(230,126,34,0.2);color:#F0A500}
-.chip.alert{background:rgba(192,57,43,0.2);color:#EC7063}
-.chip.info{background:rgba(46,134,193,0.2);color:#5DADE2}
+.mod-hidrantes{--color:var(--rojo);--color-texto:#F1948A;--color-fondo:rgba(192,57,43,.12);--color-borde:rgba(192,57,43,.3)}
+.mod-sotanos{--color:var(--naranja);--color-texto:#F0A862;--color-fondo:rgba(230,126,34,.12);--color-borde:rgba(230,126,34,.3)}
+.mod-patrimonio{--color:var(--purpura);--color-texto:#C39BD3;--color-fondo:rgba(142,68,173,.12);--color-borde:rgba(142,68,173,.3)}
+.mod-sitac{--color:var(--azul);--color-texto:#85C1E9;--color-fondo:rgba(46,134,193,.12);--color-borde:rgba(46,134,193,.3)}
 
-/* FLECHA */
-.modulo-flecha{
-  position:absolute;bottom:14px;right:16px;
-  font-size:16px;color:var(--texto-muted);
-  opacity:0;transition:opacity 0.2s, transform 0.2s;
-  z-index:1;
-}
-.modulo:hover .modulo-flecha{opacity:1;transform:translateX(3px)}
-
-/* BARRA INFERIOR */
+/* PIE */
 footer{
-  position:relative;z-index:10;
-  padding:10px 24px;
-  border-top:1px solid var(--gris-borde);
-  background:rgba(13,15,18,0.8);
-  display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;
+  position:relative;z-index:10;flex-shrink:0;
+  padding:10px 24px;border-top:1px solid var(--gris-borde);
+  background:rgba(13,15,18,0.86);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
 }
-.footer-left{font-size:11px;color:var(--texto-muted);font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase}
-.footer-right{display:flex;gap:16px;align-items:center}
-.estado-sistema{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--texto-muted)}
-.dot-verde{width:7px;height:7px;border-radius:50%;background:#27AE60;animation:pulso 2s infinite}
-@keyframes pulso{0%,100%{opacity:1}50%{opacity:0.4}}
+.footer-txt{
+  font-family:var(--font-display);font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--texto-dim);
+}
+.estado-sistema{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--texto-dim)}
+.dot-verde{width:7px;height:7px;border-radius:50%;background:#27AE60;animation:pulso 2.6s infinite}
+@keyframes pulso{0%,100%{opacity:1}50%{opacity:.35}}
 
-/* ANIMACIÓN ENTRADA */
-.modulo{animation:entrar 0.4s ease both}
-.modulo:nth-child(1){animation-delay:0.05s}
-.modulo:nth-child(2){animation-delay:0.12s}
-.modulo:nth-child(3){animation-delay:0.19s}
-.modulo:nth-child(4){animation-delay:0.26s}
-@keyframes entrar{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+/* ENTRADA — una sola secuencia */
+.inter,.modulo{animation:entrar .42s cubic-bezier(.2,.7,.3,1) both}
+.inter:nth-child(1){animation-delay:.04s}
+.inter:nth-child(2){animation-delay:.10s}
+.inter:nth-child(3){animation-delay:.16s}
+.inter:nth-child(4){animation-delay:.22s}
+.modulo:nth-child(1){animation-delay:.28s}
+.modulo:nth-child(2){animation-delay:.32s}
+.modulo:nth-child(3){animation-delay:.36s}
+.modulo:nth-child(4){animation-delay:.40s}
+@keyframes entrar{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+  .inter,.modulo{animation:none}
+  .dot-verde{animation:none}
+  *{transition-duration:.01ms!important}
+}
 
 /* RESPONSIVE */
-@media(max-width:900px){
-  .modulos{grid-template-columns:1fr 1fr;max-width:600px;gap:12px}
+@media(max-width:1060px){
+  .intervenciones{grid-template-columns:repeat(2,1fr)}
+  .modulos{grid-template-columns:repeat(2,1fr)}
+  .main{justify-content:flex-start}
 }
-@media(max-width:700px){
-  html,body{overflow:auto;height:auto}
-  .modulos{grid-template-columns:1fr;max-width:100%;gap:10px}
-  .modulo{min-height:80px;flex-direction:row;padding:14px 16px;gap:14px;justify-content:flex-start;border-radius:10px}
-  .modulo-icono-bg{width:44px;height:44px;font-size:20px;flex-shrink:0;border-radius:10px}
-  .modulo-nombre{font-size:16px;text-align:left}
-  .modulo-desc{text-align:left;font-size:11px;display:none}
-  .modulo-num{font-size:20px}
-  .modulo-num-label{margin-top:-4px;font-size:9px}
-  .modulo-chips{justify-content:flex-start;gap:3px}
-  .modulo-chips .chip{font-size:9px;padding:1px 5px;white-space:nowrap}
-  .modulo-chips{max-width:160px;overflow:hidden}
-  .modulo-flecha{opacity:1}
-  header{padding:10px 14px;height:auto;flex-wrap:wrap;gap:8px}
-  .header-titulo{font-size:15px}
-  .hora{font-size:14px;min-width:50px}
-  .badge-parque{display:none}
-  .main{padding:14px 12px;gap:14px;justify-content:flex-start;padding-top:20px}
-  footer{padding:8px 14px;flex-wrap:wrap;gap:4px}
-  #portal-btn-login{font-size:11px;padding:5px 10px}
+@media(max-width:720px){
+  header{padding:8px 14px;gap:10px}
+  .escudo{height:42px}
+  .header-titulo{font-size:16px;letter-spacing:.03em}
+  .header-subtitulo{font-size:9.5px;letter-spacing:.05em;white-space:nowrap}
+  #portal-usuario{display:none!important}
+  .header-titulo{white-space:nowrap}
+  .estado-sistema{white-space:nowrap}
+  .hora{font-size:17px;min-width:46px}
+  .hora{font-size:15px;min-width:46px}
+  .main{padding:18px 14px;gap:20px}
+  .intervenciones{grid-template-columns:1fr;gap:9px}
+  .inter{flex-direction:row;align-items:center;gap:13px;padding:14px 15px;flex-wrap:wrap}
+  .inter-icono{font-size:25px}
+  .inter-nombre{flex:1;margin:0}
+  .inter-principal{font-size:16px}
+  .inter-que{flex-basis:100%;font-size:12px}
+  .inter-destino{flex-basis:100%;padding-top:7px}
+  .modulos{grid-template-columns:1fr;gap:8px}
+  .modulo{padding:12px 14px;gap:12px}
+  .modulo-icono{width:40px;height:40px;font-size:19px;border-radius:10px}
+  .modulo-cifra{font-size:22px}
+  .modulo-desc{display:none}
+  footer{padding:8px 14px}
+  .footer-txt{font-size:9.5px}
 }
 </style>
 </head>
@@ -287,14 +226,13 @@ footer{
 
 <header>
   <div class="header-left">
-    <div class="escudo">🚒</div>
+    <img class="escudo" src="comun/escudo.png" alt="Servicio de Prevención y Extinción de Incendios de Los Palacios y Villafranca">
     <div>
       <div class="header-titulo">Portal Operativo</div>
-      <div class="header-subtitulo">Parque de Bomberos · Los Palacios y Villafranca</div>
+      <div class="header-subtitulo">Los Palacios y Villafranca</div>
     </div>
   </div>
   <div class="header-right">
-    <span class="badge-parque">T5 · Los Palacios</span>
     <span id="portal-usuario" style="display:none;font-size:11px;color:#58D68D;background:rgba(30,132,73,0.15);border:1px solid rgba(30,132,73,0.3);padding:4px 10px;border-radius:20px"></span>
     <button id="portal-btn-login" onclick="if(confirm('¿Cerrar sesión?'))PortalAuth.logout()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">Salir</button>
     <div class="hora" id="hora">--:--</div>
@@ -302,166 +240,127 @@ footer{
 </header>
 
 <div class="main">
-  <div class="portal-titulo">Selecciona un módulo de consulta</div>
 
-  <div class="modulos">
+  <section>
+    <h1 class="seccion-titulo">¿Qué tipo de intervención?</h1>
+    <div class="intervenciones">
 
-    <!-- HIDRANTES -->
-    <a class="modulo mod-hidrantes" href="hidrantes/index.html">
-      <div class="modulo-icono-bg">💧</div>
-      <div class="modulo-nombre">Hidrantes</div>
-      <div class="modulo-num" id="num-hidrantes">221</div>
-      <div class="modulo-num-label">puntos registrados</div>
-      <div class="modulo-chips">
-        <span class="chip ok">● OSM integrado</span>
-        <span class="chip">📍 Geolocalización</span>
+      <div class="inter i-fuego">
+        <span class="inter-icono">🔥</span>
+        <h3 class="inter-nombre"><a class="inter-principal" href="hidrantes/index.html">Fuego en vivienda o local</a></h3>
+        <p class="inter-que">Hidrante más cercano con ruta por calles, diámetro y presión.</p>
+        <p class="inter-destino">Hidrantes</p>
       </div>
-      <div class="modulo-desc">Consulta y localización de hidrantes, bocas de incendio y depósitos en el municipio.</div>
-      <span class="modulo-flecha">→</span>
-    </a>
 
-    <!-- SÓTANOS -->
-    <a class="modulo mod-sotanos" href="sotanos/index.html">
-      <div class="modulo-icono-bg">🅿️</div>
-      <div class="modulo-nombre">Sótanos</div>
-      <div class="modulo-num" id="num-sotanos">6</div>
-      <div class="modulo-num-label">fichas registradas</div>
-      <div class="modulo-chips">
-        <span class="chip ok">● Activo</span>
-        <span class="chip">📷 Registro fotográfico</span>
+      <div class="inter i-sotano">
+        <span class="inter-icono">🅿️</span>
+        <h3 class="inter-nombre"><a class="inter-principal" href="sotanos/index.html">Fuego en garaje o sótano</a></h3>
+        <p class="inter-que">Accesos y gálibo de la rampa, plantas, ventilación y gases.</p>
+        <p class="inter-destino">Sótanos</p>
       </div>
-      <div class="modulo-desc">Fichas de garajes y sótanos con accesos, condiciones y fotografías para intervenciones.</div>
-      <span class="modulo-flecha">→</span>
-    </a>
 
-    <!-- PATRIMONIO -->
-    <a class="modulo mod-patrimonio" href="patrimonio/index.html">
-      <div class="modulo-icono-bg">🏛️</div>
-      <div class="modulo-nombre">Patrimonio</div>
-      <div class="modulo-num" id="num-patrimonio">7</div>
-      <div class="modulo-num-label">edificios catalogados</div>
-      <div class="modulo-chips">
-        <span class="chip ok">● Activo</span>
-        <span class="chip">⚠️ Riesgos operativos</span>
-        <span class="chip">🚒 Hidrantes cercanos</span>
+      <div class="inter i-patrimonio">
+        <span class="inter-icono">🏛️</span>
+        <h3 class="inter-nombre"><a class="inter-principal" href="patrimonio/index.html">Fuego en edificio protegido</a></h3>
+        <p class="inter-que">Punto de entrada, riesgos del edificio y contacto del responsable.</p>
+        <p class="inter-destino">Patrimonio · <a class="inter-extra" href="fichas/index.html">Orden de rescate</a></p>
       </div>
-      <div class="modulo-desc">Bienes de patrimonio cultural con rutas de acceso, riesgos específicos e inventario.</div>
-      <span class="modulo-flecha">→</span>
-    </a>
 
-    <!-- SITAC -->
-    <a class="modulo mod-sitac" href="sitac/index.html">
-      <div class="modulo-icono-bg">🗺️</div>
-      <div class="modulo-nombre">SITAC</div>
-      <div class="modulo-num" style="font-size:18px;padding-top:4px">BPS</div>
-      <div class="modulo-num-label">Bomberos Prov. Sevilla</div>
-      <div class="modulo-chips">
-        <span class="chip info">● Símbolos tácticos</span>
-        <span class="chip">📡 Satélite / OSM</span>
-        <span class="chip">🔺 Sectores</span>
+      <div class="inter i-sitac">
+        <span class="inter-icono">🗺️</span>
+        <h3 class="inter-nombre"><a class="inter-principal" href="sitac/index.html">Intervención en curso</a></h3>
+        <p class="inter-que">Croquis táctico con símbolos normalizados, sectores y medios.</p>
+        <p class="inter-destino">SITAC</p>
       </div>
-      <div class="modulo-desc">Situación táctica de la intervención. Símbolos normalizados, sectores geográficos y medios desplegados.</div>
-      <span class="modulo-flecha">→</span>
-    </a>
 
-  </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="seccion-titulo">Módulos de consulta</h2>
+    <div class="modulos">
+
+      <a class="modulo mod-hidrantes" href="hidrantes/index.html">
+        <div class="modulo-icono">💧</div>
+        <div class="modulo-cuerpo">
+          <div class="modulo-nombre">Hidrantes</div>
+          <div class="modulo-cifra"><span id="num-hidrantes">—</span><small>puntos</small></div>
+          <div class="modulo-desc">Municipio y área metropolitana, con datos de EMASESA.</div>
+        </div>
+      </a>
+
+      <a class="modulo mod-sotanos" href="sotanos/index.html">
+        <div class="modulo-icono">🅿️</div>
+        <div class="modulo-cuerpo">
+          <div class="modulo-nombre">Sótanos</div>
+          <div class="modulo-cifra"><span id="num-sotanos">—</span><small>fichas</small></div>
+          <div class="modulo-desc">Garajes con accesos, condiciones y registro fotográfico.</div>
+        </div>
+      </a>
+
+      <a class="modulo mod-patrimonio" href="patrimonio/index.html">
+        <div class="modulo-icono">🏛️</div>
+        <div class="modulo-cuerpo">
+          <div class="modulo-nombre">Patrimonio</div>
+          <div class="modulo-cifra"><span id="num-patrimonio">—</span><small>edificios</small></div>
+          <div class="modulo-desc">Bienes culturales con rutas, riesgos e inventario de rescate.</div>
+        </div>
+      </a>
+
+      <a class="modulo mod-sitac" href="sitac/index.html">
+        <div class="modulo-icono">🗺️</div>
+        <div class="modulo-cuerpo">
+          <div class="modulo-nombre">SITAC</div>
+          <div class="modulo-cifra" style="font-size:19px;padding-top:4px">Situación táctica</div>
+          <div class="modulo-desc">Símbolos normalizados, sectores geográficos y medios desplegados.</div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
 </div>
 
 <footer>
-  <div class="footer-left">Consorcio de Bomberos · Provincia de Sevilla · CPEIS</div>
-  <div class="footer-right">
-    <div class="estado-sistema"><span class="dot-verde"></span>Sistema operativo</div>
-  </div>
+  <div class="footer-txt">Servicio de Prevención y Extinción de Incendios · Los Palacios y Villafranca</div>
+  <div class="estado-sistema"><span class="dot-verde"></span>Sistema operativo</div>
 </footer>
 
 <script>
-// Reloj
+const SB_URL = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
+
 function actualizarHora(){
-  const ahora = new Date();
-  const h = String(ahora.getHours()).padStart(2,'0');
-  const m = String(ahora.getMinutes()).padStart(2,'0');
-  document.getElementById('hora').textContent = h+':'+m;
+  const a = new Date();
+  document.getElementById('hora').textContent =
+    String(a.getHours()).padStart(2,'0') + ':' + String(a.getMinutes()).padStart(2,'0');
 }
 actualizarHora();
 setInterval(actualizarHora, 10000);
 
-// Contadores Supabase
-const SB_URL = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
+async function contar(tabla){
+  const r = await fetch(`${SB_URL}/rest/v1/${tabla}?select=id`,{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(PortalAuth.token()||SB_KEY),
+             'Prefer':'count=exact','Range':'0-0'}
+  });
+  return r.headers.get('Content-Range')?.split('/')[1] || null;
+}
 
 async function cargarContadores(){
-  try {
-    const [rH, rS, rP] = await Promise.all([
-      fetch(`${SB_URL}/rest/v1/hidrantes?select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(PortalAuth.token()||SB_KEY),'Prefer':'count=exact','Range':'0-0'}}),
-      fetch(`${SB_URL}/rest/v1/sotanos?select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(PortalAuth.token()||SB_KEY),'Prefer':'count=exact','Range':'0-0'}}),
-      fetch(`${SB_URL}/rest/v1/patrimonio?select=id`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(PortalAuth.token()||SB_KEY),'Prefer':'count=exact','Range':'0-0'}})
-    ]);
-    const nH = rH.headers.get('Content-Range')?.split('/')[1];
-    const nS = rS.headers.get('Content-Range')?.split('/')[1];
-    const nP = rP.headers.get('Content-Range')?.split('/')[1];
-    if(nH) document.getElementById('num-hidrantes').textContent = nH;
-    if(nS) document.getElementById('num-sotanos').textContent = nS;
-    if(nP) document.getElementById('num-patrimonio').textContent = nP;
-  } catch(e){ /* sin conexión — valores por defecto */ }
+  const tablas = [['hidrantes','num-hidrantes'],['sotanos','num-sotanos'],['patrimonio','num-patrimonio']];
+  const r = await Promise.allSettled(tablas.map(([t])=>contar(t)));
+  r.forEach((res,i)=>{
+    const el = document.getElementById(tablas[i][1]);
+    el.textContent = (res.status==='fulfilled' && res.value) ? res.value : '—';
+  });
 }
 cargarContadores();
-</script>
 
-<!-- MODAL LOGIN PORTAL -->
-<div id="portal-modal-login" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
-  <div style="background:#161A1F;border:1px solid #353C47;border-radius:12px;padding:28px;width:340px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative">
-    <button onclick="document.getElementById('portal-modal-login').style.display='none'" style="position:absolute;top:12px;right:16px;background:none;border:none;color:#8892A0;font-size:22px;cursor:pointer">×</button>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;letter-spacing:.04em;margin-bottom:6px">🔐 Acceso Admin</div>
-    <div style="font-size:13px;color:#8892A0;margin-bottom:20px;line-height:1.4">Introduce tu email y contraseña de administrador.</div>
-    <input id="portal-email" type="email" placeholder="tu@email.com" style="width:100%;background:#1E232B;border:1px solid #353C47;border-radius:6px;color:#F0F2F5;padding:10px 12px;font-size:14px;margin-bottom:10px;font-family:inherit;outline:none">
-    <input id="portal-password" type="password" placeholder="Contraseña" style="width:100%;background:#1E232B;border:1px solid #353C47;border-radius:6px;color:#F0F2F5;padding:10px 12px;font-size:14px;margin-bottom:12px;font-family:inherit;outline:none">
-    <button onclick="enviarLoginPortal()" style="width:100%;background:#C0392B;border:none;color:white;padding:11px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.05em;cursor:pointer">Acceder</button>
-    <div id="portal-login-msg" style="font-size:12px;color:#8892A0;text-align:center;margin-top:10px;min-height:18px"></div>
-  </div>
-</div>
-
-<script>
-const SB_URL_P = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
-const SB_KEY_P = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
-
-function abrirLoginPortal(){
-  document.getElementById('portal-modal-login').style.display='flex';
-}
-
-async function enviarLoginPortal(){
-  const email = document.getElementById('portal-email').value.trim();
-  const password = document.getElementById('portal-password').value;
-  const msg = document.getElementById('portal-login-msg');
-  if(!email||!password){msg.textContent='Rellena email y contraseña';return;}
-  msg.style.color='#8892A0';
-  msg.textContent='Accediendo...';
-  try {
-    const r = await fetch(`${SB_URL_P}/auth/v1/token?grant_type=password`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SB_KEY_P},
-      body:JSON.stringify({email,password})
-    });
-    const data = await r.json();
-    if(r.ok && data.access_token){
-      sessionStorage.setItem('sb_token',data.access_token);
-      sessionStorage.setItem('sb_user',email);
-      document.getElementById('portal-usuario').textContent='● '+email;
-      document.getElementById('portal-usuario').style.display='inline-block';
-      document.getElementById('portal-btn-login').style.display='none';
-      document.getElementById('portal-modal-login').style.display='none';
-      msg.textContent='';
-    } else {
-      msg.style.color='#EC7063';
-      msg.textContent='Email o contraseña incorrectos';
-    }
-  } catch(e){msg.textContent='Error de conexión';}
-}
-
-// Detectar sesión activa
-(function detectarSesionPortal(){
+(function mostrarUsuario(){
   if(PortalAuth.user()){
-    document.getElementById('portal-usuario').textContent='● '+PortalAuth.nombre()+' · '+PortalAuth.rol();
-    document.getElementById('portal-usuario').style.display='inline-block';
+    const el = document.getElementById('portal-usuario');
+    el.textContent = '● ' + PortalAuth.nombre() + ' · ' + PortalAuth.rol();
+    el.style.display = 'inline-block';
   }
 })();
 </script>

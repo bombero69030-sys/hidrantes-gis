@@ -1,0 +1,14 @@
+# Normaliza los finales de línea: en el repositorio siempre LF.
+# Evita que git marque como modificados archivos que nadie ha tocado.
+* text=auto eol=lf
+
+# Binarios: que no los toque
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.gif  binary
+*.pdf  binary
+*.docx binary
+*.xlsx binary
+*.kml  text eol=lf

@@ -323,10 +323,20 @@ footer{
 
 <footer>
   <div class="footer-txt">Servicio de Prevención y Extinción de Incendios · Los Palacios y Villafranca</div>
+  <a id="pie-herramientas" href="herramientas/direcciones.html"
+     style="display:none;font-size:11px;color:var(--texto-dim);text-decoration:none;
+            border-bottom:1px dotted currentColor">Herramientas</a>
   <div class="estado-sistema"><span class="dot-verde"></span>Sistema operativo</div>
 </footer>
 
 <script>
+/* Las herramientas de mantenimiento solo las ve quien puede usarlas */
+document.addEventListener('DOMContentLoaded',()=>{
+  if(window.PortalAuth && PortalAuth.rol() === 'admin'){
+    const a = document.getElementById('pie-herramientas');
+    if(a) a.style.display = 'inline';
+  }
+});
 const SB_URL = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
 

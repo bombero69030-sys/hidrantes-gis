@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direcciones de hidrantes · Portal Operativo</title>
+<script src="../comun/auth.js?v=202611041930"></script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fondo:#0D0F12; --panel:#15181C; --panel2:#1B1F24; --borde:#262B31;
+  --texto:#F2F3F5; --muted:#9AA3AD; --dim:#6B747E;
+  --rojo:#C0392B; --verde:#27AE60; --ambar:#E67E22;
+  --display:'Barlow Condensed',system-ui,sans-serif;
+  --cuerpo:'Barlow',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);color:var(--texto);font-family:var(--cuerpo);font-size:15px}
+
+header{display:flex;align-items:center;gap:14px;padding:12px 20px;
+  background:rgba(13,15,18,.9);border-bottom:1px solid var(--borde);
+  position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
+.volver{color:var(--muted);text-decoration:none;font-size:13px;border:1px solid var(--borde);
+  padding:6px 13px;border-radius:5px;white-space:nowrap}
+.volver:hover{color:var(--texto);border-color:var(--dim)}
+h1{margin:0;font-family:var(--display);font-size:21px;font-weight:800;letter-spacing:.04em;
+  text-transform:uppercase;flex:1;min-width:0}
+#quien{font-size:12px;color:var(--muted);white-space:nowrap}
+
+main{max-width:1120px;margin:0 auto;padding:22px 20px 60px}
+.intro{color:var(--muted);line-height:1.55;max-width:70ch;margin:0 0 20px}
+.intro b{color:var(--texto)}
+
+.barra{display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  background:var(--panel);border:1px solid var(--borde);border-radius:6px;padding:14px 16px;
+  margin-bottom:16px}
+.btn{background:var(--rojo);border:none;color:#fff;font:inherit;font-weight:600;font-size:15px;
+  padding:11px 20px;border-radius:5px;cursor:pointer}
+.btn:hover:not(:disabled){background:#D1452F}
+.btn:disabled{background:#3A4149;color:#8A939D;cursor:not-allowed}
+.btn.sec{background:transparent;border:1px solid var(--borde);color:var(--muted)}
+.btn.sec:hover:not(:disabled){border-color:var(--dim);color:var(--texto);background:transparent}
+.btn.ok{background:var(--verde)}
+.btn.ok:hover:not(:disabled){background:#2ECC71}
+label.opt{display:flex;align-items:center;gap:7px;font-size:14px;color:var(--muted);cursor:pointer}
+.sep{flex:1}
+
+#estado{font-family:var(--display);font-size:15px;letter-spacing:.03em;color:var(--muted)}
+#progreso{height:4px;background:var(--borde);border-radius:2px;overflow:hidden;margin-top:12px;
+  display:none}
+#progreso.visible{display:block}
+#progreso i{display:block;height:100%;width:0;background:var(--ambar);transition:width .25s}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-family:var(--display);font-size:11.5px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);text-align:left;padding:9px 10px;
+  border-bottom:1px solid var(--borde);position:sticky;top:57px;background:var(--fondo);z-index:10}
+td{padding:9px 10px;border-bottom:1px solid #1C2026;vertical-align:top}
+tr.sin td{color:var(--dim)}
+tr:hover td{background:var(--panel)}
+.ref{font-family:var(--display);font-weight:600;letter-spacing:.02em}
+.coord{font-size:12.5px;color:var(--dim);white-space:nowrap}
+.nueva{font-weight:600}
+.nueva.vacia{font-weight:400;color:var(--ambar);font-style:italic}
+.muni{font-size:12.5px;color:var(--muted)}
+.muni.ojo{color:var(--ambar)}
+.ver{color:#7FB3E8;text-decoration:none;font-size:12.5px;white-space:nowrap}
+.ver:hover{text-decoration:underline}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--rojo);cursor:pointer}
+
+.aviso{background:rgba(230,126,34,.12);border:1px solid rgba(230,126,34,.4);border-radius:6px;
+  padding:13px 16px;color:#F0A868;line-height:1.5;margin-bottom:16px}
+.aviso.malo{background:rgba(231,76,60,.12);border-color:rgba(231,76,60,.4);color:#F5A79D}
+.aviso.bien{background:rgba(39,174,96,.12);border-color:rgba(39,174,96,.4);color:#8FE3B0}
+.vacio{color:var(--muted);text-align:center;padding:50px 20px;line-height:1.6}
+
+@media(max-width:720px){
+  main{padding:16px 13px 50px}
+  h1{font-size:17px}
+  .coord,.muni{display:none}
+  th{top:53px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="volver" href="../index.html">← Portal</a>
+  <h1>Direcciones de hidrantes</h1>
+  <span id="quien"></span>
+</header>
+
+<main>
+  <p class="intro">
+    Muchos hidrantes importados no tienen calle: en el modo emergencia aparecen como
+    «Los Palacios y Villafranca» en vez de con su dirección. Esta herramienta le pregunta a
+    OpenStreetMap qué calle corresponde a cada coordenada. <b>No guarda nada hasta que tú lo
+    revisas y lo apruebas.</b>
+  </p>
+
+  <div id="alerta"></div>
+
+  <div class="barra">
+    <button class="btn" id="btn-buscar">Buscar direcciones</button>
+    <button class="btn sec" id="btn-parar" disabled>Parar</button>
+    <label class="opt"><input type="checkbox" id="opt-todos"> Incluir también los que ya tienen dirección</label>
+    <span class="sep"></span>
+    <span id="estado">Sin empezar</span>
+  </div>
+  <div id="progreso"><i></i></div>
+
+  <div id="salida"></div>
+
+  <div class="barra" id="barra-guardar" style="display:none">
+    <button class="btn ok" id="btn-guardar">Guardar las marcadas</button>
+    <button class="btn sec" id="btn-todas">Marcar todas</button>
+    <button class="btn sec" id="btn-ninguna">Desmarcar todas</button>
+    <span class="sep"></span>
+    <span id="cuenta"></span>
+  </div>
+</main>
+
+<script>
+const SB  = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
+const H = () => ({'Content-Type':'application/json','apikey':KEY,
+                  'Authorization':'Bearer ' + (PortalAuth.token() || KEY)});
+
+/* Nominatim pide como máximo una consulta por segundo. Respetarlo no es
+   opcional: si se abusa, bloquean la IP y deja de funcionar para todos. */
+const PAUSA = 1100;
+
+let filas = [], parar = false;
+
+const $ = s => document.querySelector(s);
+const alerta = (txt, clase) => {
+  $('#alerta').innerHTML = txt ? `<div class="aviso ${clase||''}">${txt}</div>` : '';
+};
+
+function soloAdmin(){
+  const rol = PortalAuth.rol();
+  $('#quien').textContent = PortalAuth.nombre() ? `${PortalAuth.nombre()} · ${rol}` : '';
+  if(rol !== 'admin'){
+    $('#salida').innerHTML = '<div class="vacio">Esta herramienta modifica datos de todo el ' +
+      'parque, así que solo pueden usarla los administradores.<br>Tu perfil es «' +
+      (rol || 'sin rol') + '».</div>';
+    $('.barra').style.display = 'none';
+    $('.intro').style.display = 'none';
+    return false;
+  }
+  return true;
+}
+
+/* ---------- traer hidrantes ---------- */
+async function traerHidrantes(soloSinDireccion){
+  const out = [];
+  for(let off = 0; ; off += 1000){
+    const filtro = soloSinDireccion ? '&or=(direccion.is.null,direccion.eq.)' : '';
+    const r = await fetch(
+      `${SB}/rest/v1/hidrantes?select=id,ref,osm_id,direccion,municipio,lat,lon` +
+      `${filtro}&limit=1000&offset=${off}`, {headers:H()});
+    if(!r.ok) throw new Error('Supabase respondió ' + r.status);
+    const lote = await r.json();
+    out.push(...lote);
+    if(lote.length < 1000) break;
+  }
+  return out.filter(h => h.lat != null && h.lon != null);
+}
+
+/* ---------- geocodificación inversa ---------- */
+async function calleDe(lat, lon){
+  const url = 'https://nominatim.openstreetmap.org/reverse'
+            + `?lat=${lat}&lon=${lon}&format=jsonv2&addressdetails=1&zoom=18`;
+  const r = await fetch(url, {headers:{'Accept-Language':'es'}});
+  if(!r.ok) return null;
+  const d = await r.json();
+  const a = (d && d.address) || {};
+  const via = a.road || a.pedestrian || a.footway || a.square || a.hamlet || a.neighbourhood;
+  if(!via) return null;
+  const num = a.house_number ? ' ' + a.house_number : '';
+  return {
+    direccion: (via + num).trim(),
+    municipio: a.town || a.village || a.city || a.municipality || null
+  };
+}
+
+/* ---------- recorrido ---------- */
+async function buscar(){
+  parar = false;
+  alerta('');
+  $('#btn-buscar').disabled = true;
+  $('#btn-parar').disabled = false;
+  $('#barra-guardar').style.display = 'none';
+  $('#progreso').classList.add('visible');
+  $('#estado').textContent = 'Cargando hidrantes…';
+
+  let hidrantes;
+  try{
+    hidrantes = await traerHidrantes(!$('#opt-todos').checked);
+  }catch(e){
+    alerta('No se ha podido leer la base de datos: ' + e.message, 'malo');
+    $('#btn-buscar').disabled = false; $('#btn-parar').disabled = true;
+    $('#estado').textContent = 'Error'; return;
+  }
+
+  if(!hidrantes.length){
+    $('#salida').innerHTML = '<div class="vacio">No hay hidrantes que necesiten dirección.</div>';
+    $('#estado').textContent = 'Nada que hacer';
+    $('#btn-buscar').disabled = false; $('#btn-parar').disabled = true;
+    $('#progreso').classList.remove('visible');
+    return;
+  }
+
+  const minutos = Math.ceil(hidrantes.length * PAUSA / 60000);
+  alerta(`${hidrantes.length} hidrantes por consultar. Tarda alrededor de ${minutos} ` +
+         `minuto${minutos !== 1 ? 's' : ''}: OpenStreetMap solo admite una consulta por segundo ` +
+         `y hay que respetarlo. Puedes parar cuando quieras y se queda lo encontrado hasta ahí.`);
+
+  filas = [];
+  pintar();
+
+  for(let i = 0; i < hidrantes.length; i++){
+    if(parar) break;
+    const h = hidrantes[i];
+    $('#estado').textContent = `${i+1} de ${hidrantes.length}`;
+    $('#progreso i').style.width = ((i+1)/hidrantes.length*100) + '%';
+
+    let encontrado = null;
+    try{ encontrado = await calleDe(h.lat, h.lon); }catch(e){ /* se marca como no encontrada */ }
+
+    filas.push({
+      h,
+      nueva: encontrado ? encontrado.direccion : null,
+      muniNuevo: encontrado ? encontrado.municipio : null,
+      marcado: !!encontrado && encontrado.direccion !== (h.direccion||'')
+    });
+    pintar();
+
+    if(i < hidrantes.length - 1) await new Promise(r => setTimeout(r, PAUSA));
+  }
+
+  $('#btn-buscar').disabled = false;
+  $('#btn-parar').disabled = true;
+  $('#progreso').classList.remove('visible');
+  const hallados = filas.filter(f => f.nueva).length;
+  $('#estado').textContent = parar ? 'Parado' : 'Terminado';
+  alerta(`${hallados} direcciones encontradas de ${filas.length} consultadas. ` +
+         `Revisa la lista y desmarca lo que no te convenza antes de guardar.`,
+         hallados ? 'bien' : '');
+  if(filas.length) $('#barra-guardar').style.display = 'flex';
+  contar();
+}
+
+/* ---------- tabla ---------- */
+function pintar(){
+  if(!filas.length){ $('#salida').innerHTML = ''; return; }
+  const cuerpo = filas.map((f, i) => {
+    const h = f.h;
+    const ref = h.ref || (h.osm_id ? h.osm_id.replace('node/','#') : h.id.slice(0,8));
+    const actual = (h.direccion||'').trim() || '—';
+    const muniRaro = f.muniNuevo && h.municipio &&
+                     f.muniNuevo.toLowerCase() !== h.municipio.toLowerCase();
+    return `<tr class="${f.nueva ? '' : 'sin'}">
+      <td>${f.nueva ? `<input type="checkbox" data-i="${i}" ${f.marcado?'checked':''}>` : ''}</td>
+      <td class="ref">${ref}</td>
+      <td>${actual}</td>
+      <td>
+        <div class="nueva ${f.nueva?'':'vacia'}">${f.nueva || 'sin calle en OpenStreetMap'}</div>
+        ${muniRaro ? `<div class="muni ojo">⚠ OSM dice «${f.muniNuevo}», la ficha dice «${h.municipio}»</div>` : ''}
+      </td>
+      <td class="coord">${(+h.lat).toFixed(5)}, ${(+h.lon).toFixed(5)}</td>
+      <td><a class="ver" target="_blank" rel="noopener"
+             href="https://www.google.com/maps?q=${h.lat},${h.lon}">ver</a></td>
+    </tr>`;
+  }).join('');
+
+  $('#salida').innerHTML = `<table>
+    <thead><tr><th></th><th>Ref.</th><th>Dirección actual</th>
+      <th>Propuesta</th><th>Coordenadas</th><th></th></tr></thead>
+    <tbody>${cuerpo}</tbody></table>`;
+
+  $('#salida').querySelectorAll('input[type=checkbox]').forEach(c=>{
+    c.onchange = ()=>{ filas[+c.dataset.i].marcado = c.checked; contar(); };
+  });
+}
+
+function contar(){
+  const n = filas.filter(f => f.marcado).length;
+  $('#cuenta').textContent = `${n} marcada${n !== 1 ? 's' : ''} para guardar`;
+  $('#btn-guardar').disabled = !n;
+}
+
+/* ---------- guardar ---------- */
+async function guardar(){
+  const pendientes = filas.filter(f => f.marcado && f.nueva);
+  if(!pendientes.length) return;
+  if(!confirm(`Se van a escribir ${pendientes.length} direcciones. ¿Continuar?`)) return;
+
+  $('#btn-guardar').disabled = true;
+  $('#progreso').classList.add('visible');
+  let hechos = 0, fallos = 0;
+
+  for(let i = 0; i < pendientes.length; i++){
+    const f = pendientes[i];
+    $('#estado').textContent = `Guardando ${i+1} de ${pendientes.length}`;
+    $('#progreso i').style.width = ((i+1)/pendientes.length*100) + '%';
+    try{
+      const r = await fetch(`${SB}/rest/v1/hidrantes?id=eq.${f.h.id}`, {
+        method:'PATCH', headers:H(), body: JSON.stringify({direccion: f.nueva})});
+      if(r.ok){ hechos++; f.h.direccion = f.nueva; f.marcado = false; }
+      else fallos++;
+    }catch(e){ fallos++; }
+  }
+
+  $('#progreso').classList.remove('visible');
+  $('#estado').textContent = 'Guardado';
+  pintar(); contar();
+  alerta(fallos
+    ? `${hechos} direcciones guardadas y ${fallos} fallaron. Si fallaron todas, comprueba que tu perfil es administrador.`
+    : `${hechos} direcciones guardadas.`,
+    fallos ? 'malo' : 'bien');
+}
+
+/* ---------- arranque ---------- */
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(!soloAdmin()) return;
+  $('#btn-buscar').onclick  = buscar;
+  $('#btn-parar').onclick   = ()=>{ parar = true; $('#btn-parar').disabled = true; };
+  $('#btn-guardar').onclick = guardar;
+  $('#btn-todas').onclick   = ()=>{ filas.forEach(f=>{ if(f.nueva) f.marcado = true; }); pintar(); contar(); };
+  $('#btn-ninguna').onclick = ()=>{ filas.forEach(f=> f.marcado = false); pintar(); contar(); };
+});
+</script>
+</body>
+</html>

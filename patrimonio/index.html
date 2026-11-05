@@ -851,7 +851,7 @@ function mostrarFicha(id){
       ${riesgos.length?`<div>${riesgos.map(r=>`<span class="riesgo-tag">▶ ${etqRiesgo(r)}</span>`).join('')}</div>`:'<p style="font-size:12px;color:var(--texto-dim)">Sin riesgos registrados</p>'}
 
       <hr class="divider">
-      <div class="sec-titulo" style="margin-bottom:10px;display:flex;align-items:center;gap:10px">🏺 Bienes a rescatar <button onclick="abrirFichas('${b.id}')" style="margin-left:auto;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--texto);padding:3px 10px;border-radius:4px;font-family:var(--font-display);font-size:11px;letter-spacing:.04em;cursor:pointer">📋 Fichas de rescate →</button></div>
+      <div class="sec-titulo" style="margin-bottom:10px;display:flex;align-items:center;gap:10px">🏺 Bienes a rescatar <button onclick="abrirBienes('${b.id}')" style="margin-left:auto;background:#C0392B;border:1px solid #C0392B;color:#fff;padding:3px 10px;border-radius:4px;font-family:var(--font-display);font-size:11px;letter-spacing:.04em;cursor:pointer;font-weight:700">🏺 Bienes / Intervención →</button><button onclick="abrirFichas('${b.id}')" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--texto);padding:3px 10px;border-radius:4px;font-family:var(--font-display);font-size:11px;letter-spacing:.04em;cursor:pointer">📋 Orden de rescate →</button></div>
       <div id="bienes-live"><p style="font-size:12px;color:var(--texto-dim)">⟳ Consultando fichas...</p></div>
       ${MODO==='planificacion'&&bienes.length?`<div style="font-size:11px;color:var(--texto-dim);margin-top:6px">Inventario antiguo (texto): ${bienes.map(bm=>bm.nombre+(bm.siglo?' ('+bm.siglo+')':'')).join(' · ')}</div>`:''}
 
@@ -1459,6 +1459,11 @@ async function _cargarExtrasFicha(b){
       setHTML('bienes-live',bs.map(x=>`<div class="bien-row" onclick="abrirFichas('${b.id}')"><span class="bien-cod cod-${x.rescate_codigo||'RI'}">${x.rescate_codigo||'—'}</span><span>${x.nombre}</span>${x.personas?`<span style="color:var(--texto-dim);font-size:11px">${x.personas} pers.</span>`:''}<span class="bien-zona">${x.zona||''}</span></div>`).join(''));
     } else { setHTML('cab-bienes','<span style="color:var(--texto-dim)">Sin fichas de rescate</span>'); setHTML('bienes-live','<p style="font-size:12px;color:#F0A500">Sin bienes catalogados — añádelos desde Fichas de rescate</p>'); }
   }catch(e){}
+}
+/* La página de bienes hereda el modo en el que ya estás */
+function abrirBienes(id){
+  window.location.href = 'bienes.html?edificio=' + encodeURIComponent(id) +
+                         '&modo=' + (MODO === 'intervencion' ? 'intervencion' : 'planificacion');
 }
 function etqEstadoHid(e){return {operativo:'Operativo',revision:'En revisión',inoperativo:'Inoperativo'}[e]||'Desconocido';}
 async function recalcularRuta(id){

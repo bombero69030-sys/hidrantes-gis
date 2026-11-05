@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Bienes e intervención · Portal Operativo</title>
+<script src="../comun/auth.js?v=202611051400"></script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fondo:#0D0F12; --panel:#15181C; --panel2:#1B1F24; --borde:#262B31; --borde2:#353C47;
+  --texto:#F2F3F5; --muted:#9AA3AD; --dim:#6B747E;
+  --rojo:#C0392B; --rojo-cl:#E74C3C; --naranja:#E67E22; --verde:#27AE60;
+  --azul:#2E86C1; --purpura:#8E44AD; --teal:#148F77;
+  --r1:#E74C3C; --r2:#E67E22; --r3:#27AE60; --ri:#2E86C1;
+  --display:'Barlow Condensed',system-ui,sans-serif; --cuerpo:'Barlow',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:var(--cuerpo);background:var(--fondo);color:var(--texto);
+  display:flex;flex-direction:column;font-size:15px}
+#pa-user{display:none!important}
+
+/* ---------- cabecera ---------- */
+header{flex-shrink:0;display:flex;align-items:center;gap:12px;padding:10px 16px;
+  background:var(--panel);border-bottom:1px solid var(--borde);position:sticky;top:0;z-index:300}
+header.caliente{background:#1C1215;border-bottom-color:#4A2A2C}
+.volver{background:rgba(255,255,255,.08);border:1px solid var(--borde2);color:var(--muted);
+  font:inherit;font-size:13px;padding:7px 13px;border-radius:5px;text-decoration:none;
+  white-space:nowrap;cursor:pointer}
+.volver:hover{color:var(--texto);border-color:var(--dim)}
+.h-tit{font-family:var(--display);font-size:19px;font-weight:800;letter-spacing:.04em;
+  text-transform:uppercase;flex:1;min-width:0;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;line-height:1.1}
+.h-tit small{display:block;font-family:var(--cuerpo);font-size:12px;font-weight:400;
+  letter-spacing:0;text-transform:none;color:var(--muted)}
+.modos{display:flex;background:rgba(0,0,0,.35);border-radius:6px;padding:3px;gap:3px;flex-shrink:0}
+.modo-bt{font-family:var(--display);font-size:13.5px;font-weight:700;letter-spacing:.07em;
+  text-transform:uppercase;padding:7px 15px;border-radius:4px;border:none;background:transparent;
+  color:rgba(255,255,255,.45);cursor:pointer;white-space:nowrap}
+.modo-bt.on{background:rgba(255,255,255,.14);color:#fff}
+.modo-bt.cal.on{background:var(--rojo);color:#fff}
+#quien{font-size:11.5px;color:var(--muted);white-space:nowrap}
+
+main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.wrap{max-width:1040px;margin:0 auto;padding:16px 16px 100px}
+
+/* ---------- avisos ---------- */
+.aviso{border-radius:7px;padding:13px 16px;font-size:14.5px;line-height:1.5;margin-bottom:14px}
+.aviso.ojo{background:rgba(230,126,34,.12);border:1px solid rgba(230,126,34,.4);color:#F0A868}
+.aviso.mal{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.4);color:#F5A79D}
+.aviso.bien{background:rgba(39,174,96,.12);border:1px solid rgba(39,174,96,.4);color:#8FE3B0}
+.vacio{color:var(--muted);text-align:center;padding:60px 20px;line-height:1.6;font-size:15px}
+
+/* ---------- barra del edificio ---------- */
+.edi{display:flex;align-items:center;gap:13px;background:var(--panel);border:1px solid var(--borde);
+  border-radius:9px;padding:12px 16px;margin-bottom:14px}
+.edi-p{font-family:var(--display);font-weight:800;font-size:15px;width:28px;height:28px;
+  border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.edi-n{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:.02em;line-height:1.1}
+.edi-s{font-size:12.5px;color:var(--muted);margin-top:1px}
+
+/* ====== PESTAÑA PLANIFICACIÓN ====== */
+.sub{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+.sub-bt{font-family:var(--display);font-size:13.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;padding:9px 15px;border-radius:5px;border:1px solid var(--borde);
+  background:var(--panel);color:var(--muted);cursor:pointer}
+.sub-bt.on{background:var(--panel2);border-color:var(--borde2);color:var(--texto)}
+.sub-bt.accion{margin-left:auto;background:var(--rojo);border-color:var(--rojo);color:#fff}
+
+.leyenda{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px}
+.lg{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);
+  background:var(--panel);border:1px solid var(--borde);border-radius:20px;padding:4px 11px}
+.lg i{width:10px;height:10px;border-radius:50%;display:block;font-style:normal}
+
+.rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(216px,1fr));gap:11px}
+.tarj{background:var(--panel);border:1px solid var(--borde);border-radius:9px;overflow:hidden;
+  cursor:pointer;position:relative;text-align:left;color:inherit;font:inherit;padding:0;
+  display:flex;flex-direction:column}
+.tarj:hover{border-color:var(--borde2)}
+.tarj-f{height:4px;flex-shrink:0}
+.tarj-img{height:118px;background:#22262B;display:flex;align-items:center;justify-content:center;
+  font-size:34px;color:#3C434A;overflow:hidden}
+.tarj-img img{width:100%;height:100%;object-fit:cover;display:block}
+.tarj-c{padding:11px 13px;display:flex;flex-direction:column;gap:5px;flex:1}
+.tarj-n{font-family:var(--display);font-size:17px;font-weight:700;line-height:1.14}
+.tarj-u{font-size:11.5px;color:var(--muted);line-height:1.3}
+.tarj-b{display:flex;gap:5px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+.eti{font-size:10.5px;font-weight:700;letter-spacing:.05em;padding:3px 7px;border-radius:4px;
+  text-transform:uppercase;background:#1F242A;color:#C5CCD3;border:1px solid #2D343B}
+.tarj-o{position:absolute;top:122px;right:9px;font-family:var(--display);font-size:13px;
+  font-weight:800;color:var(--dim);background:rgba(13,15,18,.8);padding:1px 6px;border-radius:4px}
+
+/* ---------- ficha detalle ---------- */
+#cortina{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:800;display:none;
+  align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px;backdrop-filter:blur(4px)}
+#cortina.visible{display:flex}
+.ficha{background:var(--panel);border:1px solid var(--borde2);border-radius:13px;max-width:780px;
+  width:100%;overflow:hidden;margin:auto 0}
+.f-cab{padding:15px 19px 12px;border-bottom:1px solid var(--borde);display:flex;gap:12px;
+  align-items:flex-start}
+.f-tri{width:13px;align-self:stretch;border-radius:4px;flex-shrink:0}
+.f-n{font-family:var(--display);font-size:25px;font-weight:800;line-height:1.06}
+.f-s{font-size:12.5px;color:var(--muted);margin-top:2px}
+.f-x{margin-left:auto;background:var(--panel2);border:1px solid var(--borde);color:var(--muted);
+  width:34px;height:34px;border-radius:8px;font-size:16px;cursor:pointer;flex-shrink:0}
+.f-cuerpo{padding:15px 19px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.f-col{display:flex;flex-direction:column;gap:11px;min-width:0}
+.bloq{background:var(--panel2);border:1px solid var(--borde);border-radius:9px;padding:12px 14px}
+.bloq-t{font-family:var(--display);font-size:11.5px;font-weight:700;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.fila{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:4px 0;
+  border-bottom:1px dashed var(--borde)}
+.fila:last-child{border-bottom:none}
+.fila .k{color:var(--muted);flex-shrink:0}
+.fila .v{text-align:right;font-weight:600;min-width:0;word-break:break-word}
+.f-foto{border-radius:8px;overflow:hidden;background:#22262B;min-height:150px;display:flex;
+  align-items:center;justify-content:center;font-size:44px;color:#3C434A}
+.f-foto img{width:100%;display:block}
+.f-pie{padding:0 19px 17px;display:flex;gap:9px;flex-wrap:wrap}
+.bt{border:none;border-radius:7px;font-family:var(--display);font-size:14px;font-weight:700;
+  letter-spacing:.05em;padding:11px 18px;cursor:pointer;text-transform:uppercase}
+.bt.pri{background:var(--rojo);color:#fff}
+.bt.sec{background:var(--panel2);color:var(--texto);border:1px solid var(--borde2)}
+.bt.ok{background:var(--verde);color:#06240F}
+.bt:disabled{background:#3A4149;color:#8A939D;cursor:not-allowed}
+
+/* ---------- formulario ---------- */
+.form{display:flex;flex-direction:column;gap:11px;padding:15px 19px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-family:var(--display);font-size:11.5px;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--dim)}
+.fg input,.fg select,.fg textarea{background:var(--fondo);border:1px solid var(--borde2);
+  border-radius:6px;color:var(--texto);font:inherit;font-size:15px;padding:10px 12px;width:100%}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--rojo)}
+.fg textarea{min-height:72px;resize:vertical}
+.f2{display:flex;gap:10px}.f2>*{flex:1;min-width:0}
+
+/* ---------- plano ---------- */
+.plano-caja{position:relative;background:#0A0C0E;border:1px solid var(--borde);border-radius:9px;
+  overflow:hidden}
+.plano-caja img{width:100%;display:block;filter:invert(1) hue-rotate(180deg) brightness(.82) contrast(1.08)}
+.pin{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;
+  border:3px solid #fff;display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-size:15px;font-weight:800;color:#fff;cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.7);padding:0;background:var(--r1)}
+.pin.ri{border-radius:6px}
+.pin.sel{box-shadow:0 0 0 5px rgba(255,255,255,.3),0 2px 8px rgba(0,0,0,.7)}
+.plano-caja.colocando{cursor:crosshair}
+.plano-vacio{padding:44px 20px;text-align:center;color:var(--muted);line-height:1.6;font-size:14.5px}
+.plantas{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.pl-bt{font-family:var(--display);font-size:13px;font-weight:700;letter-spacing:.07em;
+  text-transform:uppercase;padding:7px 13px;border-radius:5px;border:1px solid var(--borde);
+  background:var(--panel);color:var(--muted);cursor:pointer}
+.pl-bt.on{background:var(--panel2);border-color:var(--borde2);color:var(--texto)}
+
+/* ====== PESTAÑA INTERVENCIÓN ====== */
+.iv-off{text-align:center;padding:46px 20px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.iv-off h2{font-family:var(--display);font-size:26px;font-weight:800;letter-spacing:.03em}
+.iv-off p{color:var(--muted);font-size:14.5px;max-width:52ch;line-height:1.55}
+.bt-grande{background:var(--rojo);color:#fff;border:none;padding:19px 38px;border-radius:11px;
+  font-family:var(--display);font-size:21px;font-weight:800;letter-spacing:.08em;cursor:pointer;
+  text-transform:uppercase;box-shadow:0 4px 24px rgba(192,57,43,.32)}
+.bt-grande:hover{background:var(--rojo-cl)}
+
+.marc{background:linear-gradient(180deg,#1C1215,#15181C);border:1px solid var(--borde);
+  border-radius:10px;padding:14px 16px;margin-bottom:12px;position:sticky;top:0;z-index:200}
+.marc-1{display:flex;align-items:baseline;gap:11px}
+.marc-n{font-family:var(--display);font-size:46px;font-weight:800;line-height:.9;color:var(--rojo-cl)}
+.marc-t{font-family:var(--display);font-size:15px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);line-height:1.1}
+.marc-cr{margin-left:auto;font-family:var(--display);font-size:25px;font-weight:800;
+  font-variant-numeric:tabular-nums;letter-spacing:.03em}
+.marc-cr small{display:block;font-size:9.5px;letter-spacing:.14em;color:var(--dim);text-align:right}
+.marc-s{font-size:14px;color:var(--texto);margin-top:6px;line-height:1.4}
+.marc-s b{color:#F0A868}
+.barra{height:7px;background:#2A2F35;border-radius:4px;overflow:hidden;margin-top:10px;display:flex}
+.barra i{display:block;height:100%}
+.barra-p{display:flex;justify-content:space-between;font-family:var(--display);font-size:11.5px;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-top:5px;font-weight:600}
+
+.estado-op{display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--borde);
+  border-radius:8px;padding:9px 13px;margin-bottom:12px;flex-wrap:wrap}
+.estado-op.susp{background:rgba(230,126,34,.12);border-color:rgba(230,126,34,.4)}
+.estado-op .et{font-family:var(--display);font-size:13px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+.estado-op .et.ojo{color:#F0A868}
+
+.equipos{display:flex;align-items:center;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+.eq{background:var(--panel);border:1px solid var(--borde2);color:var(--muted);padding:8px 15px;
+  border-radius:20px;font-family:var(--display);font-size:14px;font-weight:700;cursor:pointer;
+  letter-spacing:.04em}
+.eq.on{background:var(--azul);border-color:var(--azul);color:#fff}
+.eq-mas{border-style:dashed}
+
+.gr{font-family:var(--display);font-size:11px;font-weight:700;letter-spacing:.17em;
+  text-transform:uppercase;color:var(--dim);padding:10px 2px 4px;display:flex;align-items:center;gap:8px}
+.gr::after{content:'';flex:1;height:1px;background:var(--borde)}
+.bien-f{background:var(--panel);border:1px solid var(--borde);border-left:4px solid var(--r1);
+  border-radius:7px;margin-bottom:8px;display:flex;overflow:hidden}
+.bien-f.r2{border-left-color:var(--r2)} .bien-f.r3{border-left-color:var(--r3)}
+.bien-f.ri{border-left-color:var(--ri)}
+.bien-f.fin{opacity:.55}
+.bf-c{flex:1;padding:11px 13px;min-width:0}
+.bf-1{display:flex;align-items:center;gap:10px}
+.bf-n{font-family:var(--display);font-size:18px;font-weight:800;line-height:1.1;flex:1;min-width:0}
+.bf-u{font-size:11.5px;color:var(--muted);margin-top:2px}
+.bf-e{font-family:var(--display);font-size:12px;font-weight:800;letter-spacing:.06em;padding:4px 10px;
+  border-radius:5px;text-transform:uppercase;flex-shrink:0;white-space:nowrap}
+.bf-d{font-size:12px;color:var(--muted);margin-top:5px;display:flex;gap:11px;flex-wrap:wrap}
+.bf-d b{color:var(--texto)}
+.bf-m{font-size:11.5px;color:var(--dim);margin-top:4px}
+.bf-bt{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}
+.be{flex:1;min-width:96px;min-height:46px;border:none;border-radius:7px;font-family:var(--display);
+  font-size:14.5px;font-weight:800;letter-spacing:.05em;cursor:pointer;text-transform:uppercase;color:#fff}
+.be:active{transform:scale(.98)}
+.be:disabled{background:#2A2F35!important;color:#6B747E;cursor:not-allowed}
+.be.resc{background:var(--naranja)} .be.evac{background:var(--verde);color:#06240F}
+.be.depo{background:#1A5276} .be.prot{background:var(--teal)}
+.be.dano{background:var(--purpura)} .be.ilo{background:#5A6475}
+.be.des{background:var(--panel2);border:1px solid var(--borde2);color:var(--muted);flex:0 0 auto;
+  min-width:auto;padding:0 14px}
+
+.registro{background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:13px 15px;
+  margin-top:16px}
+.reg-t{font-family:var(--display);font-size:13.5px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.reg-l{display:flex;gap:10px;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--borde);
+  align-items:baseline}
+.reg-l:last-child{border-bottom:none}
+.reg-h{font-family:var(--display);font-weight:700;color:var(--muted);flex-shrink:0;min-width:62px}
+.reg-e{font-weight:700;color:#F1C40F;flex-shrink:0}
+.cola{font-size:12.5px;color:#F0A868;margin-top:8px}
+
+/* ---------- toast y modal ---------- */
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(90px);
+  background:var(--panel2);border:1px solid var(--borde2);color:var(--texto);padding:11px 20px;
+  border-radius:30px;font-size:13.5px;font-weight:600;z-index:9500;transition:transform .28s;
+  box-shadow:0 6px 24px rgba(0,0,0,.6);max-width:90vw;text-align:center}
+#toast.visible{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:700px){
+  .wrap{padding:12px 11px 90px}
+  .h-tit{font-size:16px}
+  .f-cuerpo{grid-template-columns:1fr}
+  .rejilla{grid-template-columns:1fr 1fr}
+  #cortina{padding:0;align-items:flex-end}
+  .ficha{border-radius:13px 13px 0 0;max-height:94vh;overflow-y:auto}
+  .marc-n{font-size:38px}
+  .be{min-width:30%;font-size:13px}
+  .modo-bt{padding:7px 11px;font-size:12.5px}
+  #quien{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---------- impresión ---------- */
+#papel{display:none}
+@media print{
+  body>*:not(#papel){display:none!important}
+  body{background:#fff;display:block;height:auto}
+  html,body{overflow:visible}
+  #papel{display:block}
+}
+@page{size:A4 landscape;margin:6mm}
+.pf{width:277mm;min-height:186mm;background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;
+  font-size:9pt;padding:7mm;page-break-after:always}
+.pf-t{font-size:12pt;font-weight:bold;text-transform:uppercase;margin-bottom:3mm}
+.pf-top{display:flex;justify-content:flex-end;gap:5mm;margin-bottom:3mm}
+.pf-pr{display:grid;grid-template-columns:34mm 18mm;border:1px solid #1F3864}
+.pf-pr div{padding:1.4mm 2mm;font-weight:bold;font-size:9pt}
+.pf-pl{background:#D6DC8E;border-bottom:1px solid #1F3864}
+.pf-pv{background:#fff;border-bottom:1px solid #1F3864;border-left:1px solid #1F3864;text-align:center}
+.pf-main{display:flex;gap:5mm}
+.pf-i{flex:1.15;display:flex;flex-direction:column;gap:3mm}
+.pf-d{flex:1;display:flex;flex-direction:column;gap:3mm}
+.pf-b{display:flex;border:1px solid #1F3864}
+.pf-lat{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font-weight:bold;
+  font-size:8pt;letter-spacing:.04em;padding:2mm 1mm;border-left:1px solid #1F3864;flex-shrink:0;
+  width:8mm;display:flex;align-items:center;justify-content:center}
+.lat-dat{background:#BFBFBF} .lat-pro{background:#B4C6E7} .lat-eva{background:#F4B8C1}
+.lat-img{background:#BDD7EE} .lat-pla{background:#BDD7EE}
+.pf-con{flex:1;padding:2.4mm 3mm;min-width:0}
+.pf-f{display:flex;gap:2mm;padding:.7mm 0;border-bottom:.5pt dotted #999}
+.pf-f:last-child{border-bottom:none}
+.pf-f .pk{font-weight:bold;min-width:36mm;flex-shrink:0}
+.pf-f .pv{min-width:0;word-break:break-word}
+.pf-cj{flex:1;padding:2mm;display:flex;align-items:center;justify-content:center;min-height:52mm}
+.pf-cj img{max-width:100%;max-height:72mm;object-fit:contain}
+.pf-sin{color:#888;font-size:8pt;font-style:italic}
+.pf-pm{position:relative;display:inline-block;max-width:100%}
+.pf-pm img{max-width:100%;max-height:72mm;display:block}
+.pf-pt{position:absolute;transform:translate(-50%,-50%);width:7mm;height:7mm;border-radius:50%;
+  border:.6mm solid #fff;background:#C0392B;color:#fff;font-size:8pt;font-weight:bold;
+  display:flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+
+<header id="cab">
+  <a class="volver" id="bt-volver" href="index.html">← Patrimonio</a>
+  <div class="h-tit" id="h-tit">Bienes<small id="h-sub">Cargando…</small></div>
+  <div class="modos">
+    <button class="modo-bt on" id="m-plan" type="button" onclick="setModo('planificacion')">Planificación</button>
+    <button class="modo-bt cal" id="m-int" type="button" onclick="setModo('intervencion')">🔥 Intervención</button>
+  </div>
+  <span id="quien"></span>
+</header>
+
+<main><div class="wrap">
+  <div id="alerta"></div>
+  <div class="edi" id="edi" style="display:none">
+    <span class="edi-p" id="edi-p"></span>
+    <div style="min-width:0">
+      <div class="edi-n" id="edi-n"></div>
+      <div class="edi-s" id="edi-s"></div>
+    </div>
+  </div>
+
+  <!-- ====== PLANIFICACIÓN ====== -->
+  <div id="v-plan">
+    <div class="sub">
+      <button class="sub-bt on" id="sb-cat" type="button" onclick="setSub('catalogo')">Catálogo</button>
+      <button class="sub-bt" id="sb-pla" type="button" onclick="setSub('plano')">Plano</button>
+      <button class="sub-bt" type="button" onclick="imprimirCuadernillo()">Cuadernillo</button>
+      <button class="sub-bt accion" id="bt-nuevo" type="button" onclick="abrirForm(null)">+ Añadir bien</button>
+    </div>
+
+    <div id="s-catalogo">
+      <div class="leyenda">
+        <span class="lg"><i style="background:#E74C3C"></i>R1 · Evacuar primero</span>
+        <span class="lg"><i style="background:#E67E22"></i>R2 · Después</span>
+        <span class="lg"><i style="background:#27AE60"></i>R3 · Si da tiempo</span>
+        <span class="lg"><i style="background:#2E86C1;border-radius:2px"></i>Inamovible · proteger</span>
+      </div>
+      <div class="rejilla" id="rejilla"></div>
+    </div>
+
+    <div id="s-plano" style="display:none">
+      <div class="plantas" id="plantas"></div>
+      <input type="file" id="in-croquis" accept="image/*" style="display:none" onchange="subirCroquis(event)">
+      <input type="file" id="in-foto" accept="image/*" style="display:none" onchange="subirFotoBien(event)">
+      <div id="plano-host"></div>
+      <p style="font-size:13px;color:var(--muted);margin-top:10px;line-height:1.5" id="plano-pie"></p>
+    </div>
+  </div>
+
+  <!-- ====== INTERVENCIÓN ====== -->
+  <div id="v-int" style="display:none">
+    <div class="iv-off" id="iv-off">
+      <h2>Salvamento de bienes</h2>
+      <p>Aún no hay intervención abierta en este edificio. Al iniciarla, cada cambio de estado
+         queda registrado con su hora y su equipo, y al terminar sale el acta de entrega.</p>
+      <button class="bt-grande" type="button" onclick="iniciarIntervencion()">Iniciar salvamento</button>
+      <p style="font-size:13px;color:var(--dim)">Primero las personas, después estabilizar el incendio.
+         Esto se abre cuando el mando lo autoriza.</p>
+    </div>
+    <div id="iv-on" style="display:none">
+      <div class="marc">
+        <div class="marc-1">
+          <span class="marc-n" id="m-dentro">—</span>
+          <span class="marc-t">piezas<br>dentro</span>
+          <span class="marc-cr" id="m-crono">00:00:00<small>En curso</small></span>
+        </div>
+        <div class="marc-s" id="m-recursos"></div>
+        <div class="barra"><i id="b-fuera"></i><i id="b-resc"></i></div>
+        <div class="barra-p"><span id="b-izq"></span><span id="b-der"></span></div>
+      </div>
+
+      <div class="estado-op" id="estado-op">
+        <span class="et" id="op-et">Salvamento autorizado</span>
+        <button class="bt sec" type="button" style="padding:7px 13px;font-size:12.5px"
+                onclick="alternarSuspension()" id="bt-susp">Suspender</button>
+        <button class="bt pri" type="button" style="margin-left:auto;padding:7px 13px;font-size:12.5px"
+                onclick="finalizarIntervencion()">■ Finalizar</button>
+      </div>
+
+      <div class="equipos" id="equipos"></div>
+      <div id="iv-lista"></div>
+
+      <div class="registro">
+        <div class="reg-t">Registro cronológico</div>
+        <div id="reg-lineas"><div style="color:var(--dim);font-size:13px;font-style:italic">Sin registros todavía.</div></div>
+        <div class="cola" id="cola" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</div></main>
+
+<div id="cortina" onclick="if(event.target===this)cerrarFicha()"><div class="ficha" id="ficha"></div></div>
+<div id="toast"></div>
+<div id="papel"></div>
+
+<script>
+/* ============================================================
+   BIENES MUEBLES E INTERVENCIÓN
+   Una página, dos caras: hereda el modo de Patrimonio.
+   En intervención no se edita nada; solo se marca.
+   ============================================================ */
+const SB  = 'https://zgwnkahaeuckdtjehpfj.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd25rYWhhZXVja2R0amVocGZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjk2NTgsImV4cCI6MjA5Mzg0NTY1OH0.CqbtLMuzijzOFiPdivAdlbf-rmaXkyXgyY4CGVOkCzM';
+const H = (x={}) => ({'Content-Type':'application/json','apikey':KEY,
+  'Authorization':'Bearer ' + (window.PortalAuth && PortalAuth.token() || KEY), ...x});
+
+const RESCATE = {
+  R1:{cls:'',   color:'#E74C3C', etq:'R1 · Evacuar primero', grupo:'R1 · Primero',   orden:1, evacua:true},
+  R2:{cls:'r2', color:'#E67E22', etq:'R2 · Después',         grupo:'R2 · Después',   orden:2, evacua:true},
+  R3:{cls:'r3', color:'#27AE60', etq:'R3 · Si da tiempo',    grupo:'R3 · Si da tiempo', orden:3, evacua:true},
+  RI:{cls:'ri', color:'#2E86C1', etq:'Inamovible',           grupo:'Inamovibles',    orden:4, evacua:false}
+};
+const codigo = b => RESCATE[b.rescate_codigo] ? b.rescate_codigo : 'R3';
+
+const ESTADOS = {
+  pendiente:   {etq:'Dentro',        bg:'#2A2F35',               fg:'#A7B0B9'},
+  en_rescate:  {etq:'En rescate',    bg:'rgba(230,126,34,.22)',  fg:'#F0A868'},
+  evacuado:    {etq:'Fuera',         bg:'rgba(39,174,96,.2)',    fg:'#6FCF97'},
+  depositado:  {etq:'Depositado',    bg:'rgba(26,82,118,.4)',    fg:'#7FB3E8'},
+  protegido:   {etq:'Cubierto',      bg:'rgba(20,143,119,.25)',  fg:'#48C9B0'},
+  danado:      {etq:'Dañado',        bg:'rgba(142,68,173,.3)',   fg:'#BB8FCE'},
+  ilocalizable:{etq:'No está',       bg:'rgba(231,76,60,.2)',    fg:'#F1897D'}
+};
+const FINALES = ['depositado','protegido','danado','ilocalizable'];
+
+let EDIFICIO = null, PLANTAS = [], BIENES = [], PLANTA_SEL = null;
+let INTERV = null, LOG = [], ESTADO_OP = 'autorizado';
+let MODO = 'planificacion', SUB = 'catalogo';
+let EQUIPO = 'B-31', EQUIPOS = ['B-31','B-32','B-33','Mando'];
+let colocando = null, cronoT = null, sondeoT = null, bienAbierto = null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hhmm = d => new Date(d).toTimeString().slice(0,8);
+
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('visible');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('visible'),2400);}
+function alerta(t,c){ $('alerta').innerHTML = t ? `<div class="aviso ${c||''}">${t}</div>` : ''; }
+
+/* Personas viene como texto libre ("2–3", "2 bomberos"): para sumar hace
+   falta el primer número; para enseñar, el texto tal cual. */
+function personasNum(b){
+  const m = String(b.personas||'').match(/\d+/);
+  return m ? parseInt(m[0],10) : 0;
+}
+const puedeEditar = () => window.PortalAuth && PortalAuth.rol &&
+  ['admin','bombero'].includes(PortalAuth.rol());
+
+/* ---------------- carga ---------------- */
+async function sb(path, opc){
+  const r = await fetch(`${SB}/rest/v1/${path}`, {headers:H(), ...opc});
+  if(!r.ok) throw new Error(await r.text() || ('HTTP ' + r.status));
+  return r.status === 204 ? null : r.json();
+}
+
+async function cargar(){
+  const p = new URLSearchParams(location.search);
+  const id = p.get('edificio');
+  MODO = p.get('modo') === 'intervencion' ? 'intervencion' : 'planificacion';
+  if(!id){
+    $('alerta').innerHTML = '<div class="aviso mal">Falta el edificio. Vuelve a Patrimonio y entra desde su ficha.</div>';
+    return;
+  }
+  try{
+    const [edi, pls, bns] = await Promise.all([
+      sb(`patrimonio?id=eq.${id}&select=*`),
+      sb(`plantas?patrimonio_id=eq.${id}&select=*&order=orden.asc`),
+      sb(`bienes_muebles?patrimonio_id=eq.${id}&select=*&order=orden_rescate.asc,nombre.asc`)
+    ]);
+    if(!edi.length) throw new Error('Ese edificio no existe');
+    EDIFICIO = edi[0]; PLANTAS = pls || []; BIENES = bns || [];
+    PLANTA_SEL = PLANTAS.length ? PLANTAS[0].id : null;
+  }catch(e){
+    $('alerta').innerHTML = `<div class="aviso mal">No se ha podido cargar: ${esc(e.message)}</div>`;
+    return;
+  }
+  pintarEdificio();
+  await cargarIntervencion();
+  aplicarModo();
+  vaciarCola();
+}
+
+async function cargarIntervencion(){
+  try{
+    const act = await sb(`intervenciones?patrimonio_id=eq.${EDIFICIO.id}&estado=eq.activa&select=*&limit=1`);
+    INTERV = act && act.length ? act[0] : null;
+    LOG = INTERV
+      ? await sb(`intervencion_log?intervencion_id=eq.${INTERV.id}&select=*&order=ts.asc`)
+      : [];
+    const sus = [...LOG].reverse().find(l => l.estado_nuevo === 'sistema' &&
+                 /suspend|reanud/i.test(l.nota||''));
+    ESTADO_OP = sus && /suspend/i.test(sus.nota) ? 'suspendido' : 'autorizado';
+  }catch(e){ INTERV = null; LOG = []; }
+}
+
+function pintarEdificio(){
+  const b = EDIFICIO;
+  $('h-tit').innerHTML = `Bienes<small id="h-sub">${esc(b.nombre||'')}</small>`;
+  $('quien').textContent = window.PortalAuth && PortalAuth.nombre ? (PortalAuth.nombre()||'') : '';
+  $('bt-volver').href = 'index.html';
+  const col = b.prioridad === 'A' ? '#E74C3C' : b.prioridad === 'B' ? '#E67E22' : '#9AA3AD';
+  $('edi').style.display = 'flex';
+  $('edi-p').textContent = b.prioridad || '—';
+  $('edi-p').style.cssText = `background:${col}22;color:${col}`;
+  $('edi-n').textContent = b.nombre || '';
+  $('edi-s').textContent = [b.tipo, b.direccion,
+    BIENES.length + (BIENES.length===1?' bien catalogado':' bienes catalogados')]
+    .filter(Boolean).join(' · ');
+}
+
+/* ---------------- modos ---------------- */
+function setModo(m){
+  MODO = m;
+  const u = new URL(location.href); u.searchParams.set('modo', m);
+  history.replaceState(null, '', u);
+  aplicarModo();
+}
+function aplicarModo(){
+  const cal = MODO === 'intervencion';
+  $('m-plan').classList.toggle('on', !cal);
+  $('m-int').classList.toggle('on', cal);
+  $('cab').classList.toggle('caliente', cal);
+  $('v-plan').style.display = cal ? 'none' : 'block';
+  $('v-int').style.display  = cal ? 'block' : 'none';
+  if(cal){ pintarIntervencion(); arrancarSondeo(); }
+  else   { pararSondeo(); pintarCatalogo(); pintarPlano(); }
+}
+function setSub(s){
+  SUB = s;
+  $('sb-cat').classList.toggle('on', s === 'catalogo');
+  $('sb-pla').classList.toggle('on', s === 'plano');
+  $('s-catalogo').style.display = s === 'catalogo' ? 'block' : 'none';
+  $('s-plano').style.display    = s === 'plano' ? 'block' : 'none';
+  if(s === 'plano') pintarPlano();
+}
+
+/* ---------------- catálogo ---------------- */
+function pintarCatalogo(){
+  $('bt-nuevo').style.display = puedeEditar() ? 'block' : 'none';
+  const r = $('rejilla');
+  if(!BIENES.length){
+    r.innerHTML = '<div class="vacio">Este edificio no tiene bienes catalogados.<br>' +
+      (puedeEditar() ? 'Empieza por «Añadir bien».' : 'Pide a un administrador que los dé de alta.') +
+      '</div>';
+    return;
+  }
+  const orden = [...BIENES].sort((a,b)=>
+    RESCATE[codigo(a)].orden - RESCATE[codigo(b)].orden ||
+    (a.orden_rescate||99) - (b.orden_rescate||99) ||
+    (a.nombre||'').localeCompare(b.nombre||''));
+  r.innerHTML = orden.map((b,i)=>{
+    const R = RESCATE[codigo(b)];
+    return `<button class="tarj" type="button" onclick="abrirFicha('${b.id}')">
+      <div class="tarj-f" style="background:${R.color}"></div>
+      <div class="tarj-img">${b.foto_url
+        ? `<img src="${esc(b.foto_url)}" alt="" loading="lazy" onerror="this.parentNode.textContent='🏺'">`
+        : '🏺'}</div>
+      <span class="tarj-o">#${i+1}</span>
+      <div class="tarj-c">
+        <div class="tarj-n">${esc(b.nombre)}</div>
+        <div class="tarj-u">${esc(b.zona || b.ubicacion || 'Sin ubicación')}</div>
+        <div class="tarj-b">
+          <span class="eti" style="background:${R.color}22;color:${R.color};border-color:${R.color}55">${esc(R.etq)}</span>
+          ${b.personas ? `<span class="eti">${esc(b.personas)} pers.</span>` : ''}
+          ${(b.croquis_x!=null && b.croquis_y!=null) ? '<span class="eti">En el plano</span>' : ''}
+        </div>
+      </div>
+    </button>`;
+  }).join('');
+}
+
+/* ---------------- ficha de un bien ---------------- */
+function abrirFicha(id){
+  const b = BIENES.find(x=>x.id===id); if(!b) return;
+  bienAbierto = id;
+  const R = RESCATE[codigo(b)];
+  const riesgos = Array.isArray(b.riesgos) ? b.riesgos : [];
+  const sens = [['Agua',b.sens_agua],['Fuego',b.sens_fuego],['Golpes',b.sens_golpes]]
+    .filter(x=>x[1]);
+  const f = (k,v) => v ? `<div class="fila"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>` : '';
+
+  $('ficha').innerHTML = `
+    <div class="f-cab">
+      <div class="f-tri" style="background:${R.color}"></div>
+      <div style="min-width:0">
+        <div class="f-n">${esc(b.nombre)}</div>
+        <div class="f-s">${[b.autor,b.cronologia].filter(Boolean).map(esc).join(' · ')}
+          ${b.autor||b.cronologia?' · ':''}<b style="color:${R.color}">${esc(R.etq)}</b></div>
+      </div>
+      <button class="f-x" type="button" onclick="cerrarFicha()">✕</button>
+    </div>
+    <div class="f-cuerpo">
+      <div class="f-col">
+        <div class="f-foto">${b.foto_url
+          ? `<img src="${esc(b.foto_url)}" alt="${esc(b.nombre)}">` : '🏺'}</div>
+        <div class="bloq">
+          <div class="bloq-t">Datos identificativos</div>
+          ${f('Tipo', b.tipo)}${f('Material', b.material)}${f('Dimensiones', b.dimensiones)}
+          ${f('Peso', b.peso)}${f('Zona', b.zona)}${f('Ubicación', b.ubicacion)}
+          ${f('Valor', b.valor)}${f('Propietario', b.propietario)}
+        </div>
+      </div>
+      <div class="f-col">
+        <div class="bloq">
+          <div class="bloq-t">Extracción</div>
+          ${f('Personal', b.personas ? b.personas + ' personas' : (R.evacua ? null : 'No se evacúa'))}
+          ${f('Anclaje', b.anclaje)}${f('Herramientas', b.herramientas)}
+          ${f('Ruta de salida', b.ruta_evac)}
+          ${b.embalaje ? `<div style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.45">${esc(b.embalaje)}</div>` : ''}
+        </div>
+        ${sens.length || riesgos.length ? `<div class="bloq">
+          <div class="bloq-t">Protección y riesgos</div>
+          ${sens.map(([k,v])=>f(k,v)).join('')}
+          ${riesgos.length ? `<div style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.45">${esc(riesgos.join(' · '))}</div>` : ''}
+        </div>` : ''}
+        ${(b.croquis_x!=null) ? '' :
+          '<div class="aviso ojo" style="margin:0">Sin anclar al plano. En intervención no se podrá señalar dónde está.</div>'}
+        ${b.pos_revisar ? '<div class="aviso ojo" style="margin:0">El plano cambió: hay que revisar su posición.</div>' : ''}
+      </div>
+    </div>
+    <div class="f-pie">
+      <button class="bt pri" type="button" onclick="imprimirConsorcio('${b.id}')">Ficha del Consorcio</button>
+      ${puedeEditar() ? `<button class="bt sec" type="button" onclick="abrirForm('${b.id}')">Editar</button>` : ''}
+      ${puedeEditar() ? `<button class="bt sec" type="button" onclick="colocarEnPlano('${b.id}')">Situar en el plano</button>` : ''}
+      ${puedeEditar() ? `<button class="bt sec" type="button" onclick="pedirFotoBien('${b.id}')">${b.foto_url?'Cambiar foto':'Añadir foto'}</button>` : ''}
+      <button class="bt sec" type="button" onclick="cerrarFicha()">Cerrar</button>
+    </div>`;
+  $('cortina').classList.add('visible');
+}
+function cerrarFicha(){ $('cortina').classList.remove('visible'); bienAbierto = null; }
+
+/* ---------------- alta y edición ---------------- */
+function abrirForm(id){
+  if(!puedeEditar()){ toast('Solo pueden editar los administradores'); return; }
+  const b = id ? BIENES.find(x=>x.id===id) : {};
+  const v = k => esc(b[k]==null ? '' : b[k]);
+  const sel = (k,ops) => ops.map(o =>
+    `<option value="${o}" ${String(b[k]||'')===o?'selected':''}>${o||'—'}</option>`).join('');
+  $('ficha').innerHTML = `
+    <div class="f-cab">
+      <div class="f-tri" style="background:${RESCATE[codigo(b)].color}"></div>
+      <div><div class="f-n">${id ? 'Editar bien' : 'Nuevo bien'}</div>
+      <div class="f-s">${esc(EDIFICIO.nombre)}</div></div>
+      <button class="f-x" type="button" onclick="cerrarFicha()">✕</button>
+    </div>
+    <form class="form" onsubmit="guardarBien(event,${id?`'${id}'`:'null'})">
+      <div class="fg"><label>Denominación</label>
+        <input id="x-nombre" required value="${v('nombre')}" placeholder="Virgen de la Aurora"></div>
+      <div class="f2">
+        <div class="fg"><label>Prioridad de rescate</label>
+          <select id="x-cod">${sel('rescate_codigo',['R1','R2','R3','RI'])}</select></div>
+        <div class="fg"><label>Orden dentro del grupo</label>
+          <input id="x-orden" type="number" min="1" value="${v('orden_rescate')}"></div>
+      </div>
+      <div class="f2">
+        <div class="fg"><label>Zona</label><input id="x-zona" value="${v('zona')}" placeholder="Altar mayor"></div>
+        <div class="fg"><label>Ubicación exacta</label><input id="x-ubi" value="${v('ubicacion')}"></div>
+      </div>
+      <div class="f2">
+        <div class="fg"><label>Autor</label><input id="x-autor" value="${v('autor')}"></div>
+        <div class="fg"><label>Cronología</label><input id="x-crono" value="${v('cronologia')}"></div>
+      </div>
+      <div class="f2">
+        <div class="fg"><label>Tipo</label><input id="x-tipo" value="${v('tipo')}"></div>
+        <div class="fg"><label>Material</label><input id="x-mat" value="${v('material')}"></div>
+      </div>
+      <div class="f2">
+        <div class="fg"><label>Dimensiones</label><input id="x-dim" value="${v('dimensiones')}"></div>
+        <div class="fg"><label>Peso</label><input id="x-peso" value="${v('peso')}"></div>
+      </div>
+      <div class="f2">
+        <div class="fg"><label>Personas que hacen falta</label>
+          <input id="x-pers" value="${v('personas')}" placeholder="2–3"></div>
+        <div class="fg"><label>Anclaje</label>
+          <input id="x-ancl" value="${v('anclaje')}" placeholder="Pernos al camarín, llave en sacristía"></div>
+      </div>
+      <div class="fg"><label>Herramientas</label>
+        <input id="x-herr" value="${v('herramientas')}" placeholder="Escalera 3 m · manta ignífuga"></div>
+      <div class="fg"><label>Cómo se manipula</label>
+        <textarea id="x-emb" placeholder="Transportar vertical. Nunca sujetar por las manos.">${v('embalaje')}</textarea></div>
+      <div class="fg"><label>Ruta de salida</label>
+        <input id="x-ruta" value="${v('ruta_evac')}" placeholder="Presbiterio → nave → puerta principal"></div>
+      <div class="f2">
+        <div class="fg"><label>Sensible al agua</label>
+          <select id="x-sa">${sel('sens_agua',['','Muy alta','Alta','Media','Baja'])}</select></div>
+        <div class="fg"><label>Al fuego</label>
+          <select id="x-sf">${sel('sens_fuego',['','Muy alta','Alta','Media','Baja'])}</select></div>
+        <div class="fg"><label>A golpes</label>
+          <select id="x-sg">${sel('sens_golpes',['','Muy alta','Alta','Media','Baja'])}</select></div>
+      </div>
+      <div class="f2">
+        <div class="fg"><label>Valor</label><input id="x-valor" value="${v('valor')}"></div>
+        <div class="fg"><label>Propietario</label><input id="x-prop" value="${v('propietario')}"></div>
+      </div>
+      <div class="f-pie" style="padding:6px 0 0">
+        <button class="bt ok" type="submit" id="x-bt">Guardar</button>
+        <button class="bt sec" type="button" onclick="${id?`abrirFicha('${id}')`:'cerrarFicha()'}">Cancelar</button>
+      </div>
+    </form>`;
+  $('cortina').classList.add('visible');
+}
+
+async function guardarBien(ev, id){
+  ev.preventDefault();
+  const g = k => { const e = $(k); return e && e.value.trim() ? e.value.trim() : null; };
+  const datos = {
+    nombre: g('x-nombre'), rescate_codigo: g('x-cod') || 'R3',
+    orden_rescate: g('x-orden') ? parseInt(g('x-orden'),10) : null,
+    zona:g('x-zona'), ubicacion:g('x-ubi'), autor:g('x-autor'), cronologia:g('x-crono'),
+    tipo:g('x-tipo'), material:g('x-mat'), dimensiones:g('x-dim'), peso:g('x-peso'),
+    personas:g('x-pers'), anclaje:g('x-ancl'), herramientas:g('x-herr'),
+    embalaje:g('x-emb'), ruta_evac:g('x-ruta'),
+    sens_agua:g('x-sa'), sens_fuego:g('x-sf'), sens_golpes:g('x-sg'),
+    valor:g('x-valor'), propietario:g('x-prop'),
+    updated_at: new Date().toISOString()
+  };
+  const bt = $('x-bt'); bt.disabled = true; bt.textContent = 'Guardando…';
+  try{
+    if(id){
+      const [u] = await sb(`bienes_muebles?id=eq.${id}`, {method:'PATCH',
+        headers:H({'Prefer':'return=representation'}), body:JSON.stringify(datos)});
+      Object.assign(BIENES.find(x=>x.id===id), u);
+      toast('Bien actualizado'); abrirFicha(id);
+    } else {
+      const [n] = await sb('bienes_muebles', {method:'POST',
+        headers:H({'Prefer':'return=representation'}),
+        body:JSON.stringify({...datos, patrimonio_id:EDIFICIO.id, planta_id:PLANTA_SEL})});
+      BIENES.push(n); toast('Bien añadido'); abrirFicha(n.id);
+    }
+    pintarCatalogo(); pintarEdificio();
+  }catch(e){
+    bt.disabled = false; bt.textContent = 'Guardar';
+    toast('No se ha podido guardar: ' + e.message);
+  }
+}
+
+/* ---------------- plano ---------------- */
+function pintarPlano(){
+  const host = $('plano-host');
+  if(!PLANTAS.length){
+    host.innerHTML = '<div class="plano-caja"><div class="plano-vacio">' +
+      'Este edificio no tiene croquis.<br>Vale la foto de un croquis hecho a mano: ' +
+      'con la planta y las puertas basta.' +
+      (puedeEditar()
+        ? '<br><br><button class="bt pri" type="button" onclick="pedirCroquis(null)">Subir un croquis</button>'
+        : '') + '</div></div>';
+    $('plantas').innerHTML = ''; $('plano-pie').textContent = ''; return;
+  }
+  $('plantas').innerHTML = PLANTAS.map(p =>
+    `<button class="pl-bt ${p.id===PLANTA_SEL?'on':''}" type="button"
+      onclick="PLANTA_SEL='${p.id}';pintarPlano()">${esc(p.nombre)}</button>`).join('')
+    + (puedeEditar()
+        ? `<button class="pl-bt" type="button" onclick="pedirCroquis(null)">+ Planta</button>
+           <button class="pl-bt" type="button" onclick="pedirCroquis('${PLANTA_SEL}')">Cambiar croquis</button>`
+        : '');
+
+  const pl = PLANTAS.find(p=>p.id===PLANTA_SEL) || PLANTAS[0];
+  if(!pl.croquis_url){
+    host.innerHTML = '<div class="plano-caja"><div class="plano-vacio">' +
+      esc(pl.nombre) + ' no tiene croquis subido.' +
+      (puedeEditar()
+        ? `<br><br><button class="bt pri" type="button" onclick="pedirCroquis('${pl.id}')">Subir croquis</button>`
+        : '') + '</div></div>';
+    return;
+  }
+  const dentro = BIENES.filter(b => (b.planta_id === pl.id || (!b.planta_id && pl.orden===0))
+                                  && b.croquis_x != null && b.croquis_y != null);
+  host.innerHTML = `<div class="plano-caja ${colocando?'colocando':''}" id="lienzo">
+      <img src="${esc(pl.croquis_url)}" alt="Croquis de ${esc(pl.nombre)}">
+      ${dentro.map((b,i)=>{
+        const R = RESCATE[codigo(b)];
+        return `<button class="pin ${codigo(b)==='RI'?'ri':''}" type="button"
+          style="left:${b.croquis_x}%;top:${b.croquis_y}%;background:${R.color}"
+          title="${esc(b.nombre)}" onclick="event.stopPropagation();abrirFicha('${b.id}')">${i+1}</button>`;
+      }).join('')}
+    </div>`;
+  if(colocando) $('lienzo').onclick = e => fijarPosicion(e);
+  const sin = BIENES.length - dentro.length;
+  $('plano-pie').textContent = colocando
+    ? 'Toca en el plano dónde está la pieza.'
+    : `${dentro.length} de ${BIENES.length} bienes situados.` +
+      (sin ? ` Quedan ${sin} por anclar.` : '');
+}
+
+function colocarEnPlano(id){
+  if(!PLANTAS.length || !PLANTAS.some(p=>p.croquis_url)){
+    toast('Antes hay que subir un croquis del edificio'); return;
+  }
+  colocando = id; cerrarFicha(); setSub('plano');
+  toast('Toca en el plano dónde está la pieza');
+}
+
+async function fijarPosicion(ev){
+  if(!colocando) return;
+  const img = ev.currentTarget.querySelector('img');
+  const r = img.getBoundingClientRect();
+  const x = +(((ev.clientX - r.left) / r.width) * 100).toFixed(2);
+  const y = +(((ev.clientY - r.top) / r.height) * 100).toFixed(2);
+  if(x < 0 || x > 100 || y < 0 || y > 100) return;
+  const id = colocando; colocando = null;
+  try{
+    await sb(`bienes_muebles?id=eq.${id}`, {method:'PATCH', headers:H(),
+      body:JSON.stringify({croquis_x:x, croquis_y:y, planta_id:PLANTA_SEL, pos_revisar:false})});
+    const b = BIENES.find(z=>z.id===id);
+    Object.assign(b, {croquis_x:x, croquis_y:y, planta_id:PLANTA_SEL, pos_revisar:false});
+    toast('Situado en el plano');
+  }catch(e){ toast('No se ha podido guardar la posición'); }
+  pintarPlano();
+}
+
+/* ---------------- subidas a Storage ---------------- */
+/* Los buckets ya existen: patrimonio-fotos para croquis, bienes-fotos
+   para las piezas. No se crea ninguno nuevo. */
+const BK_CROQUIS = 'patrimonio-fotos', BK_BIENES = 'bienes-fotos';
+
+function nombreLimpio(f){
+  return Date.now() + '-' + (f.name||'img')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^A-Za-z0-9._-]/g,'_').slice(-60);
+}
+
+async function aStorage(bucket, ruta, file){
+  const r = await fetch(`${SB}/storage/v1/object/${bucket}/${ruta}`, {
+    method:'POST',
+    headers:{'apikey':KEY, 'Content-Type':file.type || 'image/jpeg',
+             'Authorization':'Bearer ' + (PortalAuth.token()||KEY)},
+    body:file});
+  if(!r.ok) throw new Error(await r.text() || 'No se ha podido subir');
+  return `${SB}/storage/v1/object/public/${bucket}/${ruta}`;
+}
+
+let plantaDestino = null, bienDestinoFoto = null;
+
+function pedirCroquis(id){
+  if(!puedeEditar()){ toast('Solo pueden editar los administradores'); return; }
+  plantaDestino = id || null;
+  $('in-croquis').value = ''; $('in-croquis').click();
+}
+
+async function subirCroquis(ev){
+  const f = ev.target.files && ev.target.files[0]; if(!f) return;
+  toast('Subiendo croquis…');
+  try{
+    const url = await aStorage(BK_CROQUIS, `croquis/${EDIFICIO.id}/${nombreLimpio(f)}`, f);
+    if(plantaDestino){
+      await sb(`plantas?id=eq.${plantaDestino}`, {method:'PATCH', headers:H(),
+        body:JSON.stringify({croquis_url:url})});
+      const pl = PLANTAS.find(p=>p.id===plantaDestino);
+      pl.croquis_url = url;
+      /* El plano es otro: los porcentajes guardados ya no valen */
+      const afect = BIENES.filter(b => b.planta_id === pl.id && b.croquis_x != null);
+      if(afect.length){
+        await sb(`bienes_muebles?planta_id=eq.${pl.id}&croquis_x=not.is.null`,
+          {method:'PATCH', headers:H(), body:JSON.stringify({pos_revisar:true})});
+        afect.forEach(b => b.pos_revisar = true);
+        toast(`Croquis cambiado: ${afect.length} posiciones por revisar`);
+      } else toast('Croquis subido');
+    } else {
+      const nombre = prompt('¿Cómo se llama esta planta?', PLANTAS.length ? 'Planta ' + PLANTAS.length : 'Planta única');
+      if(nombre === null) return;
+      const [n] = await sb('plantas', {method:'POST', headers:H({'Prefer':'return=representation'}),
+        body:JSON.stringify({patrimonio_id:EDIFICIO.id, nombre:(nombre.trim()||'Planta'),
+                             orden:PLANTAS.length, croquis_url:url})});
+      PLANTAS.push(n); PLANTA_SEL = n.id;
+      toast('Planta creada');
+    }
+  }catch(e){ toast('No se ha podido subir: ' + e.message); }
+  plantaDestino = null;
+  pintarPlano();
+}
+
+function pedirFotoBien(id){
+  if(!puedeEditar()){ toast('Solo pueden editar los administradores'); return; }
+  bienDestinoFoto = id;
+  $('in-foto').value = ''; $('in-foto').click();
+}
+
+async function subirFotoBien(ev){
+  const f = ev.target.files && ev.target.files[0]; if(!f || !bienDestinoFoto) return;
+  const id = bienDestinoFoto; bienDestinoFoto = null;
+  toast('Subiendo foto…');
+  try{
+    const url = await aStorage(BK_BIENES, `${id}/${nombreLimpio(f)}`, f);
+    await sb(`bienes_muebles?id=eq.${id}`, {method:'PATCH', headers:H(),
+      body:JSON.stringify({foto_url:url})});
+    BIENES.find(b=>b.id===id).foto_url = url;
+    toast('Foto añadida'); pintarCatalogo(); abrirFicha(id);
+  }catch(e){ toast('No se ha podido subir: ' + e.message); }
+}
+
+/* ============================================================
+   INTERVENCIÓN
+   ============================================================ */
+const COLA = 'portal_cola_interv';
+function leerCola(){ try{ return JSON.parse(localStorage.getItem(COLA)||'[]'); }catch(e){ return []; } }
+function escribirCola(c){ try{ localStorage.setItem(COLA, JSON.stringify(c)); }catch(e){} }
+
+/* Cada línea lleva un identificador del móvil: reenviar la cola
+   acumulada sin cobertura no duplica nada. */
+function idCliente(){
+  return (crypto.randomUUID ? crypto.randomUUID()
+        : Date.now()+'-'+Math.random().toString(16).slice(2));
+}
+
+async function anotar(linea){
+  const fila = {intervencion_id: INTERV.id, cliente_id: idCliente(),
+                ts: new Date().toISOString(), ...linea};
+  LOG.push(fila);
+  pintarIntervencion();
+  try{
+    await sb('intervencion_log', {method:'POST', headers:H({'Prefer':'return=minimal'}),
+      body:JSON.stringify(fila)});
+  }catch(e){
+    const c = leerCola(); c.push(fila); escribirCola(c);
+    pintarIntervencion();
+  }
+}
+
+async function vaciarCola(){
+  let c = leerCola();
+  if(!c.length) return;
+  const quedan = [];
+  for(const f of c){
+    try{
+      await sb('intervencion_log', {method:'POST', headers:H({'Prefer':'return=minimal'}),
+        body:JSON.stringify(f)});
+    }catch(e){ quedan.push(f); }
+  }
+  escribirCola(quedan);
+  if(!quedan.length && c.length) toast(`${c.length} registros subidos`);
+  pintarIntervencion();
+}
+window.addEventListener('online', vaciarCola);
+
+function estadoDe(id){
+  const l = [...LOG].reverse().find(x => x.bien_id === id);
+  return l ? l.estado_nuevo : 'pendiente';
+}
+function ultimoDe(id){ return [...LOG].reverse().find(x => x.bien_id === id); }
+
+async function iniciarIntervencion(){
+  if(!puedeEditar()){ toast('Solo admin o bombero pueden abrir una intervención'); return; }
+  try{
+    const [n] = await sb('intervenciones', {method:'POST',
+      headers:H({'Prefer':'return=representation'}),
+      body:JSON.stringify({patrimonio_id:EDIFICIO.id,
+        creada_por: PortalAuth.nombre ? PortalAuth.nombre() : null,
+        mando: PortalAuth.nombre ? PortalAuth.nombre() : null})});
+    INTERV = n; LOG = []; ESTADO_OP = 'autorizado';
+    await anotar({bien_id:null, estado_nuevo:'sistema', equipo:EQUIPO,
+                  nota:'Salvamento autorizado — ' + EDIFICIO.nombre});
+    toast('Intervención abierta');
+  }catch(e){
+    // El índice único impide dos activas: si otro la abrió, nos unimos a la suya
+    await cargarIntervencion();
+    if(INTERV) toast('Ya había una intervención abierta: te has unido');
+    else toast('No se ha podido abrir: ' + e.message);
+  }
+  pintarIntervencion();
+}
+
+async function alternarSuspension(){
+  const susp = ESTADO_OP === 'autorizado';
+  if(susp){
+    const m = prompt('¿Por qué se suspende el salvamento?\n(Riesgo de colapso, orden del mando…)');
+    if(m === null) return;
+    ESTADO_OP = 'suspendido';
+    await anotar({bien_id:null, estado_nuevo:'sistema', equipo:EQUIPO,
+                  nota:'Salvamento SUSPENDIDO — ' + (m.trim() || 'sin motivo indicado')});
+  } else {
+    ESTADO_OP = 'autorizado';
+    await anotar({bien_id:null, estado_nuevo:'sistema', equipo:EQUIPO,
+                  nota:'Salvamento reanudado'});
+  }
+  pintarIntervencion();
+}
+
+async function marcar(id, estado){
+  if(ESTADO_OP === 'suspendido' && estado === 'en_rescate'){
+    toast('El salvamento está suspendido'); return;
+  }
+  const b = BIENES.find(x=>x.id===id);
+  let zona = null;
+  if(estado === 'depositado' || estado === 'evacuado'){
+    const zs = Array.isArray(EDIFICIO.zonas_acopio) ? EDIFICIO.zonas_acopio : [];
+    if(zs.length === 1) zona = zs[0];
+    else if(zs.length > 1){
+      const q = prompt('¿Dónde queda?\n' + zs.map((z,i)=>`${i+1}. ${z}`).join('\n'), '1');
+      if(q === null) return;
+      zona = zs[parseInt(q,10)-1] || zs[0];
+    }
+  }
+  await anotar({bien_id:id, estado_nuevo:estado, equipo:EQUIPO, zona_acopio:zona,
+                nota: b ? b.nombre : null});
+  toast(`${(b&&b.nombre||'').slice(0,28)} → ${ESTADOS[estado].etq}`);
+}
+
+function botones(b, est){
+  const R = RESCATE[codigo(b)];
+  const sus = ESTADO_OP === 'suspendido';
+  const bt = (cls,txt,est2,off) =>
+    `<button class="be ${cls}" type="button" ${off?'disabled':''}
+      onclick="marcar('${b.id}','${est2}')">${txt}</button>`;
+  if(est === 'pendiente'){
+    return (R.evacua ? bt('resc','▶ En rescate','en_rescate',sus)
+                     : bt('prot','🛡 Cubierto','protegido',false))
+         + bt('ilo','? No está','ilocalizable',false);
+  }
+  if(est === 'en_rescate') return bt('evac','✔ Fuera','evacuado',false)
+                                + bt('dano','⚠ Dañado','danado',false)
+                                + `<button class="be des" type="button" onclick="marcar('${b.id}','pendiente')">↩</button>`;
+  if(est === 'evacuado')   return bt('depo','📦 Depositado','depositado',false)
+                                + bt('dano','⚠ Dañado','danado',false);
+  return `<button class="be des" type="button" onclick="marcar('${b.id}','pendiente')">↩ Deshacer</button>`;
+}
+
+function pintarIntervencion(){
+  if(!INTERV){
+    $('iv-off').style.display = 'flex'; $('iv-on').style.display = 'none'; return;
+  }
+  $('iv-off').style.display = 'none'; $('iv-on').style.display = 'block';
+
+  /* equipos */
+  $('equipos').innerHTML = EQUIPOS.map(e =>
+    `<button class="eq ${e===EQUIPO?'on':''}" type="button" onclick="EQUIPO='${esc(e)}';pintarIntervencion()">${esc(e)}</button>`
+  ).join('') + '<button class="eq eq-mas" type="button" onclick="masEquipo()">+ Añadir</button>';
+
+  /* estado de la operación */
+  const sus = ESTADO_OP === 'suspendido';
+  $('estado-op').classList.toggle('susp', sus);
+  $('op-et').textContent = sus ? '⚠ Salvamento suspendido' : 'Salvamento autorizado';
+  $('op-et').classList.toggle('ojo', sus);
+  $('bt-susp').textContent = sus ? 'Reanudar' : 'Suspender';
+
+  /* marcador */
+  const act = BIENES.map(b => ({b, e: estadoDe(b.id)}));
+  const dentro = act.filter(x => x.e === 'pendiente' || x.e === 'en_rescate');
+  const fuera  = act.filter(x => ['evacuado','depositado','protegido'].includes(x.e));
+  const enResc = act.filter(x => x.e === 'en_rescate');
+  const personas = dentro.reduce((s,x)=> s + personasNum(x.b), 0);
+  const anclados = dentro.filter(x => x.b.anclaje && !/^no\b/i.test(x.b.anclaje)).length;
+
+  $('m-dentro').textContent = dentro.length;
+  $('m-recursos').innerHTML = dentro.length
+    ? `Necesitan <b>${personas || '—'} personas</b>` +
+      (anclados ? ` · ${anclados} ${anclados===1?'va anclada':'van ancladas'}` : '')
+    : 'Todo resuelto.';
+  const t = BIENES.length || 1;
+  $('b-fuera').style.cssText = `width:${fuera.length/t*100}%;background:#27AE60`;
+  $('b-resc').style.cssText  = `width:${enResc.length/t*100}%;background:#E67E22`;
+  $('b-izq').textContent = `${fuera.length} fuera · ${enResc.length} en rescate`;
+  $('b-der').textContent = `${BIENES.length} en total`;
+
+  /* lista por orden de rescate, lo resuelto al final */
+  const orden = [...BIENES].sort((a,b)=>{
+    const fa = FINALES.includes(estadoDe(a.id)) ? 1 : 0;
+    const fb = FINALES.includes(estadoDe(b.id)) ? 1 : 0;
+    if(fa !== fb) return fa - fb;
+    return RESCATE[codigo(a)].orden - RESCATE[codigo(b)].orden ||
+           (a.orden_rescate||99) - (b.orden_rescate||99);
+  });
+  let grupo = '', html = '';
+  orden.forEach(b => {
+    const R = RESCATE[codigo(b)], est = estadoDe(b.id), E = ESTADOS[est], u = ultimoDe(b.id);
+    if(R.grupo !== grupo && !FINALES.includes(est)){ grupo = R.grupo; html += `<div class="gr">${esc(grupo)}</div>`; }
+    html += `<div class="bien-f ${R.cls} ${FINALES.includes(est)?'fin':''}">
+      <div class="bf-c">
+        <div class="bf-1">
+          <div style="min-width:0;flex:1">
+            <div class="bf-n">${esc(b.nombre)}</div>
+            <div class="bf-u">${esc(u && u.zona_acopio ? 'Acopio: ' + u.zona_acopio
+                                    : (b.zona || b.ubicacion || ''))}</div>
+          </div>
+          <span class="bf-e" style="background:${E.bg};color:${E.fg}">${E.etq}</span>
+        </div>
+        <div class="bf-d">
+          ${b.personas ? `<span><b>${esc(b.personas)}</b> personas</span>` : ''}
+          ${b.anclaje ? `<span>${esc(b.anclaje).slice(0,46)}</span>` : ''}
+          ${b.herramientas ? `<span>${esc(b.herramientas).slice(0,46)}</span>` : ''}
+        </div>
+        ${u && est!=='pendiente' ? `<div class="bf-m">${hhmm(u.ts)} · ${esc(u.equipo||'')}</div>` : ''}
+        <div class="bf-bt">${botones(b, est)}</div>
+      </div>
+    </div>`;
+  });
+  $('iv-lista').innerHTML = html;
+
+  /* registro */
+  const ls = [...LOG].reverse();
+  $('reg-lineas').innerHTML = ls.length
+    ? ls.map(l => `<div class="reg-l"><span class="reg-h">${hhmm(l.ts)}</span>
+        <span class="reg-e">${esc(l.equipo||'')}</span>
+        <span>${esc(l.estado_nuevo==='sistema' ? (l.nota||'')
+          : (ESTADOS[l.estado_nuevo]?ESTADOS[l.estado_nuevo].etq:l.estado_nuevo) +
+            ' — ' + (l.nota||'') + (l.zona_acopio ? ' (' + l.zona_acopio + ')' : ''))}</span>
+      </div>`).join('')
+    : '<div style="color:var(--dim);font-size:13px;font-style:italic">Sin registros todavía.</div>';
+
+  const c = leerCola();
+  $('cola').style.display = c.length ? 'block' : 'none';
+  $('cola').textContent = c.length
+    ? `⚠ ${c.length} registro${c.length===1?'':'s'} sin subir: se enviarán cuando vuelva la cobertura.`
+    : '';
+
+  if(!cronoT){ cronoT = setInterval(tictac, 1000); tictac(); }
+}
+
+function tictac(){
+  if(!INTERV){ clearInterval(cronoT); cronoT = null; return; }
+  const s = Math.max(0, Math.floor((Date.now() - new Date(INTERV.inicio).getTime())/1000));
+  const p = n => String(n).padStart(2,'0');
+  $('m-crono').innerHTML = `${p(Math.floor(s/3600))}:${p(Math.floor(s/60)%60)}:${p(s%60)}` +
+    `<small>${ESTADO_OP==='suspendido'?'Suspendido':'En curso'}</small>`;
+}
+
+function masEquipo(){
+  const n = prompt('¿Quién más interviene?\n(Hermandad, Cultura, un nombre…)');
+  if(n && n.trim() && !EQUIPOS.includes(n.trim())){
+    EQUIPOS.push(n.trim()); EQUIPO = n.trim(); pintarIntervencion();
+  }
+}
+
+/* Sondeo: otro dispositivo puede estar marcando a la vez */
+function arrancarSondeo(){
+  pararSondeo();
+  sondeoT = setInterval(async ()=>{
+    if(!INTERV || document.hidden) return;
+    try{
+      const nuevo = await sb(`intervencion_log?intervencion_id=eq.${INTERV.id}&select=*&order=ts.asc`);
+      if(nuevo.length !== LOG.length){ LOG = nuevo; pintarIntervencion(); }
+    }catch(e){}
+  }, 5000);
+}
+function pararSondeo(){ if(sondeoT){ clearInterval(sondeoT); sondeoT = null; } }
+
+async function finalizarIntervencion(){
+  const pend = BIENES.filter(b => !FINALES.includes(estadoDe(b.id))).length;
+  const msg = pend
+    ? `Quedan ${pend} bienes sin estado final. Se registrarán tal como están.\n\n¿Finalizar?`
+    : '¿Finalizar la intervención y generar el acta?';
+  if(!confirm(msg)) return;
+  const recibe = prompt('¿Quién recibe los bienes?\n(Nombre y cargo)') || '';
+  await anotar({bien_id:null, estado_nuevo:'sistema', equipo:EQUIPO,
+                nota:'Intervención finalizada'});
+  try{
+    await sb(`intervenciones?id=eq.${INTERV.id}`, {method:'PATCH', headers:H(),
+      body:JSON.stringify({estado:'finalizada', fin:new Date().toISOString(),
+                           entregado_a: recibe.trim() || null})});
+  }catch(e){ toast('No se ha podido cerrar en el servidor; el acta sale igual'); }
+  imprimirActa(recibe.trim());
+  pararSondeo();
+  INTERV = null; LOG = [];
+  pintarIntervencion();
+}
+
+/* ============================================================
+   PAPEL
+   ============================================================ */
+function plantaDe(b){
+  return PLANTAS.find(p => p.id === b.planta_id) ||
+         (PLANTAS.length ? PLANTAS[0] : null);
+}
+
+function fichaConsorcioHTML(b){
+  const R = RESCATE[codigo(b)];
+  const pl = plantaDe(b);
+  const prio = codigo(b)==='R1' ? 'ALTA' : codigo(b)==='R2' ? 'MEDIA'
+             : codigo(b)==='R3' ? 'BAJA' : '—';
+  const evac = R.evacua ? (codigo(b)==='R1'?'1º':codigo(b)==='R2'?'2º':'3º') : 'NO';
+  const f = (k,v) => `<div class="pf-f"><span class="pk">${k}</span><span class="pv">${v?esc(v):'<span class="pf-sin">Pendiente</span>'}</span></div>`;
+  const sens = [b.sens_agua&&('Agua: '+b.sens_agua), b.sens_fuego&&('Fuego: '+b.sens_fuego),
+                b.sens_golpes&&('Golpes: '+b.sens_golpes)].filter(Boolean).join(' · ');
+  const planoHTML = (pl && pl.croquis_url)
+    ? `<div class="pf-pm"><img src="${esc(pl.croquis_url)}" alt="">
+        ${(b.croquis_x!=null && b.croquis_y!=null)
+          ? `<span class="pf-pt" style="left:${b.croquis_x}%;top:${b.croquis_y}%">1</span>` : ''}</div>`
+    : '<span class="pf-sin">Sin croquis del edificio</span>';
+  return `<div class="pf">
+    <div class="pf-t">Ficha de bien mueble — ${esc(EDIFICIO.nombre)}</div>
+    <div class="pf-top"><div class="pf-pr">
+      <div class="pf-pl">PRIORIDAD:</div><div class="pf-pv">${prio}</div>
+      <div class="pf-pl" style="border-bottom:none">EVACUACIÓN:</div>
+      <div class="pf-pv" style="border-bottom:none">${evac}</div>
+    </div></div>
+    <div class="pf-main">
+      <div class="pf-i">
+        <div class="pf-b"><div class="pf-con">
+          ${f('DENOMINACIÓN', b.nombre)}${f('AUTOR / ÉPOCA', [b.autor,b.cronologia].filter(Boolean).join(' · '))}
+          ${f('MATERIAL', b.material)}${f('DIMENSIONES / PESO', [b.dimensiones,b.peso].filter(Boolean).join(' · '))}
+          ${f('UBICACIÓN', [b.zona,b.ubicacion].filter(Boolean).join(' — '))}
+          ${f('VALOR / PROPIETARIO', [b.valor,b.propietario].filter(Boolean).join(' · '))}
+        </div><div class="pf-lat lat-dat">DATOS IDENTIFICATIVOS</div></div>
+        <div class="pf-b"><div class="pf-con">
+          ${f('SENSIBILIDAD', sens)}${f('ANCLAJE', b.anclaje)}${f('MANIPULACIÓN', b.embalaje)}
+        </div><div class="pf-lat lat-pro">PROTECCIÓN Y RIESGOS</div></div>
+        <div class="pf-b" style="flex:1"><div class="pf-con">
+          ${f('PRIORIDAD DE RESCATE', R.etq)}
+          ${f('PERSONAL / MEDIOS', [b.personas && (b.personas+' personas'), b.herramientas].filter(Boolean).join(' · '))}
+          ${f('RUTA DE EVACUACIÓN', b.ruta_evac)}
+          ${f('PUNTO DE DEPÓSITO', (Array.isArray(EDIFICIO.zonas_acopio)?EDIFICIO.zonas_acopio:[]).join(' · '))}
+        </div><div class="pf-lat lat-eva">EVACUACIÓN</div></div>
+      </div>
+      <div class="pf-d">
+        <div class="pf-b" style="flex:1"><div class="pf-cj">
+          ${b.foto_url ? `<img src="${esc(b.foto_url)}" alt="">` : '<span class="pf-sin">Sin fotografía</span>'}
+        </div><div class="pf-lat lat-img">IMAGEN</div></div>
+        <div class="pf-b" style="flex:1"><div class="pf-cj">${planoHTML}</div>
+        <div class="pf-lat lat-pla">PLANO UBICACIÓN Y RUTA DE EVACUACIÓN</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function imprimirConsorcio(id){
+  const b = BIENES.find(x=>x.id===id); if(!b) return;
+  $('papel').innerHTML = fichaConsorcioHTML(b);
+  window.print();
+}
+function imprimirCuadernillo(){
+  $('papel').innerHTML = BIENES.map(fichaConsorcioHTML).join('');
+  window.print();
+}
+
+function imprimirActa(recibe){
+  const fin = new Date(), ini = new Date(INTERV.inicio);
+  const min = Math.round((fin - ini)/60000);
+  const filas = [...BIENES].sort((a,b)=>RESCATE[codigo(a)].orden - RESCATE[codigo(b)].orden)
+    .map(b=>{
+      const est = estadoDe(b.id), u = ultimoDe(b.id);
+      return `<tr><td>${esc(b.nombre)}</td><td>${RESCATE[codigo(b)].etq}</td>
+        <td><b>${ESTADOS[est].etq}</b></td>
+        <td>${u && u.zona_acopio ? esc(u.zona_acopio) : '—'}</td>
+        <td>${u ? hhmm(u.ts) : '—'}</td><td>${u ? esc(u.equipo||'') : '—'}</td></tr>`;
+    }).join('');
+  const crono = LOG.map(l => `<tr><td>${hhmm(l.ts)}</td><td>${esc(l.equipo||'')}</td>
+    <td>${esc(l.estado_nuevo==='sistema' ? (l.nota||'')
+      : (ESTADOS[l.estado_nuevo]?ESTADOS[l.estado_nuevo].etq:l.estado_nuevo)+' — '+(l.nota||''))}</td></tr>`).join('');
+  const nolocal = BIENES.filter(b=>estadoDe(b.id)==='ilocalizable').length;
+  $('papel').innerHTML = `<div style="width:190mm;background:#fff;color:#000;
+      font-family:Arial,sans-serif;font-size:10pt;padding:10mm">
+    <h1 style="font-size:15pt;border-bottom:2px solid #7B241C;padding-bottom:2mm;
+        margin-bottom:4mm;text-transform:uppercase">Acta de entrega de bienes</h1>
+    <p style="line-height:1.6"><b>${esc(EDIFICIO.nombre)}</b> — ${esc(EDIFICIO.direccion||'')}<br>
+      Intervención del ${ini.toLocaleString('es-ES')} al ${fin.toLocaleString('es-ES')}
+      · Duración: ${min} min<br>
+      Mando: ${esc(INTERV.mando||'—')} · Recibe: ${esc(recibe||'—')}</p>
+    <h2 style="font-size:11pt;margin:5mm 0 2mm;color:#7B241C;text-transform:uppercase">Resultado por bien</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:9pt">
+      <tr style="background:#E8E8E8"><th style="border:1px solid #888;padding:1.5mm;text-align:left">Bien</th>
+      <th style="border:1px solid #888;padding:1.5mm;text-align:left">Prioridad</th>
+      <th style="border:1px solid #888;padding:1.5mm;text-align:left">Estado final</th>
+      <th style="border:1px solid #888;padding:1.5mm;text-align:left">Dónde queda</th>
+      <th style="border:1px solid #888;padding:1.5mm;text-align:left">Hora</th>
+      <th style="border:1px solid #888;padding:1.5mm;text-align:left">Equipo</th></tr>
+      ${filas}</table>
+    <h2 style="font-size:11pt;margin:5mm 0 2mm;color:#7B241C;text-transform:uppercase">Registro cronológico</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:9pt">
+      <tr style="background:#E8E8E8"><th style="border:1px solid #888;padding:1.5mm;text-align:left">Hora</th>
+      <th style="border:1px solid #888;padding:1.5mm;text-align:left">Equipo</th>
+      <th style="border:1px solid #888;padding:1.5mm;text-align:left">Acción</th></tr>${crono}</table>
+    <p style="font-size:9pt;color:#555;margin-top:4mm">
+      ${BIENES.length - nolocal} de ${BIENES.length} bienes localizados.
+      Las fotografías del estado de cada pieza en el momento de la salida quedan anexas a esta acta.</p>
+    <div style="margin-top:14mm;display:flex;gap:20mm">
+      <div style="flex:1;border-top:1px solid #000;padding-top:2mm;font-size:9pt;text-align:center">
+        Mando de la intervención<br>${esc(INTERV.mando||'')}</div>
+      <div style="flex:1;border-top:1px solid #000;padding-top:2mm;font-size:9pt;text-align:center">
+        Recibe los bienes<br>${esc(recibe||'')}</div>
+    </div>
+  </div>`;
+  window.print();
+}
+
+/* ---------------- arranque ---------------- */
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(window.Incidencia && Incidencia.pintarBarra)
+    Incidencia.pintarBarra({despuesDe:'header'});
+  cargar();
+});
+</script>
+</body>
+</html>

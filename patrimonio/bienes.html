@@ -350,6 +350,13 @@ main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
       <h2>Salvamento de bienes</h2>
       <p>Aún no hay intervención abierta en este edificio. Al iniciarla, cada cambio de estado
          queda registrado con su hora y su equipo, y al terminar sale el acta de entrega.</p>
+      <div style="width:100%;max-width:420px;display:flex;flex-direction:column;gap:11px;text-align:left">
+        <div class="fg"><label>Mando de la intervención</label>
+          <input id="in-mando" placeholder="Nombre o indicativo"></div>
+        <div class="fg"><label>Efectivos que intervienen</label>
+          <textarea id="in-efect" placeholder="Uno por línea:&#10;Juanma&#10;Rafa&#10;Hermandad"></textarea>
+          <span style="font-size:12.5px;color:var(--dim);line-height:1.4">Luego puedes añadir más sobre la marcha.</span></div>
+      </div>
       <button class="bt-grande" type="button" onclick="iniciarIntervencion()">Iniciar salvamento</button>
       <p style="font-size:13px;color:var(--dim)">Primero las personas, después estabilizar el incendio.
          Esto se abre cuando el mando lo autoriza.</p>
@@ -423,7 +430,7 @@ const FINALES = ['depositado','protegido','danado','ilocalizable'];
 let EDIFICIO = null, PLANTAS = [], BIENES = [], PLANTA_SEL = null;
 let INTERV = null, LOG = [], ESTADO_OP = 'autorizado';
 let MODO = 'planificacion', SUB = 'catalogo';
-let EQUIPO = 'B-31', EQUIPOS = ['B-31','B-32','B-33','Mando'];
+let EQUIPO = null, EQUIPOS = [], MANDO = null;
 let colocando = null, cronoT = null, sondeoT = null, bienAbierto = null;
 
 const $ = id => document.getElementById(id);
@@ -473,6 +480,8 @@ async function cargar(){
     return;
   }
   pintarEdificio();
+  const yo = window.PortalAuth && PortalAuth.nombre ? PortalAuth.nombre() : '';
+  if(yo && $('in-mando') && !$('in-mando').value) $('in-mando').value = yo;
   await cargarIntervencion();
   aplicarModo();
   vaciarCola();
@@ -488,6 +497,11 @@ async function cargarIntervencion(){
     const sus = [...LOG].reverse().find(l => l.estado_nuevo === 'sistema' &&
                  /suspend|reanud/i.test(l.nota||''));
     ESTADO_OP = sus && /suspend/i.test(sus.nota) ? 'suspendido' : 'autorizado';
+    if(INTERV){
+      MANDO = INTERV.mando || null;
+      EQUIPOS = Array.isArray(INTERV.efectivos) ? INTERV.efectivos.slice() : [];
+      if(!EQUIPO || !EQUIPOS.includes(EQUIPO)) EQUIPO = EQUIPOS[0] || MANDO;
+    }
   }catch(e){ INTERV = null; LOG = []; }
 }
 
@@ -938,15 +952,21 @@ function ultimoDe(id){ return [...LOG].reverse().find(x => x.bien_id === id); }
 
 async function iniciarIntervencion(){
   if(!puedeEditar()){ toast('Solo admin o bombero pueden abrir una intervención'); return; }
+  const mando = ($('in-mando').value || '').trim();
+  const efect = ($('in-efect').value || '').split(/[\n,;]+/)
+                  .map(x=>x.trim()).filter(Boolean);
+  if(!mando){ toast('Pon quién manda la intervención'); $('in-mando').focus(); return; }
   try{
     const [n] = await sb('intervenciones', {method:'POST',
       headers:H({'Prefer':'return=representation'}),
       body:JSON.stringify({patrimonio_id:EDIFICIO.id,
         creada_por: PortalAuth.nombre ? PortalAuth.nombre() : null,
-        mando: PortalAuth.nombre ? PortalAuth.nombre() : null})});
+        mando, efectivos: efect})});
     INTERV = n; LOG = []; ESTADO_OP = 'autorizado';
-    await anotar({bien_id:null, estado_nuevo:'sistema', equipo:EQUIPO,
-                  nota:'Salvamento autorizado — ' + EDIFICIO.nombre});
+    MANDO = mando; EQUIPOS = efect.slice(); EQUIPO = efect[0] || mando;
+    await anotar({bien_id:null, estado_nuevo:'sistema', equipo:mando,
+      nota:`Salvamento autorizado — mando ${mando}` +
+           (efect.length ? ` · efectivos: ${efect.join(', ')}` : '')});
     toast('Intervención abierta');
   }catch(e){
     // El índice único impide dos activas: si otro la abrió, nos unimos a la suya
@@ -1018,15 +1038,21 @@ function pintarIntervencion(){
   }
   $('iv-off').style.display = 'none'; $('iv-on').style.display = 'block';
 
-  /* equipos */
-  $('equipos').innerHTML = EQUIPOS.map(e =>
-    `<button class="eq ${e===EQUIPO?'on':''}" type="button" onclick="EQUIPO='${esc(e)}';pintarIntervencion()">${esc(e)}</button>`
-  ).join('') + '<button class="eq eq-mas" type="button" onclick="masEquipo()">+ Añadir</button>';
+  /* quién está trabajando */
+  const lista = EQUIPOS.length ? EQUIPOS : (MANDO ? [MANDO] : []);
+  $('equipos').innerHTML =
+    '<span style="font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.11em;' +
+    'text-transform:uppercase;color:var(--dim)">Quién lo hace</span>' +
+    lista.map((e,i) =>
+      `<button class="eq ${e===EQUIPO?'on':''}" type="button"
+        onclick="EQUIPO=EQUIPOS[${i}]||MANDO;pintarIntervencion()">${esc(e)}</button>`).join('')
+    + '<button class="eq eq-mas" type="button" onclick="masEquipo()">+ Añadir</button>';
 
   /* estado de la operación */
   const sus = ESTADO_OP === 'suspendido';
   $('estado-op').classList.toggle('susp', sus);
-  $('op-et').textContent = sus ? '⚠ Salvamento suspendido' : 'Salvamento autorizado';
+  $('op-et').textContent = (sus ? '⚠ Salvamento suspendido' : 'Salvamento autorizado') +
+                           (MANDO ? ' · Mando: ' + MANDO : '');
   $('op-et').classList.toggle('ojo', sus);
   $('bt-susp').textContent = sus ? 'Reanudar' : 'Suspender';
 
@@ -1111,11 +1137,18 @@ function tictac(){
     `<small>${ESTADO_OP==='suspendido'?'Suspendido':'En curso'}</small>`;
 }
 
-function masEquipo(){
-  const n = prompt('¿Quién más interviene?\n(Hermandad, Cultura, un nombre…)');
-  if(n && n.trim() && !EQUIPOS.includes(n.trim())){
-    EQUIPOS.push(n.trim()); EQUIPO = n.trim(); pintarIntervencion();
-  }
+async function masEquipo(){
+  const n = prompt('¿Quién más interviene?\n(Un efectivo, la hermandad, personal de Cultura…)');
+  if(!n || !n.trim() || EQUIPOS.includes(n.trim())) return;
+  EQUIPOS.push(n.trim()); EQUIPO = n.trim();
+  pintarIntervencion();
+  /* Queda escrito quién entró y cuándo: si hay gente de fuera, el mando responde de ella */
+  await anotar({bien_id:null, estado_nuevo:'sistema', equipo:MANDO || EQUIPO,
+                nota:'Se incorpora: ' + n.trim()});
+  try{
+    await sb(`intervenciones?id=eq.${INTERV.id}`, {method:'PATCH', headers:H(),
+      body:JSON.stringify({efectivos:EQUIPOS})});
+  }catch(e){}
 }
 
 /* Sondeo: otro dispositivo puede estar marcando a la vez */

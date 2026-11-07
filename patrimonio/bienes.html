@@ -147,6 +147,12 @@ main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .pin.ri{border-radius:6px}
 .pin.sel{box-shadow:0 0 0 5px rgba(255,255,255,.3),0 2px 8px rgba(0,0,0,.7)}
 .plano-caja.colocando{cursor:crosshair}
+.plano-caja.trazando{cursor:crosshair;touch-action:none}
+.rutas{position:absolute;inset:0;pointer-events:none}
+.ruta-aviso{position:absolute;left:10px;right:10px;top:10px;background:rgba(192,57,43,.93);
+  border-radius:6px;padding:10px 13px;font-size:13.5px;line-height:1.4;color:#fff;z-index:5}
+.ruta-aviso b{display:block;font-family:var(--display);font-size:11.5px;letter-spacing:.12em;
+  text-transform:uppercase;opacity:.85;margin-bottom:2px}
 .plano-vacio{padding:44px 20px;text-align:center;color:var(--muted);line-height:1.6;font-size:14.5px}
 .plantas{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
 .pl-bt{font-family:var(--display);font-size:13px;font-weight:700;letter-spacing:.07em;
@@ -326,6 +332,9 @@ main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
     </div>
 
     <div id="s-catalogo">
+      <div id="mat-prot" style="background:var(--panel);border:1px solid var(--borde);
+        border-left:4px solid #148F77;border-radius:7px;padding:10px 14px;margin-bottom:13px;
+        font-size:13.5px;line-height:1.45;color:#D5DAE0"></div>
       <div class="leyenda">
         <span class="lg"><i style="background:#E74C3C"></i>R1 · Evacuar primero</span>
         <span class="lg"><i style="background:#E67E22"></i>R2 · Después</span>
@@ -339,6 +348,7 @@ main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
       <div class="plantas" id="plantas"></div>
       <input type="file" id="in-croquis" accept="image/*" style="display:none" onchange="subirCroquis(event)">
       <input type="file" id="in-foto" accept="image/*" style="display:none" onchange="subirFotoBien(event)">
+      <input type="file" id="in-fotoev" accept="image/*" capture="environment" style="display:none" onchange="subirFotoSalida(event)">
       <div id="plano-host"></div>
       <p style="font-size:13px;color:var(--muted);margin-top:10px;line-height:1.5" id="plano-pie"></p>
     </div>
@@ -432,6 +442,7 @@ let INTERV = null, LOG = [], ESTADO_OP = 'autorizado';
 let MODO = 'planificacion', SUB = 'catalogo';
 let EQUIPO = null, EQUIPOS = [], MANDO = null;
 let colocando = null, cronoT = null, sondeoT = null, bienAbierto = null;
+let trazando = null, trazo = [], planoSel = null;
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g,
@@ -518,6 +529,15 @@ function pintarEdificio(){
   $('edi-s').textContent = [b.tipo, b.direccion,
     BIENES.length + (BIENES.length===1?' bien catalogado':' bienes catalogados')]
     .filter(Boolean).join(' · ');
+  const mp = $('mat-prot');
+  if(mp){
+    mp.innerHTML = b.material_proteccion
+      ? `<b>Material de protección:</b> ${esc(b.material_proteccion)}`
+      : '<span style="color:var(--dim)">Sin anotar dónde está el material de protección (lonas, plásticos).</span>';
+    mp.innerHTML += puedeEditar()
+      ? ' <button type="button" onclick="editarProteccion()" style="background:none;border:none;color:#F0A868;font:inherit;cursor:pointer;text-decoration:underline;padding:0">editar</button>'
+      : '';
+  }
 }
 
 /* ---------------- modos ---------------- */
@@ -610,7 +630,10 @@ function abrirFicha(id){
           ${f('Tipo', b.tipo)}${f('Material', b.material)}${f('Dimensiones', b.dimensiones)}
           ${f('Peso', b.peso)}${f('Zona', b.zona)}${f('Ubicación', b.ubicacion)}
           ${f('Valor', b.valor)}${f('Propietario', b.propietario)}
+          ${f('Prioridad acordada con', b.prioridad_acordada_con)}
+          ${f('Acordada el', b.prioridad_acordada_en)}
         </div>
+        ${!b.prioridad_acordada_con ? '<div class="aviso ojo" style="margin:0">Prioridad provisional: no consta acordada con la propiedad.</div>' : ''}
       </div>
       <div class="f-col">
         <div class="bloq">
@@ -620,6 +643,12 @@ function abrirFicha(id){
           ${f('Ruta de salida', b.ruta_evac)}
           ${b.embalaje ? `<div style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.45">${esc(b.embalaje)}</div>` : ''}
         </div>
+        ${(b.primeros_cuidados || b.tel_conservacion) ? `<div class="bloq" style="border-left:4px solid #27AE60">
+          <div class="bloq-t">Primeros cuidados</div>
+          ${b.primeros_cuidados ? `<div style="font-size:13.5px;line-height:1.45;color:#D5DAE0">${esc(b.primeros_cuidados)}</div>` : ''}
+          ${b.tel_conservacion ? `<a class="bt sec" style="display:block;text-align:center;margin-top:9px;text-decoration:none"
+             href="tel:${esc(String(b.tel_conservacion).replace(/\s+/g,''))}">📞 ${esc(b.tel_conservacion)}</a>` : ''}
+        </div>` : ''}
         ${sens.length || riesgos.length ? `<div class="bloq">
           <div class="bloq-t">Protección y riesgos</div>
           ${sens.map(([k,v])=>f(k,v)).join('')}
@@ -635,6 +664,8 @@ function abrirFicha(id){
       ${puedeEditar() ? `<button class="bt sec" type="button" onclick="abrirForm('${b.id}')">Editar</button>` : ''}
       ${puedeEditar() ? `<button class="bt sec" type="button" onclick="colocarEnPlano('${b.id}')">Situar en el plano</button>` : ''}
       ${puedeEditar() ? `<button class="bt sec" type="button" onclick="pedirFotoBien('${b.id}')">${b.foto_url?'Cambiar foto':'Añadir foto'}</button>` : ''}
+      ${puedeEditar() && b.croquis_x!=null ? `<button class="bt sec" type="button" onclick="dibujarRuta('${b.id}')">${(Array.isArray(b.ruta_croquis)&&b.ruta_croquis.length>1)?'Volver a dibujar la ruta':'Dibujar la ruta de salida'}</button>` : ''}
+      ${puedeEditar() && Array.isArray(b.ruta_croquis) && b.ruta_croquis.length>1 ? `<button class="bt sec" type="button" onclick="borrarRuta('${b.id}')">Borrar ruta</button>` : ''}
       <button class="bt sec" type="button" onclick="cerrarFicha()">Cerrar</button>
     </div>`;
   $('cortina').classList.add('visible');
@@ -704,6 +735,16 @@ function abrirForm(id){
         <div class="fg"><label>Valor</label><input id="x-valor" value="${v('valor')}"></div>
         <div class="fg"><label>Propietario</label><input id="x-prop" value="${v('propietario')}"></div>
       </div>
+      <div class="f2">
+        <div class="fg"><label>Prioridad acordada con</label>
+          <input id="x-pac" value="${v('prioridad_acordada_con')}" placeholder="Hermano mayor, párroco…"></div>
+        <div class="fg"><label>Fecha del acuerdo</label>
+          <input id="x-pafe" type="date" value="${v('prioridad_acordada_en')}"></div>
+      </div>
+      <div class="fg"><label>Primeros cuidados</label>
+        <textarea id="x-cuid" placeholder="No secar con calor. Mantener vertical. Si está mojada, avisar antes de 24 h.">${v('primeros_cuidados')}</textarea></div>
+      <div class="fg"><label>Teléfono de conservación urgente</label>
+        <input id="x-telc" value="${v('tel_conservacion')}" placeholder="Restaurador, IAPH, delegación de Cultura"></div>
       <div class="f-pie" style="padding:6px 0 0">
         <button class="bt ok" type="submit" id="x-bt">Guardar</button>
         <button class="bt sec" type="button" onclick="${id?`abrirFicha('${id}')`:'cerrarFicha()'}">Cancelar</button>
@@ -724,6 +765,8 @@ async function guardarBien(ev, id){
     embalaje:g('x-emb'), ruta_evac:g('x-ruta'),
     sens_agua:g('x-sa'), sens_fuego:g('x-sf'), sens_golpes:g('x-sg'),
     valor:g('x-valor'), propietario:g('x-prop'),
+    prioridad_acordada_con:g('x-pac'), prioridad_acordada_en:g('x-pafe'),
+    primeros_cuidados:g('x-cuid'), tel_conservacion:g('x-telc'),
     updated_at: new Date().toISOString()
   };
   const bt = $('x-bt'); bt.disabled = true; bt.textContent = 'Guardando…';
@@ -744,6 +787,18 @@ async function guardarBien(ev, id){
     bt.disabled = false; bt.textContent = 'Guardar';
     toast('No se ha podido guardar: ' + e.message);
   }
+}
+
+async function editarProteccion(){
+  const v = prompt('¿Dónde está el material de protección y quién lo aporta?\n' +
+                   '(Lonas, plásticos, cajas estancas…)', EDIFICIO.material_proteccion || '');
+  if(v === null) return;
+  try{
+    await sb(`patrimonio?id=eq.${EDIFICIO.id}`, {method:'PATCH', headers:H(),
+      body:JSON.stringify({material_proteccion: v.trim() || null})});
+    EDIFICIO.material_proteccion = v.trim() || null;
+    pintarEdificio(); toast('Guardado');
+  }catch(e){ toast('No se ha podido guardar'); }
 }
 
 /* ---------------- plano ---------------- */
@@ -777,21 +832,122 @@ function pintarPlano(){
   }
   const dentro = BIENES.filter(b => (b.planta_id === pl.id || (!b.planta_id && pl.orden===0))
                                   && b.croquis_x != null && b.croquis_y != null);
-  host.innerHTML = `<div class="plano-caja ${colocando?'colocando':''}" id="lienzo">
+  host.innerHTML = `<div class="plano-caja ${colocando?'colocando':''} ${trazando?'trazando':''}" id="lienzo">
       <img src="${esc(pl.croquis_url)}" alt="Croquis de ${esc(pl.nombre)}">
+      <svg class="rutas" id="svg-rutas" viewBox="0 0 100 100" preserveAspectRatio="none">
+        ${dentro.map(b => svgRuta(b)).join('')}
+        ${trazando ? svgTrazo() : ''}
+      </svg>
       ${dentro.map((b,i)=>{
         const R = RESCATE[codigo(b)];
-        return `<button class="pin ${codigo(b)==='RI'?'ri':''}" type="button"
+        return `<button class="pin ${codigo(b)==='RI'?'ri':''} ${b.id===planoSel?'sel':''}" type="button"
           style="left:${b.croquis_x}%;top:${b.croquis_y}%;background:${R.color}"
-          title="${esc(b.nombre)}" onclick="event.stopPropagation();abrirFicha('${b.id}')">${i+1}</button>`;
+          title="${esc(b.nombre)}" onclick="event.stopPropagation();tocarPin('${b.id}')">${i+1}</button>`;
       }).join('')}
+      ${trazando ? `<div class="ruta-aviso"><b>Ruta de evacuación</b>
+        Arrastra el dedo desde la pieza hasta la salida. Al soltar se guarda.</div>` : ''}
     </div>`;
-  if(colocando) $('lienzo').onclick = e => fijarPosicion(e);
+  const lz = $('lienzo');
+  if(colocando) lz.onclick = e => fijarPosicion(e);
+  if(trazando){
+    lz.addEventListener('pointerdown', trazoInicio);
+    lz.addEventListener('pointermove', trazoSigue);
+    lz.addEventListener('pointerup', trazoFin);
+    lz.addEventListener('pointercancel', trazoFin);
+  }
   const sin = BIENES.length - dentro.length;
+  const conRuta = dentro.filter(b => Array.isArray(b.ruta_croquis) && b.ruta_croquis.length > 1).length;
   $('plano-pie').textContent = colocando
     ? 'Toca en el plano dónde está la pieza.'
-    : `${dentro.length} de ${BIENES.length} bienes situados.` +
-      (sin ? ` Quedan ${sin} por anclar.` : '');
+    : trazando
+      ? 'Arrastra desde la pieza hasta la salida.'
+      : `${dentro.length} de ${BIENES.length} bienes situados` +
+        (conRuta ? `, ${conRuta} con ruta dibujada` : '') + '.' +
+        (sin ? ` Quedan ${sin} por anclar.` : '');
+}
+
+/* La ruta se guarda en porcentajes sobre el croquis, igual que los pines:
+   así vale para cualquier tamaño de pantalla y para el papel. */
+function svgRuta(b){
+  const r = b.ruta_croquis;
+  if(!Array.isArray(r) || r.length < 2) return '';
+  const sel = b.id === planoSel;
+  const d = r.map((p,i) => `${i?'L':'M'}${p.x} ${p.y}`).join(' ');
+  const col = RESCATE[codigo(b)].color;
+  return `<path d="${d}" fill="none" stroke="${col}" vector-effect="non-scaling-stroke"
+    stroke-width="${sel?4:2.5}" stroke-linecap="round" stroke-linejoin="round"
+    stroke-dasharray="6 5" opacity="${sel?1:.4}"></path>`;
+}
+function svgTrazo(){
+  if(trazo.length < 2) return '';
+  const d = trazo.map((p,i) => `${i?'L':'M'}${p.x} ${p.y}`).join(' ');
+  return `<path d="${d}" fill="none" stroke="#fff" vector-effect="non-scaling-stroke"
+    stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>`;
+}
+
+function tocarPin(id){
+  if(trazando) return;
+  planoSel = (planoSel === id) ? null : id;
+  pintarPlano();
+  if(planoSel) toast(BIENES.find(b=>b.id===id).nombre);
+}
+
+function porcentaje(ev){
+  const img = $('lienzo').querySelector('img');
+  const r = img.getBoundingClientRect();
+  return {x:+(((ev.clientX - r.left)/r.width)*100).toFixed(2),
+          y:+(((ev.clientY - r.top)/r.height)*100).toFixed(2)};
+}
+
+function dibujarRuta(id){
+  const b = BIENES.find(x=>x.id===id);
+  if(!b || b.croquis_x == null){ toast('Primero sitúa la pieza en el plano'); return; }
+  trazando = id; trazo = []; planoSel = id;
+  cerrarFicha(); setSub('plano');
+}
+
+let trazoActivo = false;
+function trazoInicio(ev){
+  if(!trazando) return;
+  ev.preventDefault();
+  trazoActivo = true; trazo = [porcentaje(ev)];
+}
+function trazoSigue(ev){
+  if(!trazando || !trazoActivo) return;
+  ev.preventDefault();
+  const p = porcentaje(ev), u = trazo[trazo.length-1];
+  /* Un punto cada 1,5 % evita guardar cientos de puntos inútiles */
+  if(!u || Math.hypot(p.x-u.x, p.y-u.y) > 1.5) {
+    trazo.push(p);
+    const svg = $('svg-rutas');
+    if(svg) svg.innerHTML = svg.innerHTML.replace(/<path[^>]*stroke="#fff"[^>]*><\/path>/,'') + svgTrazo();
+  }
+}
+async function trazoFin(ev){
+  if(!trazando || !trazoActivo) return;
+  trazoActivo = false;
+  const id = trazando;
+  if(trazo.length < 2){ trazo = []; return; }
+  const ruta = trazo.slice(0, 120);
+  trazando = null;
+  try{
+    await sb(`bienes_muebles?id=eq.${id}`, {method:'PATCH', headers:H(),
+      body:JSON.stringify({ruta_croquis:ruta})});
+    BIENES.find(b=>b.id===id).ruta_croquis = ruta;
+    toast('Ruta guardada');
+  }catch(e){ toast('No se ha podido guardar la ruta'); }
+  trazo = [];
+  pintarPlano();
+}
+
+async function borrarRuta(id){
+  if(!confirm('¿Borrar la ruta dibujada de esta pieza?')) return;
+  try{
+    await sb(`bienes_muebles?id=eq.${id}`, {method:'PATCH', headers:H(),
+      body:JSON.stringify({ruta_croquis:null})});
+    BIENES.find(b=>b.id===id).ruta_croquis = null;
+    toast('Ruta borrada'); abrirFicha(id); pintarPlano();
+  }catch(e){ toast('No se ha podido borrar'); }
 }
 
 function colocarEnPlano(id){
@@ -818,6 +974,29 @@ async function fijarPosicion(ev){
     toast('Situado en el plano');
   }catch(e){ toast('No se ha podido guardar la posición'); }
   pintarPlano();
+}
+
+/* La foto del estado en que salió la pieza: se pide después de marcar,
+   nunca antes, para no entretener a nadie con el fuego dentro. */
+let lineaFoto = null, bienFoto = null;
+function pedirFotoSalida(cliente_id, bien_id){
+  if(!cliente_id){ toast('Esa línea aún no se ha subido'); return; }
+  lineaFoto = cliente_id; bienFoto = bien_id;
+  $('in-fotoev').value = ''; $('in-fotoev').click();
+}
+async function subirFotoSalida(ev){
+  const f = ev.target.files && ev.target.files[0];
+  if(!f || !lineaFoto) return;
+  const cid = lineaFoto; lineaFoto = null;
+  toast('Subiendo foto…');
+  try{
+    const url = await aStorage(BK_BIENES, `salidas/${bienFoto}/${nombreLimpio(f)}`, f);
+    await sb(`intervencion_log?cliente_id=eq.${encodeURIComponent(cid)}`,
+      {method:'PATCH', headers:H(), body:JSON.stringify({foto_url:url})});
+    const l = LOG.find(x => x.cliente_id === cid);
+    if(l) l.foto_url = url;
+    toast('Foto guardada'); pintarIntervencion();
+  }catch(e){ toast('No se ha podido subir la foto'); }
 }
 
 /* ---------------- subidas a Storage ---------------- */
@@ -1102,7 +1281,12 @@ function pintarIntervencion(){
           ${b.anclaje ? `<span>${esc(b.anclaje).slice(0,46)}</span>` : ''}
           ${b.herramientas ? `<span>${esc(b.herramientas).slice(0,46)}</span>` : ''}
         </div>
-        ${u && est!=='pendiente' ? `<div class="bf-m">${hhmm(u.ts)} · ${esc(u.equipo||'')}</div>` : ''}
+        ${u && est!=='pendiente' ? `<div class="bf-m">${hhmm(u.ts)} · ${esc(u.equipo||'')}
+          ${['evacuado','depositado','danado'].includes(est) ? (u.foto_url
+            ? `· <a href="${esc(u.foto_url)}" target="_blank" rel="noopener" style="color:#6FCF97">foto ✓</a>`
+            : `· <button type="button" onclick="pedirFotoSalida('${u.cliente_id||''}','${b.id}')"
+                 style="background:none;border:none;color:#F0A868;font:inherit;cursor:pointer;padding:0;text-decoration:underline">📷 foto del estado</button>`) : ''}
+        </div>` : ''}
         <div class="bf-bt">${botones(b, est)}</div>
       </div>
     </div>`;
@@ -1201,8 +1385,15 @@ function fichaConsorcioHTML(b){
   const f = (k,v) => `<div class="pf-f"><span class="pk">${k}</span><span class="pv">${v?esc(v):'<span class="pf-sin">Pendiente</span>'}</span></div>`;
   const sens = [b.sens_agua&&('Agua: '+b.sens_agua), b.sens_fuego&&('Fuego: '+b.sens_fuego),
                 b.sens_golpes&&('Golpes: '+b.sens_golpes)].filter(Boolean).join(' · ');
+  const r = Array.isArray(b.ruta_croquis) ? b.ruta_croquis : [];
+  const rutaSVG = r.length > 1
+    ? `<svg viewBox="0 0 100 100" preserveAspectRatio="none"
+         style="position:absolute;inset:0;width:100%;height:100%">
+         <path d="${r.map((p,i)=>`${i?'L':'M'}${p.x} ${p.y}`).join(' ')}" fill="none"
+           stroke="#E00000" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+       </svg>` : '';
   const planoHTML = (pl && pl.croquis_url)
-    ? `<div class="pf-pm"><img src="${esc(pl.croquis_url)}" alt="">
+    ? `<div class="pf-pm"><img src="${esc(pl.croquis_url)}" alt="">${rutaSVG}
         ${(b.croquis_x!=null && b.croquis_y!=null)
           ? `<span class="pf-pt" style="left:${b.croquis_x}%;top:${b.croquis_y}%">1</span>` : ''}</div>`
     : '<span class="pf-sin">Sin croquis del edificio</span>';
@@ -1229,6 +1420,9 @@ function fichaConsorcioHTML(b){
           ${f('PERSONAL / MEDIOS', [b.personas && (b.personas+' personas'), b.herramientas].filter(Boolean).join(' · '))}
           ${f('RUTA DE EVACUACIÓN', b.ruta_evac)}
           ${f('PUNTO DE DEPÓSITO', (Array.isArray(EDIFICIO.zonas_acopio)?EDIFICIO.zonas_acopio:[]).join(' · '))}
+          ${f('PRIMEROS CUIDADOS', b.primeros_cuidados)}
+          ${f('CONSERVACIÓN URGENTE', b.tel_conservacion)}
+          ${f('PRIORIDAD ACORDADA', [b.prioridad_acordada_con, b.prioridad_acordada_en].filter(Boolean).join(' · '))}
         </div><div class="pf-lat lat-eva">EVACUACIÓN</div></div>
       </div>
       <div class="pf-d">

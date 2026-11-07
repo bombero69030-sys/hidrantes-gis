@@ -490,9 +490,9 @@ body{font-family:var(--font-body);background:var(--crema);color:var(--texto);hei
       </div>
     </div>
     <div class="bf-acciones">
-      <button class="bf-btn-borrar" id="bf-btn-borrar" onclick="borrarBien()">🗑 Eliminar</button>
+
       <button class="bf-btn-cancelar" onclick="cerrarModalBien()">Cancelar</button>
-      <button class="bf-btn-guardar" id="bf-btn-guardar" onclick="guardarBien()">💾 Guardar cambios</button>
+
     </div>
   </div>
 </div>
@@ -700,7 +700,7 @@ async function cargarBienes(edificioId){
         ${USUARIO ? `
           <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
             <button onclick="sembrarEsteEdificio('${edificioId}')" style="font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 18px;background:var(--rojo);color:white;border:none;cursor:pointer;border-radius:2px">📥 Cargar datos de ejemplo</button>
-            <button onclick="abrirFormNuevoBien()" style="font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 18px;background:var(--gris-oscuro);color:white;border:none;cursor:pointer;border-radius:2px">+ Añadir bien nuevo</button>
+            ${`<a href="../patrimonio/bienes.html?edificio=${edificioActual}&modo=planificacion" style="font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 18px;background:var(--rojo);color:#fff;border:none;cursor:pointer;border-radius:2px;text-decoration:none;display:inline-block">🏺 Dar de alta en Bienes →</a>`}
           </div>
         ` : `<button onclick="abrirLogin()" style="font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 18px;background:var(--gris-oscuro);color:white;border:none;cursor:pointer;border-radius:2px">🔐 Iniciar sesión</button>`}
       </div>`;
@@ -792,7 +792,7 @@ function mostrarFicha(id){
           <div class="ficha-autor">${b.autor||''}</div>
         </div>
         <div class="badge-rescate ${rescateClass[rescCode]||'badge-ri'}">${rescateLabel[rescCode]||rescCode}</div>
-        <button class="badge-upload${USUARIO?' admin-visible':''}" onclick="subirFotoBien('${b.id}')">📷 Añadir foto</button>
+
       </div>
       <div class="stats-strip">
         <div class="stat">
@@ -844,7 +844,7 @@ function mostrarFicha(id){
           <div class="cv">${b.contacto||'—'}</div>
           <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
             <button style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;background:var(--rojo);color:white;border:none;cursor:pointer;border-radius:2px" onclick="window.print()">🖨 Imprimir ficha</button>
-            ${USUARIO?`<button style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;background:rgba(139,26,26,.12);color:var(--rojo);border:1px solid rgba(139,26,26,.2);cursor:pointer;border-radius:2px" onclick="editarBien('${b.id}')">✏️ Editar ficha</button><button style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;background:#F0FDF4;color:#166534;border:1px solid #86EFAC;cursor:pointer;border-radius:2px" onclick="abrirFormNuevoBien()">+ Añadir bien</button>`:''}
+            ${USUARIO?`<a href="../patrimonio/bienes.html?edificio=${edificioActual}&modo=planificacion" style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;background:rgba(139,26,26,.12);color:var(--rojo);border:1px solid rgba(139,26,26,.2);cursor:pointer;border-radius:2px;text-decoration:none;display:inline-block">✏️ Editar en Bienes →</a>`:''}
           </div>
         </div>
       </div>
@@ -860,7 +860,7 @@ function mostrarEdificio(){
       <div class="edificio-titulo">${nombre}</div>
       <div class="edificio-sub" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
         <span>Fichas de rescate — ${bienesActuales.length} bienes catalogados · Haz clic en un bien para ver su ficha</span>
-        ${USUARIO?`<button class="bf-nuevo-btn" onclick="abrirFormNuevoBien()">+ Añadir bien</button>`:''}
+        ${USUARIO?`<a href="../patrimonio/bienes.html?edificio=${edificioActual}&modo=planificacion" style="font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 18px;background:var(--rojo);color:#fff;border:none;cursor:pointer;border-radius:2px;text-decoration:none;display:inline-block">🏺 Dar de alta en Bienes →</a>`:''}
       </div>
       ${renderCroquisHTML(null,true)}
       ${zonas.map(zona=>`
@@ -1211,7 +1211,7 @@ function mostrarOrden(){
       </table>
       <div class="no-print" style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
         <button class="bf-btn-guardar" onclick="window.print()">🖨 Imprimir / PDF</button>
-        ${USUARIO?`<button class="bf-btn-guardar" style="background:var(--gris-panel);border:1px solid var(--gris-borde)" onclick="abrirFormNuevoBien()">+ Añadir bien</button>`:''}
+        ${USUARIO?`<a href="../patrimonio/bienes.html?edificio=${edificioActual}&modo=planificacion" style="font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 18px;background:var(--rojo);color:#fff;border:none;cursor:pointer;border-radius:2px;text-decoration:none;display:inline-block">🏺 Dar de alta en Bienes →</a>`:''}
       </div>
     </div>`;
 }
@@ -1222,12 +1222,16 @@ function colorCod(c){return {R1:'#C0392B',R2:'#E67E22',R3:'#B7950B',RI:'#5A6475'
 function renderCroquisHTML(lista,conAcciones){
   lista=lista||bienesOrdenados();
   if(!edificioCroquis){
-    return USUARIO?`<div class="croquis-vacio no-print">Sin croquis de planta. <button class="croquis-btn" style="background:var(--rojo);border:none" onclick="subirCroquis()">📐 Subir croquis</button><div style="font-size:11px;margin-top:6px">Vale una foto del plano de evacuación o un dibujo a mano. Luego, en cada bien, "Situar en croquis".</div></div>`:'';
+    /* El croquis y las plantas se gestionan ahora en la página de Bienes */
+    return USUARIO?`<div class="croquis-vacio no-print">Sin croquis de planta.
+      <a href="../patrimonio/bienes.html?edificio=${edificioActual}&modo=planificacion"
+         class="croquis-btn" style="background:var(--rojo);border:none;color:#fff;text-decoration:none;display:inline-block">📐 Subir croquis en Bienes</a>
+      <div style="font-size:11px;margin-top:6px">Allí puedes tener varias plantas y situar cada pieza.</div></div>`:'';
   }
   const pins=lista.filter(b=>b.croquis_x!=null&&b.croquis_y!=null).map(b=>`<div class="croquis-pin ${b.id===seleccionado?'activo':''}" style="left:${b.croquis_x}%;top:${b.croquis_y}%;background:${colorCod(b.rescate_codigo)}" title="${b.nombre}" onclick="seleccionar('${b.id}');setVista('ficha')">${numeroOrden(b.id)}</div>`).join('');
   const sinPin=lista.filter(b=>b.croquis_x==null).length;
   return `<div class="croquis-wrap"><img src="${edificioCroquis}" alt="Croquis">${pins}
-    ${conAcciones&&USUARIO?`<div class="croquis-acciones no-print"><button class="croquis-btn" onclick="subirCroquis()">Cambiar croquis</button></div>`:''}
+    ${conAcciones&&USUARIO?`<div class="croquis-acciones no-print"><a class="croquis-btn" style="text-decoration:none;display:inline-block" href="../patrimonio/bienes.html?edificio=${edificioActual}&modo=planificacion">Cambiar croquis en Bienes</a></div>`:''}
   </div>${sinPin&&conAcciones?`<div class="no-print" style="font-size:11px;color:var(--texto-muted);margin:-10px 0 14px">${sinPin} bien${sinPin!==1?'es':''} sin situar en el croquis${USUARIO?' — edítalos y pulsa sobre el plano':''}</div>`:''}`;
 }
 let subiendoCroquis=false;
@@ -1249,7 +1253,16 @@ document.getElementById('input-croquis').addEventListener('change',async functio
   this.value='';
 });
 async function cargarCroquis(id){
-  try{const r=await fetch(`${SB}/rest/v1/patrimonio?id=eq.${id}&select=croquis_url`,{headers:H()});const d=r.ok?await r.json():[];edificioCroquis=d[0]?.croquis_url||null;}catch(e){edificioCroquis=null;}
+  /* La fuente buena es la tabla plantas; patrimonio.croquis_url queda como legado */
+  edificioCroquis=null;
+  try{
+    const rp=await fetch(`${SB}/rest/v1/plantas?patrimonio_id=eq.${id}&select=croquis_url&order=orden.asc&limit=1`,{headers:H()});
+    const dp=rp.ok?await rp.json():[];
+    edificioCroquis=dp[0]&&dp[0].croquis_url||null;
+  }catch(e){}
+  if(!edificioCroquis){
+    try{const r=await fetch(`${SB}/rest/v1/patrimonio?id=eq.${id}&select=croquis_url`,{headers:H()});const d=r.ok?await r.json():[];edificioCroquis=d[0]&&d[0].croquis_url||null;}catch(e){}
+  }
 }
 // En el formulario del bien: clic sobre el croquis para situarlo
 function renderCroquisForm(){
@@ -1297,7 +1310,7 @@ async function hacerLogin(){
       cerrarLogin();
       if(seleccionado) mostrarFicha(seleccionado);
       // Tras login, sembrar datos y recargar
-      await verificarSeed();
+  /* La semilla de ejemplo ya no se usa: los bienes se dan de alta en Bienes */
       if(edificioActual){
         await cargarBienes(edificioActual);
       } else {

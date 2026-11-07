@@ -1762,7 +1762,12 @@ function panelEdificio(b, ctx){
     trozos.push(bloque('alerta', 'Riesgos', ul));
   }
 
-  /* 5 · hidrantes anotados en la ficha */
+  /* 5 · hidrantes reales de la base, los de la ficha solo como nota */
+  const cajaHid = bloque('', `Hidrantes a menos de ${RADIO_HIDRANTES} m`,
+    el('div','emx-txt','⟳ Consultando…'));
+  trozos.push(cajaHid);
+  hidrantesEmergencia(b, cajaHid, ctx);
+
   const hid = Array.isArray(b.hidrantes) ? b.hidrantes : [];
   if(hid.length){
     const ul = el('ul','emx-ul');
@@ -1772,8 +1777,7 @@ function panelEdificio(b, ctx){
       if(h.ok === false) li.style.color = '#F0A868';
       ul.appendChild(li);
     });
-    trozos.push(bloque(hid.some(h=>h.ok === false) ? 'ojo' : '',
-                       'Hidrantes anotados en la ficha', ul));
+    trozos.push(bloque('', 'Anotado a mano en la ficha', ul));
   }
 
   /* 6 · qué se saca y en qué orden */
@@ -1829,6 +1833,59 @@ function panelEdificio(b, ctx){
   trozos.push(ficha);
 
   return trozos;
+}
+
+/* Los mismos que enseña la ficha del edificio: tabla hidrantes, a
+   menos de 250 m del punto de tendido (la entrada si está marcada). */
+async function hidrantesEmergencia(b, caja, ctx){
+  const {el, chip} = ctx;
+  const o = (typeof puntoTendido === 'function') ? puntoTendido(b) : null;
+  const pon = nodos => {
+    caja.innerHTML = '';
+    caja.appendChild(el('div','emx-rot', `Hidrantes a menos de ${RADIO_HIDRANTES} m`));
+    nodos.forEach(n => n && caja.appendChild(n));
+  };
+  if(!o || !coordOK(o.lat, o.lon)){
+    pon([el('div','emx-txt','El edificio no tiene coordenadas: no se pueden buscar.')]);
+    return;
+  }
+  try{
+    const d = RADIO_HIDRANTES/111000, dl = d/Math.cos(o.lat*Math.PI/180);
+    const r = await fetch(`${SB}/rest/v1/hidrantes?select=id,ref,direccion,tipo,estado,diametro,presion,lat,lon`
+      + `&lat=gte.${o.lat-d}&lat=lte.${o.lat+d}&lon=gte.${o.lon-dl}&lon=lte.${o.lon+dl}`, {headers:H()});
+    const hs = r.ok ? await r.json() : [];
+    const cerca = hs.map(h=>({...h, dist: haversine(o.lat,o.lon,h.lat,h.lon)}))
+                    .filter(h=>h.dist <= RADIO_HIDRANTES && h.estado !== 'inoperativo')
+                    .sort((a,b2)=>a.dist-b2.dist).slice(0,4);
+    if(!cerca.length){
+      pon([el('div','emx-txt','Ninguno registrado a esa distancia. Tendido largo.')]);
+      caja.classList.add('ojo');
+      return;
+    }
+    const nodos = [];
+    cerca.forEach((h,i)=>{
+      const fila = el('div','');
+      fila.style.cssText = 'display:flex;align-items:baseline;gap:10px;padding:7px 0;' +
+        (i ? 'border-top:1px solid #262B31' : '');
+      const dist = el('span',''); dist.textContent = Math.round(h.dist) + ' m';
+      dist.style.cssText = 'font-family:var(--font-display),sans-serif;font-size:21px;font-weight:700;min-width:62px';
+      const txt = el('div',''); txt.style.cssText = 'flex:1;min-width:0';
+      const dir = el('div','emx-txt', h.direccion || h.ref || 'Sin referencia');
+      dir.style.fontSize = '14px';
+      const chips = el('div','emx-chips'); chips.style.marginTop = '4px';
+      if(h.diametro) chips.appendChild(chip('∅ ' + h.diametro + ' mm'));
+      if(h.presion != null) chips.appendChild(chip(h.presion + ' bar',
+        h.presion === 1 ? 'ojo' : null));
+      chips.appendChild(chip(h.estado === 'operativo' ? 'Comprobado' : 'Sin comprobar',
+        h.estado === 'operativo' ? 'ok' : 'ojo'));
+      txt.append(dir, chips);
+      fila.append(dist, txt);
+      nodos.push(fila);
+    });
+    pon(nodos);
+  }catch(e){
+    pon([el('div','emx-txt','No se han podido consultar los hidrantes.')]);
+  }
 }
 
 (function(){

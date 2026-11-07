@@ -46,7 +46,7 @@ header{
   background:rgba(13,15,18,0.86);backdrop-filter:blur(10px);
 }
 .header-left{display:flex;align-items:center;gap:14px;min-width:0}
-.escudo{height:52px;width:auto;display:block;flex-shrink:0;
+.escudo{height:62px;width:auto;display:block;flex-shrink:0;
   filter:drop-shadow(0 2px 10px rgba(192,57,43,0.35))}
 .header-titulo{
   font-family:var(--font-display);font-size:23px;font-weight:800;
@@ -66,8 +66,8 @@ header{
 /* CUERPO */
 .main{
   position:relative;z-index:5;flex:1;
-  display:flex;flex-direction:column;justify-content:center;
-  gap:32px;padding:30px 24px;max-width:1180px;width:100%;margin:0 auto;
+  display:flex;flex-direction:column;justify-content:flex-start;
+  gap:38px;padding:44px 24px 46px;max-width:1180px;width:100%;margin:0 auto;
 }
 .seccion-titulo{
   font-family:var(--font-display);font-size:12px;font-weight:600;
@@ -88,8 +88,9 @@ header{
 .inter:hover{background:var(--gris-panel2);border-left-width:9px;transform:translateY(-2px)}
 .inter:active{transform:translateY(0) scale(.995)}
 .inter:has(.inter-principal:focus-visible){outline:2px solid var(--color);outline-offset:2px}
-.inter-icono{font-size:30px;line-height:1}
-.inter-nombre{margin:0}
+svg.inter-icono{width:32px;height:32px;display:block;color:var(--color);flex-shrink:0}
+svg.modulo-icono{width:26px;height:26px;display:block;color:var(--color)}
+.inter-nombre{min-height:2.16em;display:flex;align-items:flex-start;margin:0}
 .inter-principal{
   font-family:var(--font-display);font-size:21px;font-weight:800;
   letter-spacing:.02em;line-height:1.08;text-transform:uppercase;
@@ -206,7 +207,9 @@ footer{
   .main{padding:18px 14px;gap:20px}
   .intervenciones{grid-template-columns:1fr;gap:9px}
   .inter{flex-direction:row;align-items:center;gap:13px;padding:14px 15px;flex-wrap:wrap}
-  .inter-icono{font-size:25px}
+  svg.inter-icono{width:27px;height:27px}
+  /* En una columna el título cabe en una línea: no reservar dos */
+  .inter-nombre{min-height:0}
   .inter-nombre{flex:1;margin:0}
   .inter-principal{font-size:16px}
   .inter-que{flex-basis:100%;font-size:12px}
@@ -246,28 +249,28 @@ footer{
     <div class="intervenciones">
 
       <div class="inter i-fuego">
-        <span class="inter-icono">🔥</span>
+        <svg class="inter-icono" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 10v10.5h13V10"/><path d="M12 18.6c-1.5 0-2.6-1.1-2.6-2.5 0-1.8 1.7-2.6 1.9-4.6.9.6 2 1.7 2.4 3 .5-.4.7-1 .7-1.6.9.9 1.2 2 1.2 3.2 0 1.4-1.1 2.5-2.6 2.5Z" fill="currentColor" stroke="none"/></svg>
         <h3 class="inter-nombre"><a class="inter-principal" href="hidrantes/index.html?emergencia=1">Fuego en vivienda o local</a></h3>
         <p class="inter-que">Hidrante más cercano con ruta por calles, diámetro y presión.</p>
         <p class="inter-destino">Hidrantes · modo emergencia</p>
       </div>
 
       <div class="inter i-sotano">
-        <span class="inter-icono">🅿️</span>
+        <svg class="inter-icono" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5h19"/><path d="M4 10h4v3.5h4V17h4v3.5h4"/><path d="M18.5 3v6"/><path d="M16 6.6l2.5 2.6L21 6.6"/></svg>
         <h3 class="inter-nombre"><a class="inter-principal" href="sotanos/index.html?emergencia=1">Fuego en garaje o sótano</a></h3>
         <p class="inter-que">Accesos y gálibo de la rampa, plantas, ventilación y gases.</p>
         <p class="inter-destino">Sótanos · modo emergencia</p>
       </div>
 
       <div class="inter i-patrimonio">
-        <span class="inter-icono">🏛️</span>
+        <svg class="inter-icono" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 4l9 5.5"/><path d="M3 9.5h18"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/><path d="M3.5 20.5h17"/></svg>
         <h3 class="inter-nombre"><a class="inter-principal" href="patrimonio/index.html?emergencia=1">Fuego en edificio protegido</a></h3>
         <p class="inter-que">Punto de entrada, riesgos del edificio y contacto del responsable.</p>
-        <p class="inter-destino">Patrimonio · modo emergencia · <a class="inter-extra" href="fichas/index.html">Orden de rescate</a></p>
+        <p class="inter-destino">Patrimonio · modo emergencia</p>
       </div>
 
       <div class="inter i-sitac">
-        <span class="inter-icono">🗺️</span>
+        <svg class="inter-icono" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.6 9 4.2l6 2.4 6-2.4v13.2l-6 2.4-6-2.4-6 2.4Z"/><path d="M9 4.2v13.2M15 6.6v13.2"/><circle cx="12" cy="10.6" r="1.6" fill="currentColor" stroke="none"/></svg>
         <h3 class="inter-nombre"><a class="inter-principal" href="sitac/index.html">Intervención en curso</a></h3>
         <p class="inter-que">Croquis táctico con símbolos normalizados, sectores y medios.</p>
         <p class="inter-destino">SITAC</p>
@@ -281,16 +284,16 @@ footer{
     <div class="modulos">
 
       <a class="modulo mod-hidrantes" href="hidrantes/index.html">
-        <div class="modulo-icono">💧</div>
+        <svg class="modulo-icono" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2c3.4 4 5.4 6.6 5.4 9.2A5.4 5.4 0 0 1 6.6 12.4c0-2.6 2-5.2 5.4-9.2Z"/></svg>
         <div class="modulo-cuerpo">
           <div class="modulo-nombre">Hidrantes</div>
           <div class="modulo-cifra"><span id="num-hidrantes">—</span><small>puntos</small></div>
-          <div class="modulo-desc">Municipio y área metropolitana, con datos de EMASESA.</div>
+          <div class="modulo-desc">Los Palacios y Las Cabezas, con su diámetro, presión y estado.</div>
         </div>
       </a>
 
       <a class="modulo mod-sotanos" href="sotanos/index.html">
-        <div class="modulo-icono">🅿️</div>
+        <svg class="modulo-icono" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5h19"/><path d="M4 10h4v3.5h4V17h4v3.5h4"/><path d="M18.5 3v6"/><path d="M16 6.6l2.5 2.6L21 6.6"/></svg>
         <div class="modulo-cuerpo">
           <div class="modulo-nombre">Sótanos</div>
           <div class="modulo-cifra"><span id="num-sotanos">—</span><small>fichas</small></div>
@@ -299,7 +302,7 @@ footer{
       </a>
 
       <a class="modulo mod-patrimonio" href="patrimonio/index.html">
-        <div class="modulo-icono">🏛️</div>
+        <svg class="modulo-icono" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 4l9 5.5"/><path d="M3 9.5h18"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/><path d="M3.5 20.5h17"/></svg>
         <div class="modulo-cuerpo">
           <div class="modulo-nombre">Patrimonio</div>
           <div class="modulo-cifra"><span id="num-patrimonio">—</span><small>edificios</small></div>
@@ -308,7 +311,7 @@ footer{
       </a>
 
       <a class="modulo mod-sitac" href="sitac/index.html">
-        <div class="modulo-icono">🗺️</div>
+        <svg class="modulo-icono" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.6 9 4.2l6 2.4 6-2.4v13.2l-6 2.4-6-2.4-6 2.4Z"/><path d="M9 4.2v13.2M15 6.6v13.2"/><circle cx="12" cy="10.6" r="1.6" fill="currentColor" stroke="none"/></svg>
         <div class="modulo-cuerpo">
           <div class="modulo-nombre">SITAC</div>
           <div class="modulo-cifra" style="font-size:19px;padding-top:4px">Situación táctica</div>

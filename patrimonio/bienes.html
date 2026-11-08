@@ -12,7 +12,7 @@
   --texto:#F2F3F5; --muted:#9AA3AD; --dim:#6B747E;
   --rojo:#C0392B; --rojo-cl:#E74C3C; --naranja:#E67E22; --verde:#27AE60;
   --azul:#2E86C1; --purpura:#8E44AD; --teal:#148F77;
-  --r1:#E74C3C; --r2:#E67E22; --r3:#27AE60; --ri:#2E86C1;
+  --r1:#E74C3C; --r2:#E67E22; --r3:#27AE60; --ri:#2E86C1; --sc:#7F8C8D;
   --display:'Barlow Condensed',system-ui,sans-serif; --cuerpo:'Barlow',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -206,6 +206,7 @@ main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
   border-radius:7px;margin-bottom:8px;display:flex;overflow:hidden}
 .bien-f.r2{border-left-color:var(--r2)} .bien-f.r3{border-left-color:var(--r3)}
 .bien-f.ri{border-left-color:var(--ri)}
+.bien-f.sc{border-left-color:var(--sc);border-left-style:dashed}
 .bien-f.fin{opacity:.55}
 .bf-c{flex:1;padding:11px 13px;min-width:0}
 .bf-1{display:flex;align-items:center;gap:10px}
@@ -422,9 +423,12 @@ const RESCATE = {
   R1:{cls:'',   color:'#E74C3C', etq:'R1 · Evacuar primero', grupo:'R1 · Primero',   orden:1, evacua:true},
   R2:{cls:'r2', color:'#E67E22', etq:'R2 · Después',         grupo:'R2 · Después',   orden:2, evacua:true},
   R3:{cls:'r3', color:'#27AE60', etq:'R3 · Si da tiempo',    grupo:'R3 · Si da tiempo', orden:3, evacua:true},
-  RI:{cls:'ri', color:'#2E86C1', etq:'Inamovible',           grupo:'Inamovibles',    orden:4, evacua:false}
+  RI:{cls:'ri', color:'#2E86C1', etq:'Inamovible',           grupo:'Inamovibles',    orden:4, evacua:false},
+  // Sin clasificar: la pieza está catalogada pero nadie ha decidido su orden.
+  // Antes caía en R3 por defecto, que es una decisión que nadie había tomado.
+  SC:{cls:'sc', color:'#7F8C8D', etq:'Sin clasificar',       grupo:'Sin clasificar', orden:5, evacua:true}
 };
-const codigo = b => RESCATE[b.rescate_codigo] ? b.rescate_codigo : 'R3';
+const codigo = b => RESCATE[b.rescate_codigo] ? b.rescate_codigo : 'SC';
 
 const ESTADOS = {
   pendiente:   {etq:'Dentro',        bg:'#2A2F35',               fg:'#A7B0B9'},
@@ -691,7 +695,7 @@ function abrirForm(id){
         <input id="x-nombre" required value="${v('nombre')}" placeholder="Virgen de la Aurora"></div>
       <div class="f2">
         <div class="fg"><label>Prioridad de rescate</label>
-          <select id="x-cod">${sel('rescate_codigo',['R1','R2','R3','RI'])}</select></div>
+          <select id="x-cod">${sel('rescate_codigo',['','R1','R2','R3','RI'])}</select></div>
         <div class="fg"><label>Orden dentro del grupo</label>
           <input id="x-orden" type="number" min="1" value="${v('orden_rescate')}"></div>
       </div>
@@ -757,7 +761,7 @@ async function guardarBien(ev, id){
   ev.preventDefault();
   const g = k => { const e = $(k); return e && e.value.trim() ? e.value.trim() : null; };
   const datos = {
-    nombre: g('x-nombre'), rescate_codigo: g('x-cod') || 'R3',
+    nombre: g('x-nombre'), rescate_codigo: g('x-cod'),
     orden_rescate: g('x-orden') ? parseInt(g('x-orden'),10) : null,
     zona:g('x-zona'), ubicacion:g('x-ubi'), autor:g('x-autor'), cronologia:g('x-crono'),
     tipo:g('x-tipo'), material:g('x-mat'), dimensiones:g('x-dim'), peso:g('x-peso'),
